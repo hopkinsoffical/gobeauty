@@ -12,9 +12,9 @@ export default function SiteHeader() {
           >
             <span className="inline-block h-7 w-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 shadow-sm" />
             <span className="text-lg font-extrabold tracking-tight text-ink">
-              glow
+              Go
               <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-                go
+                Beauty
               </span>
             </span>
           </Link>
