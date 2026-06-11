@@ -11,8 +11,8 @@ export default function SiteFooter() {
               <Image
                 src="/gobeauty-logo.png"
                 alt="goBeauty.ai"
-                width={140}
-                height={42}
+                width={1230}
+                height={360}
                 className="h-9 w-auto object-contain"
               />
             </Link>

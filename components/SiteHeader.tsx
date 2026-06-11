@@ -23,9 +23,9 @@ export default function SiteHeader() {
             <Image
               src="/gobeauty-logo.png"
               alt="goBeauty.ai"
-              width={160}
-              height={48}
-              className="h-10 w-auto object-contain"
+              width={1230}
+              height={360}
+              className="h-11 w-auto object-contain"
               priority
             />
           </Link>
