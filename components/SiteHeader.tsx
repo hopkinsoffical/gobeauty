@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 const NAV_LINKS = [
@@ -19,10 +20,14 @@ export default function SiteHeader() {
         {/* Logo */}
         <div className="flex items-center gap-8">
           <Link href="/" aria-label="goBeauty.ai home" className="flex items-center">
-            <span className="text-[18px] font-bold tracking-tight text-ink">
-              go<span className="font-extrabold">Beauty</span>
-              <span className="text-brand-500">.ai</span>
-            </span>
+            <Image
+              src="/gobeauty-logo.png"
+              alt="goBeauty.ai"
+              width={160}
+              height={48}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SiteFooter() {
   return (
@@ -7,10 +8,13 @@ export default function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center">
-              <span className="text-[18px] font-bold tracking-tight text-ink">
-                go<span className="font-extrabold">Beauty</span>
-                <span className="text-brand-500">.ai</span>
-              </span>
+              <Image
+                src="/gobeauty-logo.png"
+                alt="goBeauty.ai"
+                width={140}
+                height={42}
+                className="h-9 w-auto object-contain"
+              />
             </Link>
             <p className="mt-3 max-w-xs text-[14px] leading-relaxed text-ink-muted">
               The AI-native beauty discovery platform. Get the look you want — DIY, book a pro, or shop the right products.
