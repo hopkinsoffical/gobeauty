@@ -1,53 +1,102 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
+
+const NAV_LINKS = [
+  { label: "How it Works", href: "#how-it-works" },
+  { label: "Services", href: "#services" },
+  { label: "For Professionals", href: "#for-businesses" },
+  { label: "Products", href: "#shop-products" },
+  { label: "About", href: "#about" },
+];
 
 export default function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-line-soft bg-white/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line-soft bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
+        {/* Logo */}
         <div className="flex items-center gap-8">
-          <Link
-            href="/"
-            aria-label="GoBeauty home"
-            className="flex items-center gap-1.5"
-          >
-            <span className="inline-block h-7 w-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 shadow-sm" />
-            <span className="text-lg font-extrabold tracking-tight text-ink">
-              Go
-              <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-                Beauty
-              </span>
+          <Link href="/" aria-label="goBeauty.ai home" className="flex items-center">
+            <span className="text-[18px] font-bold tracking-tight text-ink">
+              go<span className="font-extrabold">Beauty</span>
+              <span className="text-brand-500">.ai</span>
             </span>
           </Link>
+
+          {/* Desktop nav */}
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-6 text-[14.5px] font-medium text-ink-soft md:flex"
+            className="hidden items-center gap-6 text-[14px] font-medium text-ink-soft lg:flex"
           >
-            <Link href="#top-salons" className="hover:text-ink">
-              Top salons
-            </Link>
-            <Link href="#how-we-rank" className="hover:text-ink">
-              How we rank
-            </Link>
-            <Link href="#faq" className="hover:text-ink">
-              FAQ
-            </Link>
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="transition hover:text-ink">
+                {l.label}
+              </Link>
+            ))}
           </nav>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-3 sm:flex">
           <Link
-            href="#owner-cta"
-            className="hidden rounded-pill border border-line px-3.5 py-2 text-[13.5px] font-semibold text-ink-soft transition hover:border-ink hover:text-ink sm:inline-block"
+            href="#login"
+            className="text-[14px] font-medium text-ink-soft transition hover:text-ink"
           >
-            For salon owners
+            Log in
           </Link>
           <Link
-            href="#owner-cta"
-            className="rounded-pill bg-ink px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-ink-soft"
+            href="#signup"
+            className="rounded-pill bg-brand-500 px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:bg-brand-600"
           >
-            Get Free Growth Report
+            Sign up
           </Link>
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-soft transition hover:bg-surface-tint sm:hidden"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? (
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="border-t border-line-soft bg-white px-5 pb-5 pt-4 sm:hidden">
+          <nav className="flex flex-col gap-4">
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-[15px] font-medium text-ink-soft transition hover:text-ink"
+                onClick={() => setMenuOpen(false)}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <div className="mt-2 flex gap-3">
+              <Link href="#login" className="flex-1 rounded-pill border border-line py-2 text-center text-[14px] font-semibold text-ink">
+                Log in
+              </Link>
+              <Link href="#signup" className="flex-1 rounded-pill bg-brand-500 py-2 text-center text-[14px] font-semibold text-white">
+                Sign up
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
