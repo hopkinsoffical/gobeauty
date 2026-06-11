@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useAuth } from "@/lib/auth/useAuth";
 
 function maskUser(name: string) {
   if (name.length <= 3) return name[0] + "***";
@@ -69,6 +70,12 @@ function MarqueeRow({ items, reverse = false }: { items: typeof ROW_A; reverse?:
 export default function HeroSection() {
   const [query, setQuery] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const { user, openAuth } = useAuth();
+
+  function handleUploadClick() {
+    if (!user) { openAuth("sign-up"); return; }
+    fileRef.current?.click();
+  }
 
   return (
     <section id="hero" aria-labelledby="hero-h1" className="relative overflow-hidden">
@@ -112,13 +119,13 @@ export default function HeroSection() {
               aria-label="Search beauty looks"
             />
 
-            {/* Image upload */}
+            {/* Image upload — requires login */}
             <button
               type="button"
-              onClick={() => fileRef.current?.click()}
+              onClick={handleUploadClick}
               className="flex-shrink-0 rounded-xl p-1.5 text-ink-muted transition hover:bg-surface-tint hover:text-ink"
               aria-label="Upload an image"
-              title="Upload a photo"
+              title={user ? "Upload a photo" : "Sign up to upload"}
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />

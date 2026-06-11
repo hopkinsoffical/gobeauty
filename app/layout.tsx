@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { AuthProvider } from "@/lib/auth/useAuth";
+import AuthModal from "@/components/AuthModal";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gobeauty.ai"),
@@ -39,9 +41,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+        <AuthProvider>
+          <SiteHeader />
+          <AuthModal />
+          <main>{children}</main>
+          <SiteFooter />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth/useAuth";
 
 const NAV_LINKS = [
   { label: "Get This Look", href: "#hero" },
@@ -16,8 +17,15 @@ const EXTRA_LINKS = [
   { label: "Contact Us", href: "/contact" },
 ];
 
+function maskUsername(name: string) {
+  if (!name) return "";
+  if (name.length <= 4) return name[0] + "***";
+  return name.slice(0, 2) + "***" + name.slice(-2);
+}
+
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, profile, openAuth, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line-soft bg-white/90 backdrop-blur-md">
@@ -53,15 +61,39 @@ export default function SiteHeader() {
           <Link href="#for-businesses" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
             For Businesses
           </Link>
-          <Link href="#login" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
-            Sign In
-          </Link>
-          <Link
-            href="#signup"
-            className="rounded-pill bg-brand-500 px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:bg-brand-600"
-          >
-            Sign up
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-pill border border-line bg-surface-soft px-3 py-1.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white">
+                  {(profile?.username ?? "U")[0].toUpperCase()}
+                </div>
+                <span className="text-[13px] font-semibold text-ink">
+                  {profile ? maskUsername(profile.username) : "···"}
+                </span>
+              </div>
+              <button
+                onClick={signOut}
+                className="text-[13.5px] font-medium text-ink-muted transition hover:text-ink"
+              >
+                退出
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => openAuth("sign-in")}
+                className="text-[14px] font-medium text-ink-soft transition hover:text-ink"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => openAuth("sign-up")}
+                className="rounded-pill bg-brand-500 px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:bg-brand-600"
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -97,20 +129,37 @@ export default function SiteHeader() {
               </Link>
             ))}
             <div className="border-t border-line-soft pt-3">
-              {EXTRA_LINKS.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {l.label}
-                </Link>
-              ))}
+              <Link href="#for-businesses" className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink" onClick={() => setMenuOpen(false)}>
+                For Businesses
+              </Link>
+              <Link href="/contact" className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink" onClick={() => setMenuOpen(false)}>
+                Contact Us
+              </Link>
             </div>
-            <Link href="#signup" className="mt-1 rounded-pill bg-brand-500 py-2.5 text-center text-[14px] font-semibold text-white">
-              Sign up free
-            </Link>
+            {user ? (
+              <div className="mt-1 flex items-center justify-between rounded-xl border border-line bg-surface-soft px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">
+                    {(profile?.username ?? "U")[0].toUpperCase()}
+                  </div>
+                  <span className="text-[14px] font-semibold text-ink">
+                    {profile ? maskUsername(profile.username) : "···"}
+                  </span>
+                </div>
+                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-[13px] text-ink-muted hover:text-ink">
+                  退出
+                </button>
+              </div>
+            ) : (
+              <div className="mt-1 flex gap-3">
+                <button onClick={() => { openAuth("sign-in"); setMenuOpen(false); }} className="flex-1 rounded-pill border border-line py-2.5 text-center text-[14px] font-semibold text-ink">
+                  Sign In
+                </button>
+                <button onClick={() => { openAuth("sign-up"); setMenuOpen(false); }} className="flex-1 rounded-pill bg-brand-500 py-2.5 text-center text-[14px] font-semibold text-white">
+                  Sign up
+                </button>
+              </div>
+            )}
           </nav>
         </div>
       )}
