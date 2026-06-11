@@ -35,10 +35,10 @@ export default function SiteFooter() {
           <FooterCol
             title="Platform"
             items={[
-              { label: "Get This Look", href: "#get-this-look" },
-              { label: "Find a Service", href: "#services" },
+              { label: "Get This Look", href: "#hero" },
+              { label: "Book Pros", href: "#services" },
               { label: "DIY Guides", href: "#diy" },
-              { label: "Shop Products", href: "#shop-products" },
+              { label: "Shop Top 3", href: "#shop-products" },
             ]}
           />
           <FooterCol
@@ -46,15 +46,15 @@ export default function SiteFooter() {
             items={[
               { label: "About", href: "#about" },
               { label: "How it Works", href: "#how-it-works" },
-              { label: "Press", href: "/press" },
-              { label: "Contact", href: "/contact" },
+              { label: "Sign In", href: "#login" },
+              { label: "Contact Us", href: "/contact" },
             ]}
           />
           <FooterCol
             title="For Businesses"
             items={[
+              { label: "For Businesses", href: "#for-businesses" },
               { label: "Claim Your Profile", href: "#for-businesses" },
-              { label: "Free Visibility Checkup", href: "#for-businesses" },
               { label: "Pricing", href: "/pricing" },
               { label: "Business FAQ", href: "/business-faq" },
             ]}

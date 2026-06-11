@@ -4,11 +4,16 @@ import Image from "next/image";
 import { useState } from "react";
 
 const NAV_LINKS = [
-  { label: "How it Works", href: "#how-it-works" },
-  { label: "Services", href: "#services" },
-  { label: "For Professionals", href: "#for-businesses" },
-  { label: "Products", href: "#shop-products" },
-  { label: "About", href: "#about" },
+  { label: "Get This Look", href: "#hero" },
+  { label: "Book Pros", href: "#services" },
+  { label: "DIY Guides", href: "#diy" },
+  { label: "Shop Top 3", href: "#shop-products" },
+];
+
+const EXTRA_LINKS = [
+  { label: "For Businesses", href: "#for-businesses" },
+  { label: "Sign In", href: "#login" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 export default function SiteHeader() {
@@ -44,12 +49,12 @@ export default function SiteHeader() {
         </div>
 
         {/* Desktop actions */}
-        <div className="hidden items-center gap-3 sm:flex">
-          <Link
-            href="#login"
-            className="text-[14px] font-medium text-ink-soft transition hover:text-ink"
-          >
-            Log in
+        <div className="hidden items-center gap-4 sm:flex">
+          <Link href="#for-businesses" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
+            For Businesses
+          </Link>
+          <Link href="#login" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
+            Sign In
           </Link>
           <Link
             href="#signup"
@@ -91,14 +96,21 @@ export default function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <div className="mt-2 flex gap-3">
-              <Link href="#login" className="flex-1 rounded-pill border border-line py-2 text-center text-[14px] font-semibold text-ink">
-                Log in
-              </Link>
-              <Link href="#signup" className="flex-1 rounded-pill bg-brand-500 py-2 text-center text-[14px] font-semibold text-white">
-                Sign up
-              </Link>
+            <div className="border-t border-line-soft pt-3">
+              {EXTRA_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {l.label}
+                </Link>
+              ))}
             </div>
+            <Link href="#signup" className="mt-1 rounded-pill bg-brand-500 py-2.5 text-center text-[14px] font-semibold text-white">
+              Sign up free
+            </Link>
           </nav>
         </div>
       )}
