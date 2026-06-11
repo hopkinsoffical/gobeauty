@@ -75,9 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getClient();
     if (!supabase) { setLoading(false); return; }
     const { data } = await supabase
-      .from("profiles")
+      .from("gobeauty_users")
       .select("id, username, phone, avatar_url")
-      .eq("id", userId)
+      .eq("auth_user_id", userId)
       .single();
     setProfile(data ?? null);
     setLoading(false);

@@ -105,8 +105,8 @@ export default function AuthModal() {
     if (err) { setError(err.message); setLoading(false); return; }
 
     if (mode === "sign-up" && data.user) {
-      await supabase.from("profiles").upsert({
-        id: data.user.id,
+      await supabase.from("gobeauty_users").upsert({
+        auth_user_id: data.user.id,
         username: username.trim(),
         phone: fullPhone,
       });
