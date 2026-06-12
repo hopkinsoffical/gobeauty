@@ -22,7 +22,7 @@ body {
 }
 
 :where(button, a, [tabindex]):focus-visible {
-  outline: 2px solid #f06b5d;
+  outline: 2px solid #e85a82;
   outline-offset: 2px;
   border-radius: 4px;
 }

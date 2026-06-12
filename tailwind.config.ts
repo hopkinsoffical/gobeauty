@@ -14,16 +14,16 @@ const config: Config = {
       },
       colors: {
         brand: {
-          50: "#fff4f2",
-          100: "#ffe5e0",
-          200: "#ffcfc8",
-          300: "#ffaa9e",
-          400: "#f88070",
-          500: "#f06b5d",
-          600: "#dc5244",
-          700: "#bb3d30",
-          800: "#9a312b",
-          900: "#7e2b27",
+          50: "#fef1f4",
+          100: "#fde2ea",
+          200: "#fbc4d4",
+          300: "#f7a1bc",
+          400: "#f17a9e",
+          500: "#e85a82",
+          600: "#d33a68",
+          700: "#b12854",
+          800: "#8f2047",
+          900: "#751b3c",
         },
         ink: {
           DEFAULT: "#0f1419",
@@ -33,8 +33,8 @@ const config: Config = {
         },
         surface: {
           DEFAULT: "#ffffff",
-          soft: "#f8f5f4",
-          tint: "#fff4f2",
+          soft: "#faf6f7",
+          tint: "#fef1f4",
         },
         line: {
           DEFAULT: "#ececec",
