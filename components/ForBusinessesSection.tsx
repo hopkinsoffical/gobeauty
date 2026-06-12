@@ -1,61 +1,54 @@
-const PERKS = [
-  { icon: "🎯", text: "Get matched with local clients actively searching for your services" },
-  { icon: "📈", text: "Improve your visibility for the looks and services people are searching for" },
-  { icon: "✅", text: "Claim your free profile and complete a visibility checkup" },
-  { icon: "🤖", text: "Let GoBeauty AI schedule appointments and send booking confirmations" },
-];
-
 export default function ForBusinessesSection() {
   return (
-    <section id="for-businesses" className="bg-ink py-16 md:py-20">
-      <div className="mx-auto max-w-7xl px-5">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          {/* Left copy */}
-          <div>
-            <span className="mb-4 inline-flex items-center gap-2 rounded-pill bg-white/10 px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wider text-white/70">
-              For Beauty Businesses
-            </span>
-            <h2 className="font-display text-[2rem] leading-tight tracking-tight text-white md:text-4xl">
-              Own a salon or beauty business?
-            </h2>
-            <p className="mt-4 max-w-md text-[15.5px] leading-relaxed text-white/70">
-              Claim your GoBeauty profile, get matched with local clients, and improve your visibility
-              for the services and looks people are searching for.
-            </p>
+    <section
+      id="for-businesses"
+      className="mt-12 bg-gradient-to-br from-[#1a1430] to-[#2a1f4a] py-16 text-white"
+    >
+      <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.2fr_1fr]">
+        <div>
+          <span className="mb-2 inline-block rounded-pill bg-white/10 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-white/85">
+            For beauty businesses
+          </span>
+          <h2 className="mb-3 mt-2 text-[2rem] font-extrabold leading-tight tracking-tight md:text-[2.25rem]">
+            Own a salon, spa, or med spa?
+          </h2>
+          <p className="mb-6 max-w-[480px] text-[15.5px] text-white/75">
+            Get matched with clients actively searching for your services. Claim
+            your free profile, fix your visibility, and let goBeauty AI handle
+            bookings.
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            <button
+              type="button"
+              className="rounded-pill bg-brand-500 px-[18px] py-[9px] text-[13.5px] font-semibold text-white shadow-[0_4px_12px_rgba(232,90,130,0.30)] transition hover:bg-brand-600"
+            >
+              Claim your free profile
+            </button>
+            <button
+              type="button"
+              className="rounded-pill border border-white/20 bg-white/5 px-[18px] py-[9px] text-[13.5px] font-semibold text-white transition hover:bg-white/10"
+            >
+              Run a free visibility checkup
+            </button>
+          </div>
+        </div>
 
-            <ul className="mt-8 space-y-4">
-              {PERKS.map((p) => (
-                <li key={p.text} className="flex items-start gap-3 text-[14.5px] text-white/80">
-                  <span className="mt-0.5 text-xl leading-none">{p.icon}</span>
-                  {p.text}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <button className="rounded-pill bg-brand-500 px-6 py-3 text-[15px] font-semibold text-white shadow-sm transition hover:bg-brand-400">
-                Claim Your Profile
-              </button>
-              <button className="rounded-pill border border-white/20 px-6 py-3 text-[15px] font-semibold text-white/80 transition hover:border-white/40 hover:text-white">
-                Get a Free Visibility Checkup
-              </button>
+        <div className="grid gap-4">
+          {[
+            { stat: "+38%", sub: "avg. more profile views in 30 days" },
+            { stat: "4.2x", sub: "more \"request booking\" clicks" },
+            { stat: "23k+", sub: "pros already matched monthly" },
+          ].map((b) => (
+            <div
+              key={b.stat}
+              className="rounded-[18px] border border-white/10 bg-white/[0.06] px-5 py-[18px]"
+            >
+              <strong className="block text-[28px] text-[#f4a8c7]">
+                {b.stat}
+              </strong>
+              <span className="text-[13.5px] text-white/65">{b.sub}</span>
             </div>
-          </div>
-
-          {/* Right stats */}
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { value: "20K+", label: "Monthly active users" },
-              { value: "8K+", label: "Beauty professionals" },
-              { value: "50+", label: "Cities covered" },
-              { value: "98%", label: "Avg. match score" },
-            ].map((s) => (
-              <div key={s.label} className="rounded-2xl bg-white/8 p-6 backdrop-blur-sm border border-white/10">
-                <p className="font-display text-[2.5rem] font-bold leading-none text-brand-400">{s.value}</p>
-                <p className="mt-1.5 text-[13.5px] text-white/60">{s.label}</p>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </section>

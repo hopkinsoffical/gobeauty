@@ -31,7 +31,7 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-line-soft bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
         {/* Logo */}
-        <div className="flex items-center gap-8">
+        <div className="flex flex-none items-center gap-8">
           <Link href="/" aria-label="goBeauty.ai home" className="flex items-center">
             <Image
               src="/gobeauty-logo.png"
@@ -56,8 +56,33 @@ export default function SiteHeader() {
           </nav>
         </div>
 
+        {/* Search input (Pinterest-style) */}
+        <div className="hidden max-w-[640px] flex-1 items-center gap-2 rounded-pill border border-line bg-white px-4 py-1.5 transition focus-within:border-brand-300 focus-within:shadow-[0_0_0_4px_rgba(232,90,130,0.10)] lg:flex">
+          <svg className="h-[18px] w-[18px] flex-none text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search a look, service, or ‘glass skin’…"
+            className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
+          />
+          <button
+            type="button"
+            onClick={() => openAuth("sign-in")}
+            className="inline-flex flex-none items-center gap-1.5 rounded-pill bg-ink px-3.5 py-1.5 text-[13px] font-semibold text-white transition hover:bg-ink-soft"
+          >
+            <svg className="h-[14px] w-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="10.5" r="1.5" />
+              <path d="M3 17l5-5 4 4 3-3 6 6" strokeLinejoin="round" strokeLinecap="round" />
+            </svg>
+            <span>Upload a look</span>
+          </button>
+        </div>
+
         {/* Desktop actions */}
-        <div className="hidden items-center gap-4 sm:flex">
+        <div className="hidden flex-none items-center gap-3 sm:flex">
           <Link href="#for-businesses" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
             For Businesses
           </Link>
