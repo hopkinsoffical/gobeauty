@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Drive Download Helper</title>
+<style>
+body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+.btn { display: block; padding: 16px 24px; margin: 12px 0; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: 600; }
+ol li { margin: 8px 0; }
+</style>
+</head>
+<body>
+<h1>📥 Download 美业素材库</h1>
+<p>这个 folder 是 "Anyone with link can view", 但是 Drive 2024+ 不允许未登录 download. 你需要选一种方法:</p>
+
+<h2>方法 A · 浏览器手动下载 (5 分钟, 最简单)</h2>
+<ol>
+  <li>打开 <a href="https://drive.google.com/drive/folders/1mhgC4JBIv2hj4Dc6xXj4aWw_CJhgetjm" target="_blank">美业素材库</a> (你必须已登录 Google)</li>
+  <li>点 folder 上面的 ⋮ 三个点 (在 folder 名旁边)</li>
+  <li>选 "Download" → 会下个 zip `美业素材库.zip`</li>
+  <li>把 zip 移到 `~/Downloads/`</li>
+  <li>告诉我 zip 路径, 我解压 + 上传</li>
+</ol>
+
+<h2>方法 B · 建 Service Account (10 分钟, 永久方案)</h2>
+<ol>
+  <li>打开 <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
+  <li>新建一个 project (e.g. "gobeauty-drive")</li>
+  <li>左侧 "APIs & Services" → "Enable APIs" → 搜 "Google Drive API" → Enable</li>
+  <li>"APIs & Services" → "Credentials" → "Create Credentials" → "Service Account"</li>
+  <li>Name: gobeauty-reader, Role: 不需要, Done</li>
+  <li>点新建的 service account → "Keys" tab → "Add Key" → "Create new" → JSON → download</li>
+  <li>JSON 文件移到 `~/secrets/drive-sa.json`</li>
+  <li>回到 Drive folder, share 给 service account email (在 JSON 文件里 `client_email` 字段, 形如 `gobeauty-reader@xxx.iam.gserviceaccount.com`)</li>
+  <li>把 service account email 发给我, 我写脚本拉</li>
+</ol>
+
+<h2>方法 C · 你 share 给我 (2 分钟, 一次性的)</h2>
+<ol>
+  <li>打开 <a href="https://drive.google.com/drive/folders/1mhgC4JBIv2hj4Dc6xXj4aWw_CJhgetjm" target="_blank">美业素材库</a></li>
+  <li>点 "Share" → 改成 "Anyone with link" + "Viewer"</li>
+  <li>然后... (其实你已经设过了, 但还是 500)</li>
+  <li>算了, 这个方法不行, 跳过</li>
+</ol>
+
+<hr>
+<p><b>推荐 A</b> (5 分钟), 你 zip 下来后回我 "下载了", 我立刻处理.</p>
+</body>
+</html>
