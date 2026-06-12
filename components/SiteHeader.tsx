@@ -100,7 +100,7 @@ export default function SiteHeader() {
                 onClick={signOut}
                 className="text-[13.5px] font-medium text-ink-muted transition hover:text-ink"
               >
-                退出
+                Sign out
               </button>
             </div>
           ) : (
@@ -172,7 +172,7 @@ export default function SiteHeader() {
                   </span>
                 </div>
                 <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-[13px] text-ink-muted hover:text-ink">
-                  退出
+                  Sign out
                 </button>
               </div>
             ) : (
