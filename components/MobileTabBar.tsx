@@ -106,8 +106,7 @@ export default function MobileTabBar() {
     if (id === "you") {
       // Profile / settings — gated by auth
       if (user) {
-        // TODO: route to /you or open profile menu when the page exists
-        alert("Profile — coming soon.");
+        window.location.href = "/u/me";
       } else {
         openAuth("sign-in");
       }
