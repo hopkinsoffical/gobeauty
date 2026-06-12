@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import MobileTabBar from "@/components/MobileTabBar";
 import { AuthProvider } from "@/lib/auth/useAuth";
 import AuthModal from "@/components/AuthModal";
 
@@ -44,8 +45,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <SiteHeader />
           <AuthModal />
-          <main>{children}</main>
+          <main className="pb-20 md:pb-0">{children}</main>
           <SiteFooter />
+          <MobileTabBar />
         </AuthProvider>
       </body>
     </html>

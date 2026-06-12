@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import HeroSection from "@/components/HeroSection";
-import FourPathsSection from "@/components/FourPathsSection";
-import UseCasesSection from "@/components/UseCasesSection";
-import FeaturedLooksSection from "@/components/FeaturedLooksSection";
-import ShopProductsSection from "@/components/ShopProductsSection";
-import LocalServicesSection from "@/components/LocalServicesSection";
+import ChipBar from "@/components/ChipBar";
+import CompactHero from "@/components/CompactHero";
+import PathCardGrid from "@/components/PathCardGrid";
+import TrendingFeed from "@/components/TrendingFeed";
 import ForBusinessesSection from "@/components/ForBusinessesSection";
 
 export const metadata: Metadata = {
@@ -16,12 +14,10 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HeroSection />
-      <FourPathsSection />
-      <UseCasesSection />
-      <FeaturedLooksSection />
-      <ShopProductsSection />
-      <LocalServicesSection />
+      <ChipBar />
+      <CompactHero />
+      <PathCardGrid />
+      <TrendingFeed />
       <ForBusinessesSection />
     </>
   );

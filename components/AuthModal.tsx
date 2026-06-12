@@ -29,7 +29,7 @@ export default function AuthModal() {
   const [step, setStep] = useState<Step>("phone");
 
   // Fields
-  const [countryCode, setCountryCode] = useState("+86");
+  const [countryCode, setCountryCode] = useState("+1");
   const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -62,8 +62,8 @@ export default function AuthModal() {
 
   async function sendOtp() {
     setError("");
-    if (!phone.trim()) { setError("请输入手机号"); return; }
-    if (mode === "sign-up" && !username.trim()) { setError("请输入用户名"); return; }
+    if (!phone.trim()) { setError("Please enter your phone number"); return; }
+    if (mode === "sign-up" && !username.trim()) { setError("Please enter a username"); return; }
 
     setLoading(true);
     const supabase = getClient();
@@ -84,7 +84,7 @@ export default function AuthModal() {
 
   async function verifyOtp() {
     const token = otp.join("");
-    if (token.length < 6) { setError("请输入完整的验证码"); return; }
+    if (token.length < 6) { setError("Please enter the full verification code"); return; }
     setError("");
     setLoading(true);
 
@@ -150,14 +150,14 @@ export default function AuthModal() {
       <div
         role="dialog"
         aria-modal
-        aria-label={mode === "sign-in" ? "登录" : "注册"}
+        aria-label={mode === "sign-in" ? "Sign in" : "Sign up"}
         className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-3xl bg-white shadow-[0_24px_64px_rgba(15,20,25,0.18)] sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2"
       >
         {/* Close */}
         <button
           onClick={closeAuth}
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition hover:bg-surface-tint hover:text-ink"
-          aria-label="关闭"
+          aria-label="Close"
         >
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -182,7 +182,7 @@ export default function AuthModal() {
                     : "text-ink-muted hover:text-ink"
                 }`}
               >
-                {m === "sign-in" ? "登录" : "注册"}
+                {m === "sign-in" ? "Sign in" : "Sign up"}
               </button>
             ))}
           </div>
@@ -191,12 +191,12 @@ export default function AuthModal() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-[20px] font-bold text-ink">
-                  {mode === "sign-in" ? "欢迎回来" : "创建账号"}
+                  {mode === "sign-in" ? "Welcome back" : "Create your account"}
                 </h2>
                 <p className="mt-1 text-[13.5px] text-ink-muted">
                   {mode === "sign-in"
-                    ? "输入手机号，我们将发送验证码"
-                    : "注册后即可上传图片，发现专属美妆方案"}
+                    ? "Enter your phone number and we'll send a code"
+                    : "Sign up to upload photos and discover your perfect look"}
                 </p>
               </div>
 
@@ -204,18 +204,18 @@ export default function AuthModal() {
               {mode === "sign-up" && (
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-ink">
-                    用户名
+                    Username
                   </label>
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="例如：beauty_lover_88"
+                    placeholder="e.g. beauty_lover_88"
                     autoComplete="username"
                     className="w-full rounded-xl border border-line px-4 py-2.5 text-[14px] text-ink outline-none placeholder-ink-faint transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
                   />
                   <p className="mt-1 text-[11.5px] text-ink-faint">
-                    用于展示，其他用户将看到加密后的用户名
+                    Shown publicly — others will only see a masked version
                   </p>
                 </div>
               )}
@@ -223,7 +223,7 @@ export default function AuthModal() {
               {/* Phone */}
               <div>
                 <label className="mb-1.5 block text-[13px] font-semibold text-ink">
-                  手机号
+                  Phone number
                 </label>
                 <div className="flex overflow-hidden rounded-xl border border-line transition focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100">
                   <select
@@ -242,7 +242,7 @@ export default function AuthModal() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendOtp()}
-                    placeholder="请输入手机号"
+                    placeholder="Enter your phone number"
                     autoComplete="tel-national"
                     className="flex-1 bg-transparent px-4 py-2.5 text-[14px] text-ink outline-none placeholder-ink-faint"
                   />
@@ -256,27 +256,27 @@ export default function AuthModal() {
                 disabled={loading}
                 className="w-full rounded-xl bg-brand-500 py-3 text-[14.5px] font-bold text-white shadow-sm transition hover:bg-brand-600 disabled:opacity-60"
               >
-                {loading ? "发送中…" : "发送验证码"}
+                {loading ? "Sending…" : "Send verification code"}
               </button>
 
               <p className="text-center text-[12.5px] text-ink-faint">
-                继续即表示同意{" "}
-                <a href="/terms" className="text-brand-500 hover:underline">服务条款</a>
-                {" "}和{" "}
-                <a href="/privacy" className="text-brand-500 hover:underline">隐私政策</a>
+                By continuing, you agree to our{" "}
+                <a href="/terms" className="text-brand-500 hover:underline">Terms of Service</a>
+                {" "}and{" "}
+                <a href="/privacy" className="text-brand-500 hover:underline">Privacy Policy</a>
               </p>
             </div>
           ) : (
             <div className="space-y-5">
               <div>
-                <h2 className="text-[20px] font-bold text-ink">输入验证码</h2>
+                <h2 className="text-[20px] font-bold text-ink">Enter verification code</h2>
                 <p className="mt-1 text-[13.5px] text-ink-muted">
-                  已发送至 {countryCode} {phone}
+                  Sent to {countryCode} {phone}
                   <button
                     onClick={() => { setStep("phone"); setOtp(["","","","","",""]); }}
                     className="ml-2 text-brand-500 hover:underline"
                   >
-                    修改
+                    Edit
                   </button>
                 </p>
               </div>
@@ -306,20 +306,20 @@ export default function AuthModal() {
                 disabled={loading || otp.join("").length < 6}
                 className="w-full rounded-xl bg-brand-500 py-3 text-[14.5px] font-bold text-white shadow-sm transition hover:bg-brand-600 disabled:opacity-60"
               >
-                {loading ? "验证中…" : mode === "sign-in" ? "登录" : "完成注册"}
+                {loading ? "Verifying…" : mode === "sign-in" ? "Sign in" : "Complete sign up"}
               </button>
 
               {/* Resend */}
               <p className="text-center text-[13px] text-ink-muted">
-                没有收到验证码？{" "}
+                Didn't receive a code?{" "}
                 {countdown > 0 ? (
-                  <span className="text-ink-faint">{countdown}s 后重新发送</span>
+                  <span className="text-ink-faint">Resend in {countdown}s</span>
                 ) : (
                   <button
                     onClick={sendOtp}
                     className="font-semibold text-brand-500 hover:underline"
                   >
-                    重新发送
+                    Resend
                   </button>
                 )}
               </p>
