@@ -38,6 +38,23 @@ export default function CompactHero() {
             you whether to DIY, book a pro, or shop the right products.
           </p>
 
+          {/* Search input — mobile only (desktop has it in SiteHeader) */}
+          <form
+            className="mt-6 flex items-center gap-2 rounded-pill border border-line bg-white px-4 py-2.5 transition focus-within:border-brand-300 focus-within:shadow-[0_0_0_4px_rgba(232,90,130,0.10)] lg:hidden"
+            onSubmit={(e) => e.preventDefault()}
+            role="search"
+          >
+            <svg className="h-[18px] w-[18px] flex-none text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search a look, service, or ‘glass skin’…"
+              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
+            />
+          </form>
+
           <div className="mt-7 flex flex-wrap gap-2.5">
             <button
               type="button"

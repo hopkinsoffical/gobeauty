@@ -60,7 +60,59 @@ export default function MobileTabBar() {
   const { user, openAuth } = useAuth();
 
   const handleClick = (id: string) => {
-    if (id === "create") openAuth("sign-in");
+    if (id === "create") {
+      // CTA — open auth (or upload flow if logged in)
+      if (user) {
+        // TODO: open upload modal when ready
+        alert("Upload a look — coming soon. (Logged in as " + (user.email || "you") + ")");
+      } else {
+        openAuth("sign-in");
+      }
+      return;
+    }
+    if (id === "home") {
+      // Scroll to top of the page (Pinterest home behavior)
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (id === "search") {
+      // Focus the visible search input (hero on mobile, site header on desktop)
+      const all = Array.from(
+        document.querySelectorAll<HTMLInputElement>(
+          'input[type="text"][placeholder^="Search a look"]'
+        )
+      );
+      const el = all.find((i) => i.offsetParent !== null);
+      if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        // No search input visible — navigate to home then prompt
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        alert("Search is at the top of the page.");
+      }
+      return;
+    }
+    if (id === "saved") {
+      // Saved looks — gated by auth
+      if (user) {
+        // TODO: route to /saved when the page exists
+        alert("Saved looks — coming soon.");
+      } else {
+        openAuth("sign-in");
+      }
+      return;
+    }
+    if (id === "you") {
+      // Profile / settings — gated by auth
+      if (user) {
+        // TODO: route to /you or open profile menu when the page exists
+        alert("Profile — coming soon.");
+      } else {
+        openAuth("sign-in");
+      }
+      return;
+    }
   };
 
   return (
@@ -91,8 +143,9 @@ export default function MobileTabBar() {
             key={t.id}
             type="button"
             onClick={() => handleClick(t.id)}
+            aria-label={t.label}
             className={[
-              "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10.5px] font-semibold",
+              "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10.5px] font-semibold transition",
               isActive ? "text-brand-500" : "text-ink-muted",
             ].join(" ")}
           >
