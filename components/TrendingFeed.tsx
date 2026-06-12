@@ -212,9 +212,9 @@ export default function TrendingFeed() {
           </div>
         </div>
 
-        {/* CSS columns masonry */}
+        {/* CSS columns masonry — single wrapper, responsive column-count via inline media queries */}
         <div
-          className="gap-4"
+          className="masonry-cols"
           style={{
             columnCount: 6,
             columnGap: "16px",
@@ -242,7 +242,6 @@ export default function TrendingFeed() {
               }
             }
           `}</style>
-          <div className="masonry-cols" style={{ columnCount: 6, columnGap: "16px" }}>
             {CARDS.map((c) => (
               <article
                 key={c.title}
@@ -280,7 +279,6 @@ export default function TrendingFeed() {
                 </div>
               </article>
             ))}
-          </div>
         </div>
 
         <div className="mt-8 flex justify-center">
