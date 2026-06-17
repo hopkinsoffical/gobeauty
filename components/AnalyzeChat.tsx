@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/lib/auth/useAuth";
+import { getSupabaseBrowser } from "@/lib/supabase/client";
 import AnalysisResult from "@/components/AnalysisResult";
 import type {
   AnalysisRecord,
@@ -52,7 +53,7 @@ export default function AnalyzeChat({
 }: {
   onAnalyzed?: (record: AnalysisRecord) => void;
 }) {
-  const { user, accessToken, openAuth } = useAuth();
+  const { user, openAuth } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [pending, setPending] = useState<{
@@ -69,11 +70,19 @@ export default function AnalyzeChat({
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
-  const authHeaders = useCallback((): HeadersInit => {
+  // The shared auth provider doesn't expose the raw token, so read the current
+  // Supabase session at request time and forward it as a bearer token.
+  const authHeaders = useCallback(async (): Promise<HeadersInit> => {
     const h: Record<string, string> = { "Content-Type": "application/json" };
-    if (accessToken) h.Authorization = `Bearer ${accessToken}`;
+    try {
+      const { data } = await getSupabaseBrowser().auth.getSession();
+      const token = data.session?.access_token;
+      if (token) h.Authorization = `Bearer ${token}`;
+    } catch {
+      // Supabase env not configured — request proceeds and the API returns 401.
+    }
     return h;
-  }, [accessToken]);
+  }, []);
 
   const pickFile = useCallback(async (file: File) => {
     setError(null);
@@ -103,7 +112,7 @@ export default function AnalyzeChat({
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
-        headers: authHeaders(),
+        headers: await authHeaders(),
         body: JSON.stringify({
           imageBase64: payload.base64,
           mediaType: payload.mediaType,
@@ -139,7 +148,7 @@ export default function AnalyzeChat({
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: authHeaders(),
+        headers: await authHeaders(),
         body: JSON.stringify({ analysis: activeAnalysis, history: nextHistory }),
       });
       const data = await res.json();
@@ -155,7 +164,7 @@ export default function AnalyzeChat({
   function handleSend() {
     if (busy) return;
     if (!user) {
-      openAuth("signup");
+      openAuth("sign-up");
       return;
     }
     if (pending) {
@@ -356,7 +365,7 @@ export default function AnalyzeChat({
           You&apos;ll be asked to{" "}
           <button
             type="button"
-            onClick={() => openAuth("signup")}
+            onClick={() => openAuth("sign-up")}
             className="font-semibold text-brand-600 hover:text-brand-700"
           >
             create a free account

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AnalyzeChat from "@/components/AnalyzeChat";
-import TrendingFeed from "@/components/TrendingFeed";
+import AnalysisFeed from "@/components/AnalysisFeed";
 import type { AnalysisRecord } from "@/lib/types";
 
 /**
@@ -40,7 +40,7 @@ export default function AnalyzeExperience({
         />
       </section>
 
-      <TrendingFeed items={feed} />
+      <AnalysisFeed items={feed} />
     </>
   );
 }

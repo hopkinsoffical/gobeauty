@@ -1,183 +1,332 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/lib/auth/useAuth";
 
-import { useEffect, useState } from "react";
-import { useAuth, type AuthMode } from "@/components/AuthProvider";
+const COUNTRY_CODES = [
+  { code: "+86", flag: "🇨🇳", label: "CN" },
+  { code: "+1",  flag: "🇺🇸", label: "US" },
+  { code: "+44", flag: "🇬🇧", label: "GB" },
+  { code: "+81", flag: "🇯🇵", label: "JP" },
+  { code: "+82", flag: "🇰🇷", label: "KR" },
+  { code: "+65", flag: "🇸🇬", label: "SG" },
+  { code: "+61", flag: "🇦🇺", label: "AU" },
+];
+
+type Step = "phone" | "otp";
+
+function getClient() {
+  try {
+    const { getSupabaseBrowser } = require("@/lib/supabase/client");
+    return getSupabaseBrowser();
+  } catch {
+    return null;
+  }
+}
 
 export default function AuthModal() {
-  const { authOpen, authMode, closeAuth, configured, signIn, signUp } =
-    useAuth();
+  const { authOpen, authMode, closeAuth, setProfile } = useAuth();
+  const [mode, setMode] = useState<"sign-in" | "sign-up">(authMode);
+  const [step, setStep] = useState<Step>("phone");
 
-  const [mode, setMode] = useState<AuthMode>(authMode);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  // Fields
+  const [countryCode, setCountryCode] = useState("+1");
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  // Sync the local mode whenever the modal is (re)opened.
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [countdown, setCountdown] = useState(0);
+
+  // Sync mode when modal opens
   useEffect(() => {
-    if (authOpen) {
-      setMode(authMode);
-      setError(null);
-      setNotice(null);
-    }
-  }, [authOpen, authMode]);
+    setMode(authMode);
+    setStep("phone");
+    setPhone("");
+    setUsername("");
+    setOtp(["", "", "", "", "", ""]);
+    setError("");
+  }, [authMode, authOpen]);
 
-  // Close on Escape.
+  // Countdown timer for resend
   useEffect(() => {
-    if (!authOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeAuth();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [authOpen, closeAuth]);
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
 
   if (!authOpen) return null;
 
-  const isSignup = mode === "signup";
+  const fullPhone = countryCode + phone.replace(/\D/g, "");
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setNotice(null);
-    setBusy(true);
-    try {
-      if (isSignup) {
-        const { error, needsConfirmation } = await signUp(email, password);
-        if (error) return setError(error);
-        if (needsConfirmation) {
-          return setNotice(
-            "Check your inbox to confirm your email, then sign in.",
-          );
-        }
-        closeAuth();
-      } else {
-        const { error } = await signIn(email, password);
-        if (error) return setError(error);
-        closeAuth();
-      }
-    } finally {
-      setBusy(false);
+  async function sendOtp() {
+    setError("");
+    if (!phone.trim()) { setError("Please enter your phone number"); return; }
+    if (mode === "sign-up" && !username.trim()) { setError("Please enter a username"); return; }
+
+    setLoading(true);
+    const supabase = getClient();
+    if (!supabase) {
+      // Dev mode: skip actual SMS
+      setStep("otp");
+      setCountdown(60);
+      setLoading(false);
+      return;
+    }
+
+    const { error: err } = await supabase.auth.signInWithOtp({ phone: fullPhone });
+    if (err) { setError(err.message); setLoading(false); return; }
+    setStep("otp");
+    setCountdown(60);
+    setLoading(false);
+  }
+
+  async function verifyOtp() {
+    const token = otp.join("");
+    if (token.length < 6) { setError("Please enter the full verification code"); return; }
+    setError("");
+    setLoading(true);
+
+    const supabase = getClient();
+    if (!supabase) {
+      // Dev mode: auto-succeed with mock profile
+      setProfile({ id: "dev-user", username: username || "demo_user", phone: fullPhone });
+      closeAuth();
+      setLoading(false);
+      return;
+    }
+
+    const { data, error: err } = await supabase.auth.verifyOtp({
+      phone: fullPhone,
+      token,
+      type: "sms",
+    });
+    if (err) { setError(err.message); setLoading(false); return; }
+
+    if (mode === "sign-up" && data.user) {
+      await supabase.from("gobeauty_users").upsert({
+        auth_user_id: data.user.id,
+        username: username.trim(),
+        phone: fullPhone,
+      });
+    }
+    closeAuth();
+    setLoading(false);
+  }
+
+  function handleOtpInput(val: string, idx: number) {
+    const digit = val.replace(/\D/g, "").slice(-1);
+    const next = [...otp];
+    next[idx] = digit;
+    setOtp(next);
+    if (digit && idx < 5) otpRefs.current[idx + 1]?.focus();
+  }
+
+  function handleOtpKey(e: React.KeyboardEvent, idx: number) {
+    if (e.key === "Backspace" && !otp[idx] && idx > 0) {
+      otpRefs.current[idx - 1]?.focus();
+    }
+  }
+
+  function handleOtpPaste(e: React.ClipboardEvent) {
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (digits.length === 6) {
+      setOtp(digits.split(""));
+      otpRefs.current[5]?.focus();
     }
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={isSignup ? "Create your account" : "Sign in"}
-    >
-      <button
-        type="button"
-        aria-label="Close"
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
         onClick={closeAuth}
-        className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+        aria-hidden
       />
-      <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-cardHover">
-        <div className="mb-5 flex items-center gap-1.5">
-          <span className="inline-block h-6 w-6 rounded-full bg-gradient-to-br from-brand-400 to-brand-600" />
-          <span className="text-base font-extrabold tracking-tight text-ink">
-            Go
-            <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-              Beauty
-            </span>
-          </span>
+
+      {/* Modal */}
+      <div
+        role="dialog"
+        aria-modal
+        aria-label={mode === "sign-in" ? "Sign in" : "Sign up"}
+        className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-3xl bg-white shadow-[0_24px_64px_rgba(15,20,25,0.18)] sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2"
+      >
+        {/* Close */}
+        <button
+          onClick={closeAuth}
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-ink-faint transition hover:bg-surface-tint hover:text-ink"
+          aria-label="Close"
+        >
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="px-7 pb-8 pt-7">
+          {/* Logo mark */}
+          <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-500 text-xl text-white shadow-sm">
+            💄
+          </div>
+
+          {/* Tab switcher */}
+          <div className="mb-6 flex rounded-xl bg-surface-soft p-1">
+            {(["sign-in", "sign-up"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => { setMode(m); setStep("phone"); setError(""); }}
+                className={`flex-1 rounded-lg py-2 text-[13.5px] font-semibold transition ${
+                  mode === m
+                    ? "bg-white text-ink shadow-card"
+                    : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                {m === "sign-in" ? "Sign in" : "Sign up"}
+              </button>
+            ))}
+          </div>
+
+          {step === "phone" ? (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-[20px] font-bold text-ink">
+                  {mode === "sign-in" ? "Welcome back" : "Create your account"}
+                </h2>
+                <p className="mt-1 text-[13.5px] text-ink-muted">
+                  {mode === "sign-in"
+                    ? "Enter your phone number and we'll send a code"
+                    : "Sign up to upload photos and discover your perfect look"}
+                </p>
+              </div>
+
+              {/* Username — sign-up only */}
+              {mode === "sign-up" && (
+                <div>
+                  <label className="mb-1.5 block text-[13px] font-semibold text-ink">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="e.g. beauty_lover_88"
+                    autoComplete="username"
+                    className="w-full rounded-xl border border-line px-4 py-2.5 text-[14px] text-ink outline-none placeholder-ink-faint transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
+                  />
+                  <p className="mt-1 text-[11.5px] text-ink-faint">
+                    Shown publicly — others will only see a masked version
+                  </p>
+                </div>
+              )}
+
+              {/* Phone */}
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-ink">
+                  Phone number
+                </label>
+                <div className="flex overflow-hidden rounded-xl border border-line transition focus-within:border-brand-300 focus-within:ring-2 focus-within:ring-brand-100">
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="border-r border-line bg-surface-soft px-3 py-2.5 text-[13px] font-medium text-ink outline-none"
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendOtp()}
+                    placeholder="Enter your phone number"
+                    autoComplete="tel-national"
+                    className="flex-1 bg-transparent px-4 py-2.5 text-[14px] text-ink outline-none placeholder-ink-faint"
+                  />
+                </div>
+              </div>
+
+              {error && <p className="text-[13px] text-red-500">{error}</p>}
+
+              <button
+                onClick={sendOtp}
+                disabled={loading}
+                className="w-full rounded-xl bg-brand-500 py-3 text-[14.5px] font-bold text-white shadow-sm transition hover:bg-brand-600 disabled:opacity-60"
+              >
+                {loading ? "Sending…" : "Send verification code"}
+              </button>
+
+              <p className="text-center text-[12.5px] text-ink-faint">
+                By continuing, you agree to our{" "}
+                <a href="/terms" className="text-brand-500 hover:underline">Terms of Service</a>
+                {" "}and{" "}
+                <a href="/privacy" className="text-brand-500 hover:underline">Privacy Policy</a>
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-[20px] font-bold text-ink">Enter verification code</h2>
+                <p className="mt-1 text-[13.5px] text-ink-muted">
+                  Sent to {countryCode} {phone}
+                  <button
+                    onClick={() => { setStep("phone"); setOtp(["","","","","",""]); }}
+                    className="ml-2 text-brand-500 hover:underline"
+                  >
+                    Edit
+                  </button>
+                </p>
+              </div>
+
+              {/* OTP boxes */}
+              <div className="flex justify-center gap-3" onPaste={handleOtpPaste}>
+                {otp.map((digit, i) => (
+                  <input
+                    key={i}
+                    ref={(el) => { otpRefs.current[i] = el; }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpInput(e.target.value, i)}
+                    onKeyDown={(e) => handleOtpKey(e, i)}
+                    autoFocus={i === 0}
+                    className="h-12 w-12 rounded-xl border border-line bg-surface-soft text-center text-[20px] font-bold text-ink outline-none transition focus:border-brand-400 focus:bg-white focus:ring-2 focus:ring-brand-100"
+                  />
+                ))}
+              </div>
+
+              {error && <p className="text-center text-[13px] text-red-500">{error}</p>}
+
+              <button
+                onClick={verifyOtp}
+                disabled={loading || otp.join("").length < 6}
+                className="w-full rounded-xl bg-brand-500 py-3 text-[14.5px] font-bold text-white shadow-sm transition hover:bg-brand-600 disabled:opacity-60"
+              >
+                {loading ? "Verifying…" : mode === "sign-in" ? "Sign in" : "Complete sign up"}
+              </button>
+
+              {/* Resend */}
+              <p className="text-center text-[13px] text-ink-muted">
+                Didn't receive a code?{" "}
+                {countdown > 0 ? (
+                  <span className="text-ink-faint">Resend in {countdown}s</span>
+                ) : (
+                  <button
+                    onClick={sendOtp}
+                    className="font-semibold text-brand-500 hover:underline"
+                  >
+                    Resend
+                  </button>
+                )}
+              </p>
+            </div>
+          )}
         </div>
-
-        <h2 className="font-display text-2xl text-ink">
-          {isSignup ? "Create your account" : "Welcome back"}
-        </h2>
-        <p className="mt-1 text-[14px] text-ink-muted">
-          {isSignup
-            ? "Sign up to analyze your beauty photos with AI."
-            : "Sign in to pick up where you left off."}
-        </p>
-
-        {!configured && (
-          <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-[13px] text-amber-700">
-            Authentication isn&apos;t configured. Add your Supabase keys to
-            <code className="mx-1">.env.local</code>.
-          </p>
-        )}
-
-        <form onSubmit={onSubmit} className="mt-5 space-y-3">
-          <div>
-            <label
-              htmlFor="auth-email"
-              className="mb-1 block text-[12.5px] font-semibold text-ink-soft"
-            >
-              Email
-            </label>
-            <input
-              id="auth-email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-line px-3.5 py-2.5 text-[15px] text-ink outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-              placeholder="you@email.com"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="auth-password"
-              className="mb-1 block text-[12.5px] font-semibold text-ink-soft"
-            >
-              Password
-            </label>
-            <input
-              id="auth-password"
-              type="password"
-              required
-              minLength={6}
-              autoComplete={isSignup ? "new-password" : "current-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-line px-3.5 py-2.5 text-[15px] text-ink outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <p className="text-[13px] text-brand-600" role="alert">
-              {error}
-            </p>
-          )}
-          {notice && (
-            <p className="text-[13px] text-emerald-600" role="status">
-              {notice}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={busy || !configured}
-            className="w-full rounded-pill bg-ink py-2.5 text-[14px] font-semibold text-white transition hover:bg-ink-soft disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {busy
-              ? "Please wait…"
-              : isSignup
-                ? "Create account"
-                : "Sign in"}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-[13px] text-ink-muted">
-          {isSignup ? "Already have an account?" : "New to GoBeauty?"}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(isSignup ? "signin" : "signup");
-              setError(null);
-              setNotice(null);
-            }}
-            className="font-semibold text-brand-600 hover:text-brand-700"
-          >
-            {isSignup ? "Sign in" : "Create one"}
-          </button>
-        </p>
       </div>
-    </div>
+    </>
   );
 }

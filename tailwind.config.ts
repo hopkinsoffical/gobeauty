@@ -14,16 +14,16 @@ const config: Config = {
       },
       colors: {
         brand: {
-          50: "#fff1f2",
-          100: "#ffe4e6",
-          200: "#fecdd3",
-          300: "#fda4af",
-          400: "#fb7185",
-          500: "#f43f5e",
-          600: "#e11d48",
-          700: "#be123c",
-          800: "#9f1239",
-          900: "#881337",
+          50: "#fef1f4",
+          100: "#fde2ea",
+          200: "#fbc4d4",
+          300: "#f7a1bc",
+          400: "#f17a9e",
+          500: "#e85a82",
+          600: "#d33a68",
+          700: "#b12854",
+          800: "#8f2047",
+          900: "#751b3c",
         },
         ink: {
           DEFAULT: "#0f1419",
@@ -33,12 +33,12 @@ const config: Config = {
         },
         surface: {
           DEFAULT: "#ffffff",
-          soft: "#f7f6f3",
-          tint: "#fdf6f7",
+          soft: "#faf6f7",
+          tint: "#fef1f4",
         },
         line: {
           DEFAULT: "#ececec",
-          soft: "#f1f1ef",
+          soft: "#f0eded",
         },
       },
       boxShadow: {
@@ -48,6 +48,20 @@ const config: Config = {
       },
       borderRadius: {
         pill: "999px",
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "marquee-reverse": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 30s linear infinite",
+        "marquee-reverse": "marquee-reverse 30s linear infinite",
       },
     },
   },

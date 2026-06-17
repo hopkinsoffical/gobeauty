@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AuthProvider from "@/components/AuthProvider";
+import { AuthProvider } from "@/lib/auth/useAuth";
+import AuthModal from "@/components/AuthModal";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import MobileTabBar from "@/components/MobileTabBar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gobeauty.ai"),
   title: {
-    default: "GoBeauty — Find the best nail salons near you",
-    template: "%s | GoBeauty",
+    default: "goBeauty.ai — Get the Beauty Look You Want",
+    template: "%s | goBeauty.ai",
   },
   description:
-    "Discover top-rated nail salons in your city, ranked by real reviews, Google visibility, and AI Growth Score.",
+    "AI-native beauty discovery: upload a look, describe your goal, or find a service. GoBeauty.ai shows you whether to DIY, book a pro, or shop the right products.",
   openGraph: {
     type: "website",
-    siteName: "GoBeauty",
-    title: "GoBeauty — Find the best nail salons near you",
+    siteName: "goBeauty.ai",
+    title: "goBeauty.ai — Get the Beauty Look You Want",
     description:
-      "Discover top-rated nail salons in your city, ranked by real reviews, Google visibility, and AI Growth Score.",
+      "AI-native beauty discovery: upload a look, describe your goal, or find a service.",
   },
   twitter: {
     card: "summary_large_image",
@@ -28,20 +30,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
@@ -50,8 +44,10 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <SiteHeader />
-          <main>{children}</main>
+          <AuthModal />
+          <main className="pb-20 md:pb-0">{children}</main>
           <SiteFooter />
+          <MobileTabBar />
         </AuthProvider>
       </body>
     </html>

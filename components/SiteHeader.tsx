@@ -1,111 +1,194 @@
 "use client";
-
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/lib/auth/useAuth";
+
+const NAV_LINKS = [
+  { label: "Get This Look", href: "#hero" },
+  { label: "Analyze a Photo", href: "/analyze" },
+  { label: "Book Pros", href: "#services" },
+  { label: "DIY Guides", href: "#diy" },
+  { label: "Shop Top 3", href: "#shop-products" },
+];
+
+const EXTRA_LINKS = [
+  { label: "For Businesses", href: "#for-businesses" },
+  { label: "Sign In", href: "#login" },
+  { label: "Contact Us", href: "/contact" },
+];
+
+function maskUsername(name: string) {
+  if (!name) return "";
+  if (name.length <= 4) return name[0] + "***";
+  return name.slice(0, 2) + "***" + name.slice(-2);
+}
 
 export default function SiteHeader() {
-  const { user, loading, openAuth, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, profile, openAuth, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line-soft bg-white/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line-soft bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
-        <div className="flex items-center gap-8">
-          <Link
-            href="/"
-            aria-label="GoBeauty home"
-            className="flex items-center gap-1.5"
-          >
-            <span className="inline-block h-7 w-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 shadow-sm" />
-            <span className="text-lg font-extrabold tracking-tight text-ink">
-              Go
-              <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-                Beauty
-              </span>
-            </span>
+        {/* Logo */}
+        <div className="flex flex-none items-center gap-8">
+          <Link href="/" aria-label="goBeauty.ai home" className="flex items-center">
+            <Image
+              src="/gobeauty-logo.png"
+              alt="goBeauty.ai"
+              width={1230}
+              height={360}
+              className="h-11 w-auto object-contain"
+              priority
+            />
           </Link>
+
+          {/* Desktop nav */}
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-6 text-[14.5px] font-medium text-ink-soft md:flex"
+            className="hidden items-center gap-6 text-[14px] font-medium text-ink-soft lg:flex"
           >
-            <Link href="/analyze" className="hover:text-ink">
-              Analyze a photo
-            </Link>
-            <Link href="/#top-salons" className="hover:text-ink">
-              Top salons
-            </Link>
-            <Link href="/#how-we-rank" className="hover:text-ink">
-              How we rank
-            </Link>
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="transition hover:text-ink">
+                {l.label}
+              </Link>
+            ))}
           </nav>
         </div>
-        <div className="flex items-center gap-2">
-          {loading ? (
-            <span className="h-9 w-20 animate-pulse rounded-pill bg-line-soft" />
-          ) : user ? (
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setMenuOpen((v) => !v)}
-                aria-haspopup="menu"
-                aria-expanded={menuOpen}
-                className="flex items-center gap-2 rounded-pill border border-line px-2.5 py-1.5 text-[13.5px] font-semibold text-ink-soft transition hover:border-ink hover:text-ink"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-[12px] font-bold uppercase text-white">
-                  {(user.email ?? "?").charAt(0)}
-                </span>
-                <span className="hidden max-w-[140px] truncate sm:inline">
-                  {user.email}
-                </span>
-              </button>
-              {menuOpen && (
-                <div
-                  role="menu"
-                  className="absolute right-0 mt-2 w-44 overflow-hidden rounded-xl border border-line bg-white py-1 shadow-cardHover"
-                >
-                  <Link
-                    href="/analyze"
-                    role="menuitem"
-                    onClick={() => setMenuOpen(false)}
-                    className="block px-4 py-2 text-[14px] text-ink-soft hover:bg-surface-soft hover:text-ink"
-                  >
-                    Analyze a photo
-                  </Link>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      void signOut();
-                    }}
-                    className="block w-full px-4 py-2 text-left text-[14px] text-ink-soft hover:bg-surface-soft hover:text-ink"
-                  >
-                    Sign out
-                  </button>
+
+        {/* Search input (Pinterest-style) */}
+        <div className="hidden max-w-[640px] flex-1 items-center gap-2 rounded-pill border border-line bg-white px-4 py-1.5 transition focus-within:border-brand-300 focus-within:shadow-[0_0_0_4px_rgba(232,90,130,0.10)] lg:flex">
+          <svg className="h-[18px] w-[18px] flex-none text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.3-4.3" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search a look, service, or ‘glass skin’…"
+            className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-faint"
+          />
+          <button
+            type="button"
+            onClick={() => openAuth("sign-in")}
+            className="inline-flex flex-none items-center gap-1.5 rounded-pill bg-ink px-3.5 py-1.5 text-[13px] font-semibold text-white transition hover:bg-ink-soft"
+          >
+            <svg className="h-[14px] w-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="10.5" r="1.5" />
+              <path d="M3 17l5-5 4 4 3-3 6 6" strokeLinejoin="round" strokeLinecap="round" />
+            </svg>
+            <span>Upload a look</span>
+          </button>
+        </div>
+
+        {/* Desktop actions */}
+        <div className="hidden flex-none items-center gap-3 sm:flex">
+          <Link href="#for-businesses" className="text-[14px] font-medium text-ink-soft transition hover:text-ink">
+            For Businesses
+          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-pill border border-line bg-surface-soft px-3 py-1.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-[11px] font-bold text-white">
+                  {(profile?.username ?? "U")[0].toUpperCase()}
                 </div>
-              )}
+                <span className="text-[13px] font-semibold text-ink">
+                  {profile ? maskUsername(profile.username) : "···"}
+                </span>
+              </div>
+              <button
+                onClick={signOut}
+                className="text-[13.5px] font-medium text-ink-muted transition hover:text-ink"
+              >
+                Sign out
+              </button>
             </div>
           ) : (
             <>
               <button
-                type="button"
-                onClick={() => openAuth("signin")}
-                className="hidden rounded-pill border border-line px-3.5 py-2 text-[13.5px] font-semibold text-ink-soft transition hover:border-ink hover:text-ink sm:inline-block"
+                onClick={() => openAuth("sign-in")}
+                className="text-[14px] font-medium text-ink-soft transition hover:text-ink"
               >
-                Sign in
+                Sign In
               </button>
               <button
-                type="button"
-                onClick={() => openAuth("signup")}
-                className="rounded-pill bg-ink px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-ink-soft"
+                onClick={() => openAuth("sign-up")}
+                className="rounded-pill bg-brand-500 px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition hover:bg-brand-600"
               >
-                Get started
+                Sign up
               </button>
             </>
           )}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-soft transition hover:bg-surface-tint sm:hidden"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? (
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="border-t border-line-soft bg-white px-5 pb-5 pt-4 sm:hidden">
+          <nav className="flex flex-col gap-4">
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-[15px] font-medium text-ink-soft transition hover:text-ink"
+                onClick={() => setMenuOpen(false)}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <div className="border-t border-line-soft pt-3">
+              <Link href="#for-businesses" className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink" onClick={() => setMenuOpen(false)}>
+                For Businesses
+              </Link>
+              <Link href="/contact" className="block py-2 text-[15px] font-medium text-ink-soft transition hover:text-ink" onClick={() => setMenuOpen(false)}>
+                Contact Us
+              </Link>
+            </div>
+            {user ? (
+              <div className="mt-1 flex items-center justify-between rounded-xl border border-line bg-surface-soft px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">
+                    {(profile?.username ?? "U")[0].toUpperCase()}
+                  </div>
+                  <span className="text-[14px] font-semibold text-ink">
+                    {profile ? maskUsername(profile.username) : "···"}
+                  </span>
+                </div>
+                <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-[13px] text-ink-muted hover:text-ink">
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <div className="mt-1 flex gap-3">
+                <button onClick={() => { openAuth("sign-in"); setMenuOpen(false); }} className="flex-1 rounded-pill border border-line py-2.5 text-center text-[14px] font-semibold text-ink">
+                  Sign In
+                </button>
+                <button onClick={() => { openAuth("sign-up"); setMenuOpen(false); }} className="flex-1 rounded-pill bg-brand-500 py-2.5 text-center text-[14px] font-semibold text-white">
+                  Sign up
+                </button>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
