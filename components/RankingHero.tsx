@@ -84,6 +84,13 @@ export default function RankingHero({
             <span aria-hidden>↓</span>
           </Link>
           <Link
+            href="/analyze"
+            className="inline-flex items-center gap-2 rounded-pill border border-brand-300 bg-white px-6 py-3 text-[15px] font-semibold text-brand-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-500"
+          >
+            <span aria-hidden>📸</span>
+            Analyze a beauty photo
+          </Link>
+          <Link
             href="#owner-cta"
             className="inline-flex items-center gap-2 rounded-pill border border-line bg-white px-6 py-3 text-[15px] font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-ink"
           >
