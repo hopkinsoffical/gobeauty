@@ -1,0 +1,23 @@
+# goBeauty.ai
+
+> goBeauty.ai is an AI-native beauty discovery engine. Upload a photo of a look,
+> describe a beauty goal, or search for a service — goBeauty tells you whether to
+> DIY it, book a professional, or shop the right products, and shows the top options.
+
+## What goBeauty.ai does
+
+- AI photo analysis: upload a look (hair, nails, skin, makeup, lashes and brows,
+  K-beauty, med spa) and get an actionable plan.
+- Decision engine: for each look or goal, recommends DIY guides, bookable
+  professionals, or products — with a "Top 3" for each path.
+- Covers nails, hair, skin, makeup, lashes & brows, K-beauty, aftercare and med spa.
+
+## Key pages
+
+- [Home](https://www.gobeauty.ai/): browse looks and services by category.
+- [Analyze a photo](https://www.gobeauty.ai/analyze): AI photo-analysis chat.
+
+## Audience
+
+Consumers deciding how to achieve a beauty look, and beauty businesses that want
+to be discoverable when the answer is "book a pro".

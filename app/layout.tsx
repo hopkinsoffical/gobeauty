@@ -7,27 +7,49 @@ import SiteFooter from "@/components/SiteFooter";
 import MobileTabBar from "@/components/MobileTabBar";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gobeauty.ai"),
+  // www is the host that actually resolves (the apex has no A record yet); canonical
+  // URLs must point at a reachable origin or crawlers drop them.
+  metadataBase: new URL("https://www.gobeauty.ai"),
   title: {
     default: "goBeauty.ai — Get the Beauty Look You Want",
     template: "%s | goBeauty.ai",
   },
   description:
     "AI-native beauty discovery: upload a look, describe your goal, or find a service. GoBeauty.ai shows you whether to DIY, book a pro, or shop the right products.",
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
     type: "website",
     siteName: "goBeauty.ai",
     title: "goBeauty.ai — Get the Beauty Look You Want",
     description:
       "AI-native beauty discovery: upload a look, describe your goal, or find a service.",
+    images: ["/gobeauty-logo.png"],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/gobeauty-logo.png"],
   },
   robots: {
     index: true,
     follow: true,
   },
+};
+
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "goBeauty.ai",
+  url: "https://www.gobeauty.ai",
+  logo: "https://www.gobeauty.ai/gobeauty-logo.png",
+};
+
+const SITE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "goBeauty.ai",
+  url: "https://www.gobeauty.ai/",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -42,6 +64,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSONLD) }}
+        />
         <AuthProvider>
           <SiteHeader />
           <AuthModal />
