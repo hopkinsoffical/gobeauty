@@ -62,6 +62,18 @@ export interface ProductDetail extends ProductCard {
     currency: string;
     in_stock: boolean | null;
   }[];
+  dupes: Dupe[];
+}
+
+export interface Dupe {
+  slug: string;
+  name: string;
+  brand: string;
+  brandSlug: string;
+  badges: Badges;
+  images: { url: string; alt?: string }[];
+  sharedIngredients: number;
+  similarity: number;
 }
 
 export interface CompareResult {
@@ -70,17 +82,69 @@ export interface CompareResult {
   overlap: { shared: string[]; onlyA: string[]; onlyB: string[]; sharedCount: number };
 }
 
+export interface IngredientSummary {
+  slug: string;
+  inciName: string;
+  displayName: string | null;
+  rating: Ingredient["rating"];
+  irritancy: [number, number] | null;
+  comedogenicity: [number, number] | null;
+  functions: string[];
+  productCount: number;
+}
+
+export interface IngredientDetail extends Omit<IngredientSummary, "productCount"> {
+  description: string | null;
+  quickFacts: string[];
+  euAllergen: boolean;
+  faTrigger: boolean;
+  aliases: string[];
+  effects: { benefits: Effect[]; concerns: Effect[] };
+  products: (ProductCard & { position: number; isKey: boolean })[];
+}
+
+export interface BrandDetail {
+  slug: string;
+  name: string;
+  website: string | null;
+  country: string | null;
+  description: string | null;
+  logoUrl: string | null;
+  products: ProductCard[];
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`gb api ${res.status} for ${path}`);
   return res.json() as Promise<T>;
 }
 
-export const listProducts = (q = "") =>
-  get<{ products: ProductCard[] }>(`/api/gb/products${q ? `?q=${encodeURIComponent(q)}` : ""}`);
+export const listProducts = (
+  q = "",
+  opts: { badge?: string; category?: string; brand?: string } = {},
+) => {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (opts.badge) params.set("badge", opts.badge);
+  if (opts.category) params.set("category", opts.category);
+  if (opts.brand) params.set("brand", opts.brand);
+  const qs = params.toString();
+  return get<{ products: ProductCard[] }>(`/api/gb/products${qs ? `?${qs}` : ""}`);
+};
 
 export const getProduct = (slug: string) =>
   get<ProductDetail>(`/api/gb/products/${encodeURIComponent(slug)}`);
+
+export const listIngredients = (q = "", limit = 60) =>
+  get<{ ingredients: IngredientSummary[] }>(
+    `/api/gb/ingredients?limit=${limit}${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+  );
+
+export const getIngredient = (slug: string) =>
+  get<IngredientDetail>(`/api/gb/ingredients/${encodeURIComponent(slug)}`);
+
+export const getBrand = (slug: string) =>
+  get<BrandDetail>(`/api/gb/brands/${encodeURIComponent(slug)}`);
 
 export const compareProducts = (a: string, b: string) =>
   get<CompareResult>(`/api/gb/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);

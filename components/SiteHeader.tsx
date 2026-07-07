@@ -10,6 +10,8 @@ const NAV_LINKS = [
   { label: "Book Pros", href: "#services" },
   { label: "DIY Guides", href: "#diy" },
   { label: "Shop Top 3", href: "#shop-products" },
+  { label: "Products", href: "/products" },
+  { label: "Ingredients", href: "/ingredients" },
 ];
 
 const EXTRA_LINKS = [

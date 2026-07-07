@@ -44,7 +44,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <Link href="/products" className="hover:text-brand-700">
           Products
         </Link>{" "}
-        / {p.brand}
+        /{" "}
+        <Link href={`/brands/${p.brandSlug}`} className="hover:text-brand-700">
+          {p.brand}
+        </Link>
       </nav>
 
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -106,7 +109,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
             {keyIngredients.map((i) => (
               <div key={i.slug} className="rounded-xl border border-line bg-white p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-medium text-ink">{i.displayName ?? i.inciName}</p>
+                  <Link
+                    href={`/ingredients/${i.slug}`}
+                    className="font-medium text-ink hover:text-brand-700"
+                  >
+                    {i.displayName ?? i.inciName}
+                  </Link>
                   <RatingPill rating={i.rating} />
                 </div>
                 {i.functions.length > 0 && (
@@ -153,7 +161,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 <tr key={i.slug} className="border-t border-line/70">
                   <td className="px-4 py-2 tabular-nums text-ink-faint">{i.position}</td>
                   <td className="px-4 py-2">
-                    <span className="font-medium text-ink">{i.inciName}</span>
+                    <Link
+                      href={`/ingredients/${i.slug}`}
+                      className="font-medium text-ink hover:text-brand-700"
+                    >
+                      {i.inciName}
+                    </Link>
                     {i.isKey && <span className="ml-1.5 text-xs text-brand-600">★ key</span>}
                     {i.euAllergen && (
                       <span className="ml-1.5 text-xs text-amber-700">EU allergen</span>
@@ -176,6 +189,33 @@ export default async function ProductPage({ params }: { params: { slug: string }
           </table>
         </div>
       </section>
+
+      {p.dupes.length > 0 && (
+        <section className="mt-8">
+          <h2 className="mb-3 font-display text-xl text-ink">Similar products</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {p.dupes.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/compare?a=${p.slug}&b=${d.slug}`}
+                className="group rounded-2xl border border-line bg-white p-4 transition hover:border-brand-300 hover:shadow-md"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {d.brand}
+                </p>
+                <h3 className="font-display leading-snug text-ink group-hover:text-brand-700">
+                  {d.name}
+                </h3>
+                <p className="mt-1 text-xs text-ink-faint">
+                  {d.sharedIngredients} shared ingredients ·{" "}
+                  {Math.round(d.similarity * 100)}% match
+                </p>
+                <p className="mt-2 text-xs font-medium text-brand-700">Compare →</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
