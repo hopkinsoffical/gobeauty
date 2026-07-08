@@ -5,12 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 
-// PRD v2 §5 — top-level channel navigation.
+// PRD v2 §5 — top-level channel navigation. Long channel names carry a
+// shortLabel for the space-constrained desktop bar; the mobile sheet keeps
+// the full name.
 const NAV_LINKS = [
   { label: "Get This Look", href: "/get-this-look" },
   { label: "Find Pros", href: "/find-pros" },
   { label: "Local Rankings", href: "/local-rankings" },
-  { label: "Shop Pro-Recommended Products", href: "/shop-products" },
+  { label: "Shop Pro-Recommended Products", shortLabel: "Shop Products", href: "/shop-products" },
   { label: "Looks & Trends", href: "/looks-trends" },
 ];
 
@@ -64,7 +66,7 @@ export default function SiteHeader() {
         {/* Desktop nav */}
         <nav
           aria-label="Primary"
-          className="hidden min-w-0 items-center gap-5 text-[13.5px] font-semibold text-ink-soft lg:flex"
+          className="hidden min-w-0 items-center gap-4 text-[13.5px] font-semibold text-ink-soft lg:flex xl:gap-6"
         >
           {NAV_LINKS.map((l) => (
             <Link
@@ -75,22 +77,51 @@ export default function SiteHeader() {
                 pathname?.startsWith(l.href) ? "text-brand-600" : "",
               ].join(" ")}
             >
-              {l.label}
+              {l.shortLabel ?? l.label}
             </Link>
           ))}
           <span aria-hidden className="h-4 w-px bg-line" />
-          {BUSINESS_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
+          {/* Business links collapsed into a dropdown — CSS-only (hover +
+              focus-within) so the bar stays narrow as links grow */}
+          <div className="group relative">
+            <button
+              type="button"
               className={[
-                "whitespace-nowrap transition hover:text-ink",
-                pathname?.startsWith(l.href) ? "text-brand-600" : "",
+                "flex items-center gap-1 whitespace-nowrap transition hover:text-ink",
+                BUSINESS_LINKS.some((l) => pathname?.startsWith(l.href))
+                  ? "text-brand-600"
+                  : "",
               ].join(" ")}
+              aria-haspopup="menu"
             >
-              {l.label}
-            </Link>
-          ))}
+              For Business
+              <svg
+                className="h-3.5 w-3.5 transition group-hover:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div className="invisible absolute right-0 top-full pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div className="w-60 rounded-2xl border border-line-soft bg-white p-2 shadow-cardHover">
+                {BUSINESS_LINKS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className={[
+                      "block rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold transition hover:bg-surface-tint hover:text-ink",
+                      pathname?.startsWith(l.href) ? "text-brand-600" : "text-ink-soft",
+                    ].join(" ")}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </nav>
 
         {/* Desktop account actions */}
