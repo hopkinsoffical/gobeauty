@@ -120,8 +120,8 @@ export default function HomeHero() {
           <div className="relative w-full max-w-[420px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=80&auto=format&fit=crop"
-              alt="Glowing skin after a facial"
+              src="/assets/cover.png"
+              alt="Glowing skin with soft glam makeup at a vanity"
               className="aspect-[4/5] w-full rounded-[28px] object-cover shadow-[0_18px_50px_rgba(20,12,36,0.14)]"
             />
             <div className="absolute -left-8 bottom-8 rounded-2xl border border-line-soft bg-white/95 px-4 py-3 shadow-cardHover backdrop-blur">
