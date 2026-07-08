@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "For Beauty Professionals — get discovered by the right clients",
   description:
     "Salons, spas, med spas, lash studios, and independent pros: claim your profile, run a free visibility checkup, and grow with reviews, AI phone/SMS, and retail.",
-  alternates: { canonical: "/for-beauty-pros" },
+  alternates: { canonical: "/beauty-pros" },
 };
 
 // PRD v2 §7.6 — professional conversion page. Hero promise: "Get discovered
@@ -145,7 +145,7 @@ export default function ForBeautyProsPage() {
         <div className="mt-6">
           <LeadForm
             audience="professional"
-            sourcePage="/for-beauty-pros"
+            sourcePage="/beauty-pros"
             businessLabel="Salon / studio name"
             interests={[
               "Claim my profile",

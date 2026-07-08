@@ -162,13 +162,13 @@ export default async function ShopProductsPage() {
           </div>
           <div className="flex flex-col gap-2.5">
             <Link
-              href="/for-beauty-pros#samples"
+              href="/beauty-pros#samples"
               className="flex h-12 items-center justify-center rounded-pill bg-brand-500 text-[14.5px] font-semibold text-white transition hover:bg-brand-600"
             >
               Request a Sample
             </Link>
             <Link
-              href="/for-beauty-pros#samples"
+              href="/beauty-pros#samples"
               className="flex h-12 items-center justify-center rounded-pill border border-white/25 bg-white/5 text-[14.5px] font-semibold text-white transition hover:bg-white/10"
             >
               Ask Wholesale Price

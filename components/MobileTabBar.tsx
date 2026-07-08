@@ -72,7 +72,7 @@ const MORE_LINKS = [
   { label: "Local Rankings", href: "/local-rankings" },
   { label: "Product Library", href: "/products" },
   { label: "Ingredients", href: "/ingredients" },
-  { label: "For Beauty Professionals", href: "/for-beauty-pros" },
+  { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
 ];
 

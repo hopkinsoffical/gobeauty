@@ -8,13 +8,13 @@ const ENTRIES = [
     eyebrow: "For Beauty Professionals",
     copy: "Show your work, share services, and get discovered by clients looking for your exact service.",
     cta: "Claim Your Profile",
-    href: "/for-beauty-pros",
+    href: "/beauty-pros",
   },
   {
     eyebrow: "For Salon & Spa Owners",
     copy: "See your salon ranking, improve visibility, get reviews, respond faster, and grow repeat clients.",
     cta: "See Your Ranking",
-    href: "/for-beauty-pros#visibility-checkup",
+    href: "/beauty-pros#visibility-checkup",
   },
   {
     eyebrow: "For Beauty Brands & Suppliers",

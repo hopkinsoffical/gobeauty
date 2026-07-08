@@ -15,7 +15,7 @@ const NAV_LINKS = [
 ];
 
 const BUSINESS_LINKS = [
-  { label: "For Beauty Professionals", href: "/for-beauty-pros" },
+  { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
 ];
 

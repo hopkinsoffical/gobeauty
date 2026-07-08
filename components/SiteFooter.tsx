@@ -54,9 +54,9 @@ export default function SiteFooter() {
           <FooterCol
             title="For Business"
             items={[
-              { label: "For Beauty Professionals", href: "/for-beauty-pros" },
+              { label: "For Beauty Professionals", href: "/beauty-pros" },
               { label: "For Beauty Brands", href: "/brands" },
-              { label: "Claim Your Profile", href: "/for-beauty-pros#claim" },
+              { label: "Claim Your Profile", href: "/beauty-pros#claim" },
               { label: "Contact Us", href: "/contact" },
             ]}
           />

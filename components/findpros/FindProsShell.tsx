@@ -165,7 +165,7 @@ export default function FindProsShell({ salons }: { salons: Salon[] }) {
           signals — and see how clients find you on GoBeauty.
         </p>
         <Link
-          href="/for-beauty-pros#claim"
+          href="/beauty-pros#claim"
           className="mt-4 inline-flex h-11 items-center rounded-pill bg-brand-500 px-6 text-[14px] font-semibold text-white transition hover:bg-brand-600"
         >
           Claim / update your profile

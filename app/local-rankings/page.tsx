@@ -140,7 +140,7 @@ export default function LocalRankingsPage() {
             profile and run a free visibility checkup to see where you stand.
           </p>
           <Link
-            href="/for-beauty-pros#visibility-checkup"
+            href="/beauty-pros#visibility-checkup"
             className="mt-4 inline-flex h-11 items-center rounded-pill bg-brand-500 px-6 text-[14px] font-semibold text-white transition hover:bg-brand-600"
           >
             Run a free visibility checkup

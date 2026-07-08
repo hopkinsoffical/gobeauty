@@ -9,6 +9,7 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/for-brands", destination: "/brands", permanent: true },
+      { source: "/for-beauty-pros", destination: "/beauty-pros", permanent: true },
     ];
   },
 };
