@@ -174,7 +174,7 @@ export default async function ShopProductsPage() {
               Ask Wholesale Price
             </Link>
             <Link
-              href="/for-brands"
+              href="/brands"
               className="flex h-12 items-center justify-center rounded-pill border border-white/25 bg-white/5 text-[14.5px] font-semibold text-white transition hover:bg-white/10"
             >
               Book a Supplier Demo

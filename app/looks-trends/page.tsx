@@ -57,7 +57,7 @@ export default function LooksTrendsPage({
               title: "Promote this trend",
               body: "Salons and brands: put your work here.",
               cta: "Partner with us",
-              href: "/for-brands",
+              href: "/brands",
             },
           ].map((c) => (
             <div key={c.href} className="flex flex-col rounded-xl bg-white p-4 shadow-card">

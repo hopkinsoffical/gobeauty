@@ -20,7 +20,7 @@ const ENTRIES = [
     eyebrow: "For Beauty Brands & Suppliers",
     copy: "Reach salon owners, professionals, and serious beauty shoppers with product pages, samples, and campaigns.",
     cta: "Explore Supplier Promotion",
-    href: "/for-brands",
+    href: "/brands",
   },
 ];
 

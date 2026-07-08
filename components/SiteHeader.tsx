@@ -16,7 +16,7 @@ const NAV_LINKS = [
 
 const BUSINESS_LINKS = [
   { label: "For Beauty Professionals", href: "/for-beauty-pros" },
-  { label: "For Beauty Brands", href: "/for-brands" },
+  { label: "For Beauty Brands", href: "/brands" },
 ];
 
 function maskUsername(name: string) {

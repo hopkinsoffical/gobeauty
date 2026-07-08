@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "For Beauty Brands — reach salon owners and serious beauty buyers",
   description:
     "Boutique beauty brands: reach salon, spa, and studio owners through product intelligence pages, sample campaigns, wholesale leads, and weekly reporting.",
-  alternates: { canonical: "/for-brands" },
+  alternates: { canonical: "/brands" },
 };
 
 // PRD v2 §7.7 — supplier conversion page. Key message: trade shows happen a
@@ -130,7 +130,7 @@ export default function ForBrandsPage() {
         <div className="mt-6">
           <LeadForm
             audience="supplier"
-            sourcePage="/for-brands"
+            sourcePage="/brands"
             businessLabel="Brand name"
             interests={[
               "Request a brand demo",

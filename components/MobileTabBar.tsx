@@ -73,7 +73,7 @@ const MORE_LINKS = [
   { label: "Product Library", href: "/products" },
   { label: "Ingredients", href: "/ingredients" },
   { label: "For Beauty Professionals", href: "/for-beauty-pros" },
-  { label: "For Beauty Brands", href: "/for-brands" },
+  { label: "For Beauty Brands", href: "/brands" },
 ];
 
 export default function MobileTabBar() {
