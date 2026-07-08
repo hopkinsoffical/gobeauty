@@ -1,9 +1,21 @@
 # GoBeauty
 
-Consumer-facing local ranking site for nail salons. Powers SEO landing pages
-like **Best Nail Salons in Edison, NJ**, plus an AI **photo analysis chat** at
-`/analyze`, and converts both consumers (browse, analyze & discover) and salon
-owners (free Growth Report).
+Consumer-facing AI beauty discovery site with a pro-first commercial engine
+(Business Plan v7 / Website PRD v2). Channel architecture:
+
+| Route | Channel |
+| --- | --- |
+| `/` | Homepage — hero upload, finite trend grid, channel cards, local teaser, B2B entries |
+| `/get-this-look` | AI Beauty Path — photo upload + structured analysis + chat (`/analyze` redirects here) |
+| `/find-pros` | Best-fit pro search, Top-3 match model, owner claim CTA |
+| `/local-rankings` | Best [Service] in [City] SEO pages (first: nail salons, Edison NJ) |
+| `/shop-products` | Shop Pro-Recommended Products — browse modes + sample/wholesale CTAs |
+| `/looks-trends` | Trend/look intelligence grid |
+| `/for-beauty-pros` | Professional conversion + RankMySalon bridge + lead form |
+| `/for-brands` | Supplier campaigns + lead form |
+
+Professional/supplier leads POST to `/api/leads` → Supabase `gobeauty_leads`
+(`supabase/leads.sql`), best-effort with server-log fallback.
 
 ## Stack
 
@@ -23,7 +35,7 @@ npm run dev
 
 Open http://localhost:3000.
 
-## Photo analysis feature (`/analyze`)
+## Photo analysis feature (`/get-this-look`)
 
 After signing up / in, a user uploads a beauty photo in the chatbox. Claude
 analyzes it and returns a structured breakdown — **what** it is, **why** it

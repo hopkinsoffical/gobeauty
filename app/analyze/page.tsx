@@ -1,17 +1,6 @@
-import type { Metadata } from "next";
-import AnalyzeExperience from "@/components/AnalyzeExperience";
-import { getFeed } from "@/lib/analyses";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: "Analyze a beauty photo with AI",
-  description:
-    "Upload a photo of any nail, hair, or makeup look. GoBeauty's AI breaks down what it is, why it works, how it's done, and how much it costs — then chats through your next steps.",
-  alternates: { canonical: "/analyze" },
-};
-
-export default async function AnalyzePage() {
-  const initialFeed = await getFeed(12);
-  return <AnalyzeExperience initialFeed={initialFeed} />;
+// The analyze experience moved to the Get This Look channel (PRD v2 §5).
+export default function AnalyzePage() {
+  redirect("/get-this-look");
 }

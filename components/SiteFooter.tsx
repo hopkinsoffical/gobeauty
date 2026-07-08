@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-0 border-t border-line-soft bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-12">
+    <footer className="border-t border-line-soft bg-white">
+      <div className="mx-auto max-w-[1200px] px-5 py-12">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center">
@@ -17,7 +17,8 @@ export default function SiteFooter() {
               />
             </Link>
             <p className="mt-3 max-w-xs text-[14px] leading-relaxed text-ink-muted">
-              The AI-native beauty discovery platform. Get the look you want — DIY, book a pro, or shop the right products.
+              Upload a look. GoBeauty helps you get it — the right service,
+              local pros, pro-recommended products, and aftercare.
             </p>
             <div className="mt-4 flex gap-3">
               {["𝕏", "IG", "TT"].map((s) => (
@@ -33,30 +34,30 @@ export default function SiteFooter() {
           </div>
 
           <FooterCol
-            title="Platform"
+            title="Discover"
             items={[
-              { label: "Get This Look", href: "#hero" },
-              { label: "Book Pros", href: "#services" },
-              { label: "DIY Guides", href: "#diy" },
-              { label: "Shop Top 3", href: "#shop-products" },
+              { label: "Get This Look", href: "/get-this-look" },
+              { label: "Find Pros", href: "/find-pros" },
+              { label: "Local Rankings", href: "/local-rankings" },
+              { label: "Looks & Trends", href: "/looks-trends" },
             ]}
           />
           <FooterCol
-            title="Company"
+            title="Shop"
             items={[
-              { label: "About", href: "#about" },
-              { label: "How it Works", href: "#how-it-works" },
-              { label: "Sign In", href: "#login" },
+              { label: "Pro-Recommended Products", href: "/shop-products" },
+              { label: "Product Library", href: "/products" },
+              { label: "Ingredients", href: "/ingredients" },
+              { label: "Compare Products", href: "/compare" },
+            ]}
+          />
+          <FooterCol
+            title="For Business"
+            items={[
+              { label: "For Beauty Professionals", href: "/for-beauty-pros" },
+              { label: "For Beauty Brands", href: "/for-brands" },
+              { label: "Claim Your Profile", href: "/for-beauty-pros#claim" },
               { label: "Contact Us", href: "/contact" },
-            ]}
-          />
-          <FooterCol
-            title="For Businesses"
-            items={[
-              { label: "For Businesses", href: "#for-businesses" },
-              { label: "Claim Your Profile", href: "#for-businesses" },
-              { label: "Pricing", href: "/pricing" },
-              { label: "Business FAQ", href: "/business-faq" },
             ]}
           />
         </div>

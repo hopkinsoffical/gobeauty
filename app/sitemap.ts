@@ -7,7 +7,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.gobeauty.ai";
   const fixed: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
-    { url: `${base}/analyze`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/get-this-look`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/find-pros`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/local-rankings`, changeFrequency: "weekly", priority: 0.9 },
+    {
+      url: `${base}/local-rankings/best-nail-salons/edison-nj`,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    { url: `${base}/shop-products`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/looks-trends`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/for-beauty-pros`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/for-brands`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/products`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/ingredients`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/compare`, changeFrequency: "weekly", priority: 0.7 },
