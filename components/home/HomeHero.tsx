@@ -22,14 +22,25 @@ export default function HomeHero() {
 
   return (
     <section className="relative overflow-hidden" id="hero">
-      {/* Soft editorial backdrop — warm white / light pink (PRD §10) */}
+      {/* Mobile backdrop — full-bleed cover photo under a white wash for legibility */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 md:hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/cover.webp"
+          alt=""
+          className="h-full w-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/65 to-white" />
+      </div>
+
+      {/* Desktop backdrop — soft editorial warm white / light pink (PRD §10) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full bg-gradient-to-b from-[#fdeef3] via-[#fbf5f7] to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 hidden h-full bg-gradient-to-b from-[#fdeef3] via-[#fbf5f7] to-transparent md:block"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-28 -z-10 h-[440px] w-[440px] rounded-full bg-gradient-to-tr from-brand-200/60 to-violet-100/40 blur-3xl"
+        className="pointer-events-none absolute -right-24 -top-28 -z-10 hidden h-[440px] w-[440px] rounded-full bg-gradient-to-tr from-brand-200/60 to-violet-100/40 blur-3xl md:block"
       />
 
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-8 px-5 pb-10 pt-10 md:grid-cols-[1.15fr_1fr] md:gap-12 md:pb-16 md:pt-16">
@@ -120,7 +131,7 @@ export default function HomeHero() {
           <div className="relative w-full max-w-[420px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/cover.png"
+              src="/assets/cover.webp"
               alt="Glowing skin with soft glam makeup at a vanity"
               className="aspect-[4/5] w-full rounded-[28px] object-cover shadow-[0_18px_50px_rgba(20,12,36,0.14)]"
             />
