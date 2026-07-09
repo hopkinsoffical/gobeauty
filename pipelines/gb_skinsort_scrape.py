@@ -309,6 +309,10 @@ def parse_vendors(html: str) -> list[dict]:
         text = re.sub(r"\s+", " ", a.get_text(" ", strip=True))
         pm = re.search(r"\$\s*([\d,]+(?:\.\d{1,2})?)", text)
         retailer = re.sub(r"\$.*$", "", text).strip() or "Amazon"
+        # search-fallback rows render as "Amazon Search on Amazon" with no price
+        sm = re.search(r"Search on (\w+)", retailer)
+        if sm:
+            retailer = sm.group(1)
         url = href
         if "viglink.com" in href:  # unwrap the affiliate redirect
             q = urllib.parse.parse_qs(urllib.parse.urlparse(href).query)
