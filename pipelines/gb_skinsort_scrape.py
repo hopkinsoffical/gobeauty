@@ -194,9 +194,13 @@ def parse_quick_rows(soup: BeautifulSoup) -> dict[str, dict]:
         if fn_el:
             functions = [f.strip() for f in fn_el.get_text(" ", strip=True).split(",") if f.strip()]
         com = irr = None
-        m = re.search(r"(\d)\s*/\s*(\d)", row.get_text(" ", strip=True))
-        if m:
-            com, irr = int(m.group(1)), int(m.group(2))
+        # the metrics live in their own span ("0 / 3"); matching the row text
+        # would pick digits out of names like "PEG/PPG-18/18 Dimethicone"
+        for sp in row.find_all("span"):
+            m = re.fullmatch(r"(\d)\s*/\s*(\d)", sp.get_text(" ", strip=True))
+            if m:
+                com, irr = int(m.group(1)), int(m.group(2))
+                break
         icons = [img["alt"].removesuffix(" Icon") for img in row.find_all("img") if img.get("alt")]
         fa = (row.get("data-fungal-acne-trigger-level") or "").strip() or None
         rows.setdefault(name.lower(), {
