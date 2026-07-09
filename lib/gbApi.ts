@@ -169,13 +169,15 @@ async function get<T>(path: string): Promise<T> {
 
 export const listProducts = (
   q = "",
-  opts: { badge?: string; category?: string; brand?: string } = {},
+  opts: { badge?: string; category?: string; brand?: string; sort?: string; limit?: number } = {},
 ) => {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (opts.badge) params.set("badge", opts.badge);
   if (opts.category) params.set("category", opts.category);
   if (opts.brand) params.set("brand", opts.brand);
+  if (opts.sort) params.set("sort", opts.sort);
+  if (opts.limit) params.set("limit", String(opts.limit));
   const qs = params.toString();
   return get<{ products: ProductCard[] }>(`/api/gb/products${qs ? `?${qs}` : ""}`);
 };
@@ -202,6 +204,45 @@ export const getBrand = (slug: string) =>
 
 export const compareProducts = (a: string, b: string) =>
   get<CompareResult>(`/api/gb/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
+
+// --- Local salon rankings (salon_ai_leaderboard via the same shim) --------
+
+export interface SalonCard {
+  slug: string;
+  name: string;
+  address: string | null;
+  town: string | null;
+  state: string | null;
+  zipcode: string | null;
+  category: string | null;
+  rating: number | null;
+  reviewCount: number;
+  aiScore: number | null;
+  website: string | null;
+  phone: string | null;
+  reportUrl: string;
+}
+
+export interface TopSalonsResult {
+  scope: "town" | "area" | "state";
+  salons: SalonCard[];
+}
+
+export const topSalons = (opts: {
+  town?: string;
+  state?: string;
+  zip3?: string;
+  category?: string;
+  limit?: number;
+}) => {
+  const params = new URLSearchParams();
+  if (opts.town) params.set("town", opts.town);
+  if (opts.state) params.set("state", opts.state);
+  if (opts.zip3) params.set("zip3", opts.zip3);
+  if (opts.category) params.set("category", opts.category);
+  if (opts.limit) params.set("limit", String(opts.limit));
+  return get<TopSalonsResult>(`/api/gb/salons/top?${params.toString()}`);
+};
 
 export const BADGE_LABELS: Record<string, string> = {
   paraben_free: "Paraben-free",

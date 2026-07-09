@@ -44,6 +44,7 @@ async def list_products(
     badge: str = "",
     category: str = "",
     brand: str = "",
+    sort: str = "",
     limit: int = Query(24, le=60),
     offset: int = 0,
 ):
@@ -70,7 +71,7 @@ async def list_products(
             join gb_brands b on b.id = p.brand_id
             left join gb_categories c on c.id = p.category_id
             where {where}
-            order by p.rating_count desc, p.created_at desc
+            order by {"(coalesce(p.rating_avg, 0) * p.rating_count + 4.0 * 10) / (p.rating_count + 10) desc, p.rating_count desc" if sort == "top" else "p.rating_count desc, p.created_at desc"}
             limit {int(limit)} offset {int(offset)}""",
         *args,
     )
@@ -436,3 +437,105 @@ async def compare(a: str, b: str):
             "sharedCount": len(shared),
         },
     }
+
+
+# --- Local salon rankings (salon_ai_leaderboard) -------------------------
+# Powers /local-rankings "Top 3 near you". Same read-only pool; the table is
+# the RankMySalon leaderboard, so report pages exist for every slug.
+
+_SALON_CATEGORIES: dict[str, list[str]] = {
+    "nail-salon": ["nail salon"],
+    "hair-salon": ["hair salon"],
+    "beauty-salon": ["beauty salon", "salon"],
+    "spa": ["spa", "day spa", "massage spa", "massage", "facial spa"],
+    "barber": ["barber shop", "barber"],
+    "skin-care": ["skin care clinic", "skin care", "medical spa", "wellness center"],
+}
+
+# The leaderboard carries a small non-beauty tail (scraped Google categories);
+# keep it out of the default "all services" ranking.
+_NON_BEAUTY = [
+    "doctor", "medical clinic", "medical center", "educational institution",
+    "health", "service", "store",
+]
+
+
+def _salon_row(r) -> dict:
+    return {
+        "slug": r["slug"], "name": r["name"], "address": r["address"],
+        "town": r["town"], "state": r["state"], "zipcode": r["zipcode"],
+        "category": r["category"],
+        "rating": float(r["rating"]) if r["rating"] is not None else None,
+        "reviewCount": r["review_count"],
+        "aiScore": float(r["ai_score"]) if r["ai_score"] is not None else None,
+        "website": r["website"], "phone": r["phone"],
+        "reportUrl": f"https://www.rankmysalon.ai/analysis-reports/{r['slug']}",
+    }
+
+
+@router.get("/salons/top")
+async def top_salons(
+    town: str = "",
+    state: str = "",
+    zip3: str = "",
+    category: str = "",
+    limit: int = Query(3, le=10),
+):
+    """Top salons for a location, ranked by a review-count-weighted rating.
+
+    Location fallback: town+state -> zip3+state (same metro) -> state, so the
+    section never comes back empty for a sparse town. `scope` reports which
+    tier answered so the UI can label results honestly.
+    """
+    pool = await _db()
+    state = state.strip().upper()[:2]
+    town = town.strip()
+    zip3 = "".join(ch for ch in zip3.strip() if ch.isdigit())[:3]
+    cats = _SALON_CATEGORIES.get(category.strip())
+
+    async def fetch(scope_where: str, args: list) -> list:
+        args = list(args)
+        if cats:
+            args.append(cats)
+            cat_where = f" and lower(category) = any(${len(args)})"
+        else:
+            args.append(_NON_BEAUTY)
+            cat_where = f" and lower(category) <> all(${len(args)})"
+        # distinct-on collapses duplicate listings of the same salon (same
+        # name scraped under two categories); bayesian score keeps a 4.9 with
+        # 800 reviews ahead of a 5.0 with 6.
+        return await pool.fetch(
+            f"""select * from (
+                    select distinct on (lower(name))
+                           slug, name, address, town, state, zipcode, category,
+                           rating, review_count, ai_score, website, phone,
+                           (rating * review_count + 4.3 * 25) / (review_count + 25) as score
+                    from salon_ai_leaderboard
+                    where rating is not null and review_count >= 5
+                          {scope_where}{cat_where}
+                    order by lower(name), review_count desc
+                ) t
+                order by score desc, review_count desc
+                limit {int(limit)}""",
+            *args,
+        )
+
+    tiers: list[tuple[str, str, list]] = []
+    if town and state:
+        tiers.append(("town", " and lower(town) = lower($1) and state = $2", [town, state]))
+    elif town:
+        tiers.append(("town", " and lower(town) = lower($1)", [town]))
+    if zip3 and state:
+        tiers.append(("area", " and left(zipcode, 3) = $1 and state = $2", [zip3, state]))
+    elif zip3:
+        tiers.append(("area", " and left(zipcode, 3) = $1", [zip3]))
+    if state:
+        tiers.append(("state", " and state = $1", [state]))
+    if not tiers:
+        raise HTTPException(400, "provide town, zip3, or state")
+
+    for scope, where, args in tiers:
+        rows = await fetch(where, args)
+        if len(rows) >= min(limit, 3):
+            return {"scope": scope, "salons": [_salon_row(r) for r in rows]}
+    return {"scope": tiers[-1][0], "salons": [_salon_row(r) for r in rows]}

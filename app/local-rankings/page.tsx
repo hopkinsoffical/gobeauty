@@ -1,12 +1,43 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import NearbyTop3 from "@/components/localrankings/NearbyTop3";
+import TopProductsByLabel from "@/components/localrankings/TopProductsByLabel";
+import { listCategories, listProducts } from "@/lib/gbApi";
+import type { CategoryNode, CategoryRef, ProductCard } from "@/lib/gbApi";
 
 export const metadata: Metadata = {
-  title: "Local Rankings — the best beauty services in your city",
+  title: "Local Rankings — the best 3 salons near you",
   description:
-    "Browse Best [Service] in [City] pages — evidence-based local rankings for nail salons, facials, lash lifts, keratin treatments, and more.",
+    "Share your location and see the top 3 salons around you, ranked by real reviews and ratings — by service category — plus top-rated products by label.",
   alternates: { canonical: "/local-rankings" },
 };
+
+// Leaf categories that actually have products, biggest first — these become
+// the filter chips in the products section.
+function leafCategories(nodes: CategoryNode[], out: CategoryRef[] = []): CategoryRef[] {
+  for (const n of nodes) {
+    if (n.children.length > 0) leafCategories(n.children, out);
+    else if (n.productCount > 0)
+      out.push({ slug: n.slug, name: n.name, productCount: n.productCount });
+  }
+  return out;
+}
+
+async function getProductsData() {
+  try {
+    const [{ products }, { categories }] = await Promise.all([
+      listProducts("", { sort: "top", limit: 8 }),
+      listCategories(),
+    ]);
+    const cats = leafCategories(categories)
+      .sort((a, b) => b.productCount - a.productCount)
+      .slice(0, 10);
+    return { products, cats };
+  } catch {
+    // shim unreachable (e.g. at build time) — section renders client-side
+    return { products: [] as ProductCard[], cats: [] as CategoryRef[] };
+  }
+}
 
 // PRD v2 §7.3 — local ranking index. Live pages link directly; upcoming
 // service-city pages are listed as teasers to show coverage direction.
@@ -52,7 +83,8 @@ const UPCOMING_PAGES = [
   },
 ];
 
-export default function LocalRankingsPage() {
+export default async function LocalRankingsPage() {
+  const { products, cats } = await getProductsData();
   return (
     <>
       <section className="relative overflow-hidden">
@@ -62,14 +94,19 @@ export default function LocalRankingsPage() {
         />
         <div className="mx-auto max-w-[1000px] px-5 pb-8 pt-10 md:pt-14">
           <h1 className="font-display text-[2rem] leading-[1.1] text-ink md:text-[2.75rem]">
-            The best beauty services, city by city.
+            The best salons near you, ranked with evidence.
           </h1>
           <p className="mt-3 max-w-[560px] text-[15.5px] leading-relaxed text-ink-soft">
-            Evidence-based Top 3 rankings for the services people actually
-            search — with our methodology explained on every page.
+            Share your location and we&apos;ll surface the top 3 salons around
+            you — ranked by real reviews and ratings, for the exact service
+            you&apos;re after.
           </p>
         </div>
       </section>
+
+      <NearbyTop3 />
+
+      <TopProductsByLabel initialProducts={products} categories={cats} />
 
       <div className="mx-auto max-w-[1000px] px-5 pb-14">
         <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-brand-600">
