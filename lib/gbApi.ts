@@ -40,6 +40,7 @@ export interface Effect {
 }
 
 export interface ProductDetail extends ProductCard {
+  brandCountry: string | null;
   description: string | null;
   sizeLabel: string | null;
   isCrueltyFree: boolean | null;

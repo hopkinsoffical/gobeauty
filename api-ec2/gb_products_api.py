@@ -85,7 +85,7 @@ async def list_products(
 
 async def _product_detail(pool: asyncpg.Pool, slug: str) -> dict:
     p = await pool.fetchrow(
-        """select p.*, b.name as brand, b.slug as brand_slug, c.name as category
+        """select p.*, b.name as brand, b.slug as brand_slug, b.country as brand_country, c.name as category
            from gb_products p
            join gb_brands b on b.id = p.brand_id
            left join gb_categories c on c.id = p.category_id
@@ -133,6 +133,7 @@ async def _product_detail(pool: asyncpg.Pool, slug: str) -> dict:
         counts[r["rating"] or "unknown"] += 1
     return {
         "slug": p["slug"], "name": p["name"], "brand": p["brand"], "brandSlug": p["brand_slug"],
+        "brandCountry": p["brand_country"],
         "category": p["category"], "description": p["description"],
         "sizeLabel": p["size_label"], "badges": _j(p, "badge_flags"),
         "images": _j(p, "images") or [],
