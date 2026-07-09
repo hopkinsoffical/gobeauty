@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { listIngredients, listProducts } from "@/lib/gbApi";
+import { listCategories, listIngredients, listProducts } from "@/lib/gbApi";
+import type { CategoryNode } from "@/lib/gbApi";
 
 export const revalidate = 3600;
 
@@ -27,12 +28,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Best-effort: the gb API can be briefly down without breaking the sitemap.
   let dynamic: MetadataRoute.Sitemap = [];
   try {
-    const [{ products }, { ingredients }] = await Promise.all([
+    const [{ products }, { ingredients }, { categories }] = await Promise.all([
       listProducts(),
       listIngredients("", 200),
+      listCategories(),
     ]);
     const brands = [...new Set(products.map((p) => p.brandSlug))];
+    const catUrls: MetadataRoute.Sitemap = [];
+    const walk = (n: CategoryNode) => {
+      if (n.productCount > 0)
+        catUrls.push({
+          url: `${base}/products/${n.slug}`,
+          changeFrequency: "daily" as const,
+          priority: 0.9,
+        });
+      n.children.forEach(walk);
+    };
+    categories.forEach(walk);
     dynamic = [
+      ...catUrls,
       ...products.map((p) => ({
         url: `${base}/products/${p.slug}`,
         changeFrequency: "weekly" as const,

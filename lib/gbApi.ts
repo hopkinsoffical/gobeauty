@@ -113,6 +113,53 @@ export interface BrandDetail {
   products: ProductCard[];
 }
 
+export interface CategoryNode {
+  slug: string;
+  name: string;
+  description: string | null;
+  productCount: number;
+  children: CategoryNode[];
+}
+
+export interface CategoryRef {
+  slug: string;
+  name: string;
+  productCount: number;
+}
+
+export interface CategoryProduct extends ProductCard {
+  description: string | null;
+  brandCountry: string | null;
+  ingredientCount: number;
+  priceCents: number | null;
+  isCrueltyFree: boolean | null;
+  isVegan: boolean | null;
+}
+
+export interface ProductRef {
+  slug: string;
+  name: string;
+  brand: string;
+}
+
+export interface CategoryDetail {
+  slug: string;
+  name: string;
+  description: string | null;
+  productCount: number;
+  breadcrumb: { slug: string; name: string }[];
+  children: CategoryRef[];
+  siblings: CategoryRef[];
+  products: CategoryProduct[];
+  faq: {
+    topRated: ProductRef | null;
+    mostPopular: ProductRef | null;
+    fewestIngredients: ProductRef | null;
+    mostAffordable: ProductRef | null;
+    mostAffordablePriceCents: number | null;
+  };
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`gb api ${res.status} for ${path}`);
@@ -134,6 +181,12 @@ export const listProducts = (
 
 export const getProduct = (slug: string) =>
   get<ProductDetail>(`/api/gb/products/${encodeURIComponent(slug)}`);
+
+export const listCategories = () =>
+  get<{ categories: CategoryNode[] }>(`/api/gb/categories`);
+
+export const getCategory = (slug: string) =>
+  get<CategoryDetail>(`/api/gb/categories/${encodeURIComponent(slug)}`);
 
 export const listIngredients = (q = "", limit = 60) =>
   get<{ ingredients: IngredientSummary[] }>(

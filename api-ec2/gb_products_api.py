@@ -183,6 +183,134 @@ def _card(r) -> dict:
             "ratingCount": r["rating_count"], "images": _j(r, "images") or []}
 
 
+_CAT_ROLLUP = """
+    with recursive tree as (
+      select id, slug from gb_categories where slug = $1
+      union all
+      select c.id, c.slug from gb_categories c join tree t on c.parent_id = t.id
+    )
+"""
+
+
+async def _category_counts(pool: asyncpg.Pool) -> dict[str, int]:
+    """category id -> product count rolled up through descendants."""
+    rows = await pool.fetch(
+        """with recursive anc as (
+             select c.id, c.id as top from gb_categories c
+             union all
+             select a.id, c.parent_id as top
+             from anc a join gb_categories c on c.id = a.top
+             where c.parent_id is not null
+           )
+           select a.top::text as id, count(p.id) as n
+           from anc a join gb_products p on p.category_id = a.id
+           where p.status <> 'discontinued'
+           group by a.top""")
+    return {r["id"]: r["n"] for r in rows}
+
+
+@router.get("/categories")
+async def list_categories():
+    pool = await _db()
+    counts = await _category_counts(pool)
+    rows = await pool.fetch(
+        """select id::text, slug, name, description, position, parent_id::text
+           from gb_categories order by position, name""")
+    by_id = {r["id"]: {"slug": r["slug"], "name": r["name"], "description": r["description"],
+                       "productCount": counts.get(r["id"], 0), "children": []}
+             for r in rows}
+    roots = []
+    for r in rows:
+        node = by_id[r["id"]]
+        if r["parent_id"] and r["parent_id"] in by_id:
+            by_id[r["parent_id"]]["children"].append(node)
+        else:
+            roots.append(node)
+    return {"categories": roots}
+
+
+@router.get("/categories/{slug}")
+async def category_detail(slug: str, limit: int = Query(48, le=100)):
+    pool = await _db()
+    c = await pool.fetchrow(
+        "select id, id::text as id_text, slug, name, description, parent_id from gb_categories where slug = $1",
+        slug)
+    if not c:
+        raise HTTPException(404, f"category {slug} not found")
+    counts = await _category_counts(pool)
+
+    breadcrumb, pid = [], c["parent_id"]
+    for _ in range(4):
+        if not pid:
+            break
+        p = await pool.fetchrow(
+            "select slug, name, parent_id from gb_categories where id = $1", pid)
+        if not p:
+            break
+        breadcrumb.insert(0, {"slug": p["slug"], "name": p["name"]})
+        pid = p["parent_id"]
+
+    def cat_node(r):
+        return {"slug": r["slug"], "name": r["name"],
+                "productCount": counts.get(r["id"], 0)}
+
+    children = [cat_node(r) for r in await pool.fetch(
+        "select id::text, slug, name from gb_categories where parent_id = $1 order by position, name",
+        c["id"])]
+    siblings = []
+    if c["parent_id"]:
+        siblings = [cat_node(r) for r in await pool.fetch(
+            """select id::text, slug, name from gb_categories
+               where parent_id = $1 and id <> $2 order by position, name""",
+            c["parent_id"], c["id"])]
+
+    prows = await pool.fetch(
+        _CAT_ROLLUP + f"""
+        select p.slug, p.name, p.description, p.badge_flags, p.rating_avg, p.rating_count,
+               p.images, p.is_cruelty_free, p.is_vegan,
+               b.name as brand, b.slug as brand_slug, b.country as brand_country,
+               c2.name as category,
+               (select count(*) from gb_product_ingredients pi where pi.product_id = p.id) as ingredient_count,
+               (select min(o.price_cents) from gb_product_offers o
+                 where o.product_id = p.id and o.price_cents is not null) as price_cents
+        from gb_products p
+        join gb_categories c2 on c2.id = p.category_id and c2.id in (select id from tree)
+        join gb_brands b on b.id = p.brand_id
+        where p.status <> 'discontinued'
+        order by coalesce(p.rating_avg, 0) * ln(1 + p.rating_count) desc, p.rating_count desc
+        limit {int(limit)}""",
+        slug)
+    products = [
+        {**_card(r), "description": r["description"], "brandCountry": r["brand_country"],
+         "ingredientCount": r["ingredient_count"],
+         "priceCents": r["price_cents"],
+         "isCrueltyFree": r["is_cruelty_free"], "isVegan": r["is_vegan"]}
+        for r in prows
+    ]
+
+    def _pick(key, best):
+        vals = [p for p in products if p.get(key) is not None]
+        return best(vals, key=lambda p: p[key]) if vals else None
+
+    def _ref(p):
+        return {"slug": p["slug"], "name": p["name"], "brand": p["brand"]} if p else None
+
+    rated = [p for p in products if p["ratingAvg"] is not None and p["ratingCount"] >= 3]
+    faq = {
+        "topRated": _ref(max(rated, key=lambda p: p["ratingAvg"]) if rated else None),
+        "mostPopular": _ref(_pick("ratingCount", max)),
+        "fewestIngredients": _ref(_pick("ingredientCount", min)),
+        "mostAffordable": _ref(_pick("priceCents", min)),
+        "mostAffordablePriceCents": (_pick("priceCents", min) or {}).get("priceCents"),
+    }
+    return {
+        "slug": c["slug"], "name": c["name"], "description": c["description"],
+        "productCount": counts.get(c["id_text"], 0),
+        "breadcrumb": breadcrumb, "children": children, "siblings": siblings,
+        "products": products, "faq": faq,
+    }
+
+
 @router.get("/ingredients")
 async def list_ingredients(q: str = "", limit: int = Query(60, le=200), offset: int = 0):
     pool = await _db()

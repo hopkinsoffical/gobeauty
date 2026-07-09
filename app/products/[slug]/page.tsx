@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProduct } from "@/lib/gbApi";
+import { getCategory, getProduct } from "@/lib/gbApi";
 import { BadgeChips, EffectChips, RatingPill } from "@/components/gb/ProductBits";
+import CategoryView from "@/components/gb/CategoryView";
 
 export const revalidate = 300;
 
+// skinsort-style URLs: /products/night-moisturizers is a category page,
+// /products/cerave-skin-renewing-night-cream... a product page. Category slugs
+// are curated (db/rds/002) and product slugs brand-prefixed, so they never collide.
 async function load(slug: string) {
   try {
-    return await getProduct(slug);
+    return { kind: "category" as const, category: await getCategory(slug) };
+  } catch {
+    /* not a category — fall through to product */
+  }
+  try {
+    return { kind: "product" as const, product: await getProduct(slug) };
   } catch {
     return null;
   }
@@ -19,8 +28,18 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const p = await load(params.slug);
-  if (!p) return { title: "Product not found" };
+  const r = await load(params.slug);
+  if (!r) return { title: "Not found" };
+  if (r.kind === "category") {
+    const c = r.category;
+    return {
+      title: `${c.productCount} Best ${c.name} in ${new Date().getFullYear()} — ingredient-checked`,
+      description:
+        c.description ??
+        `The best ${c.name.toLowerCase()} ranked by community rating, with complete ingredient breakdowns and safety analysis.`,
+    };
+  }
+  const p = r.product;
   return {
     title: `${p.brand} ${p.name} — ingredients & analysis`,
     description: `${p.brand} ${p.name}: full ingredient list explained, benefits, concerns, and where to buy.`,
@@ -32,8 +51,10 @@ function fmtPrice(cents: number, currency: string) {
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const p = await load(params.slug);
-  if (!p) notFound();
+  const r = await load(params.slug);
+  if (!r) notFound();
+  if (r.kind === "category") return <CategoryView c={r.category} />;
+  const p = r.product;
 
   const keyIngredients = p.ingredients.filter((i) => i.isKey);
   const rc = p.ratingCounts;
