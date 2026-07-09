@@ -276,20 +276,20 @@ export default async function ComparePage({
         </span>
       </nav>
 
-      {/* Images first, then everything one row at a time */}
-      <header className="grid grid-cols-2 items-end gap-4 sm:gap-8">
+      {/* Images first, "Versus" centered between them, then one row at a time */}
+      <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-8">
         <div className="flex justify-center">
           <ProductImage p={pa} />
         </div>
+        <p className="text-center font-display text-sm uppercase tracking-[0.2em] text-ink-faint">
+          Versus
+        </p>
         <div className="flex justify-center">
           <ProductImage p={pb} />
         </div>
       </header>
-      <p className="my-4 text-center font-display text-sm uppercase tracking-[0.2em] text-ink-faint">
-        Versus
-      </p>
 
-      <div className="rounded-3xl border border-line bg-white px-4 py-2 sm:px-8">
+      <div className="mt-6 rounded-3xl border border-line bg-white px-4 py-2 sm:px-8">
         <Row a={<TitleCell p={pa} />} b={<TitleCell p={pb} />} />
         <Row
           a={<p className="text-center font-display text-2xl text-brand-700">{matchPct(pa)}% <span className="text-sm text-ink-muted">match</span></p>}
