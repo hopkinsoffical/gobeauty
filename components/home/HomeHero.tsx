@@ -47,13 +47,12 @@ export default function HomeHero() {
         {/* Copy + input */}
         <div>
           <h1 className="font-display text-[2.35rem] leading-[1.08] text-ink md:text-[3.5rem]">
-            Upload a look.
-            <br />
-            <span className="text-brand-600">GoBeauty</span> helps you get it.
+            Your <span className="text-brand-600">AI Beauty Advisor</span>.
           </h1>
           <p className="mt-3 max-w-[480px] text-[16px] leading-relaxed text-ink-soft md:mt-4 md:text-[17px]">
-            Find the right service, local pros, pro-recommended products, and
-            aftercare.
+            Upload a photo, describe your goal, or search anything. Our AI
+            recommends the right treatment, products, professionals, and
+            aftercare—all personalized for you.
           </p>
 
           {/* Single prominent input card — thumb-friendly, upload separated (PRD §6.2) */}
