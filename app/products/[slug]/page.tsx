@@ -5,6 +5,7 @@ import { getCategory, getProduct } from "@/lib/gbApi";
 import { BadgeChips, RatingPill } from "@/components/gb/ProductBits";
 import { Stars, fmtUsd } from "@/components/gb/CategoryBits";
 import CategoryView from "@/components/gb/CategoryView";
+import ProductActions from "@/components/gb/ProductActions";
 
 export const revalidate = 300;
 
@@ -70,8 +71,6 @@ const ICON_SPARKLES =
   "M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z";
 const ICON_LIST =
   "M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z";
-const ICON_ALERT =
-  "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z";
 
 function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
@@ -91,7 +90,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const p = r.product;
 
   const keyIngredients = p.ingredients.filter((i) => i.isKey);
-  const concerns = p.effects.concerns;
   const benefits = p.effects.benefits;
   const rc = p.ratingCounts;
 
@@ -151,32 +149,16 @@ export default async function ProductPage({ params }: { params: { slug: string }
           {p.description && (
             <p className="mt-4 leading-relaxed text-ink-soft">{p.description}</p>
           )}
+
+          <ProductActions
+            slug={p.slug}
+            name={p.name}
+            brand={p.brand}
+            imageUrl={p.images[0]?.url ?? null}
+            dupes={p.dupes}
+          />
         </div>
       </header>
-
-      {/* Concerns tip — rendered only when there is something to flag */}
-      {concerns.length > 0 && (
-        <aside
-          className="mb-4 flex gap-3 rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200"
-          aria-label="Worth noting"
-        >
-          <span className="mt-0.5 shrink-0 text-amber-600">
-            <Icon d={ICON_ALERT} />
-          </span>
-          <div className="text-sm leading-relaxed text-amber-900">
-            <p className="font-semibold">Worth noting</p>
-            <ul className="mt-1 space-y-0.5">
-              {concerns.map((c) => (
-                <li key={c.slug}>
-                  {c.name}
-                  {c.description && <span className="text-amber-800/80"> — {c.description}</span>}
-                  <span className="text-amber-800/60"> ({c.count} {c.count === 1 ? "ingredient" : "ingredients"})</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </aside>
-      )}
 
       {/* Where to buy */}
       {p.offers.length > 0 && (

@@ -279,3 +279,55 @@ export async function removeLookFromBoard(boardId: string, lookId: string) {
   revalidatePath(`/u/[username]`, "page");
   return { ok: true };
 }
+
+// ---------- Saved products ----------
+
+export interface SavedProductInput {
+  product_slug: string;
+  product_name: string;
+  brand: string;
+  image_url?: string | null;
+}
+
+export async function saveProduct(input: SavedProductInput) {
+  const me = await getCurrentGobeautyUser();
+  if (!me) return { ok: false, error: "not_logged_in" };
+
+  const { error } = await sb().from("gobeauty_saved_products").insert({
+    user_id: me.id,
+    product_slug: input.product_slug,
+    product_name: input.product_name,
+    brand: input.brand,
+    image_url: input.image_url ?? null,
+  });
+  if (error) {
+    if (error.code === "23505") return { ok: true }; // already saved
+    return { ok: false, error: error.message };
+  }
+  return { ok: true };
+}
+
+export async function unsaveProduct(productSlug: string) {
+  const me = await getCurrentGobeautyUser();
+  if (!me) return { ok: false, error: "not_logged_in" };
+
+  const { error } = await sb()
+    .from("gobeauty_saved_products")
+    .delete()
+    .eq("user_id", me.id)
+    .eq("product_slug", productSlug);
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function isProductSaved(productSlug: string): Promise<boolean> {
+  const me = await getCurrentGobeautyUser();
+  if (!me) return false;
+  const { data } = await sb()
+    .from("gobeauty_saved_products")
+    .select("id")
+    .eq("user_id", me.id)
+    .eq("product_slug", productSlug)
+    .maybeSingle();
+  return Boolean(data);
+}
