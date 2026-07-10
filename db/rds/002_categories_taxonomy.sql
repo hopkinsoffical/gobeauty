@@ -47,18 +47,27 @@ select pg_temp.gb_cat('face-washes', 'Face Washes', 'cleansers', 2,
 
 select pg_temp.gb_cat('serums-treatments', 'Serums & Treatments', 'skincare', 3,
   'Concentrated actives: serums, essences, ampoules, and targeted treatments.');
-select pg_temp.gb_cat('serums', 'Serums', 'serums-treatments', 1, null);
+select pg_temp.gb_cat('serums', 'Serums', 'serums-treatments', 1,
+  'Concentrated active serums — vitamin C, niacinamide, retinol, peptides, and hyaluronic acid — compared by ingredients, not marketing.');
 select pg_temp.gb_cat('essences', 'Essences', 'serums-treatments', 2, null);
 select pg_temp.gb_cat('facial-treatments', 'Facial Treatments', 'serums-treatments', 3, null);
 
 select pg_temp.gb_cat('sunscreens', 'Sunscreens', 'skincare', 4,
   'Broad-spectrum SPF — mineral and chemical filters explained.');
-select pg_temp.gb_cat('toners', 'Toners', 'skincare', 5, null);
+select pg_temp.gb_cat('toners', 'Toners', 'skincare', 5,
+  'Hydrating, exfoliating, and pH-balancing toners, mists, and toner pads — the prep step between cleansing and treatment, compared by ingredients.');
 select pg_temp.gb_cat('exfoliators', 'Exfoliators', 'skincare', 6,
   'AHA, BHA, PHA, and physical exfoliants.');
 select pg_temp.gb_cat('face-masks', 'Face Masks', 'skincare', 7, null);
-select pg_temp.gb_cat('eye-care', 'Eye Care', 'skincare', 8, null);
+select pg_temp.gb_cat('eye-care', 'Eye Care', 'skincare', 8,
+  'Eye-area skincare — creams, gels, and serums for dark circles, puffiness, and fine lines.');
+select pg_temp.gb_cat('eye-moisturizers', 'Eye Moisturizers', 'eye-care', 1,
+  'Eye creams, gels, and serums that hydrate the eye area and target dark circles, puffiness, and crow''s feet — compared by ingredients.');
+select pg_temp.gb_cat('eye-masks', 'Eye Masks', 'eye-care', 2,
+  'Hydrogel patches, under-eye masks, and overnight eye treatments that de-puff, brighten, and firm — compared by ingredients.');
 select pg_temp.gb_cat('lip-care', 'Lip Care', 'skincare', 9, null);
+select pg_temp.gb_cat('face-oils', 'Face Oils', 'skincare', 10,
+  'Facial oils — argan, rosehip, jojoba, squalane, and retinol oil blends that seal in moisture and nourish the barrier, compared by ingredients.');
 
 -- ── makeup ──────────────────────────────────────────────────────────────────
 select pg_temp.gb_cat('face-makeup', 'Face Makeup', 'makeup', 1,
