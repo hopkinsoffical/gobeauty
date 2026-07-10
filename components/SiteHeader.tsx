@@ -5,14 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 
-// PRD v2 §5 — top-level channel navigation. Long channel names carry a
-// shortLabel for the space-constrained desktop bar; the mobile sheet keeps
-// the full name.
+// PRD v2 §5 — top-level channel navigation.
 const NAV_LINKS = [
   { label: "Get This Look", href: "/get-this-look" },
   { label: "Find Pros", href: "/find-pros" },
   { label: "Local Rankings", href: "/local-rankings" },
-  { label: "Shop Pro-Recommended Products", shortLabel: "Products", href: "/shop-products" },
+  { label: "Products", href: "/shop-products" },
   { label: "Looks & Trends", href: "/looks-trends" },
 ];
 
@@ -77,7 +75,7 @@ export default function SiteHeader() {
                 pathname?.startsWith(l.href) ? "text-brand-600" : "",
               ].join(" ")}
             >
-              {l.shortLabel ?? l.label}
+              {l.label}
             </Link>
           ))}
           <span aria-hidden className="h-4 w-px bg-line" />
