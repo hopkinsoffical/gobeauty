@@ -52,6 +52,7 @@ Env for --load: DATABASE_URL (same convention as gb_inci_ingest.py).
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import re
 import sys
@@ -108,8 +109,19 @@ def jsonld_product(soup: BeautifulSoup) -> dict:
             continue
         for obj in data if isinstance(data, list) else [data]:
             if isinstance(obj, dict) and obj.get("@type") == "Product":
-                return obj
+                return unescape_strings(obj)
     return {}
+
+
+def unescape_strings(obj):
+    """skinsort's JSON-LD leaves HTML entities (&amp;, &#39;) in string values."""
+    if isinstance(obj, str):
+        return html.unescape(obj)
+    if isinstance(obj, dict):
+        return {k: unescape_strings(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [unescape_strings(v) for v in obj]
+    return obj
 
 
 def parse_badges(html: str) -> tuple[dict, bool | None, bool | None]:
