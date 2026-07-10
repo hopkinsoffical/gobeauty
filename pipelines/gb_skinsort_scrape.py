@@ -399,6 +399,8 @@ def scrape_product(url: str, delay: float, deep: bool, vendors: bool,
     for i, u in enumerate(dict.fromkeys(filter(None, [
             ld.get("image"),
             (soup.find("meta", property="og:image") or {}).get("content")]))):
+        if u.startswith("/"):  # some pages emit site-relative active_storage paths
+            u = BASE + u
         images.append({"url": u, "alt": ld.get("name"), "position": i})
 
     name = ld.get("name") or soup.find("h1").get_text(" ", strip=True)
