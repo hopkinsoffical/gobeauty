@@ -5,6 +5,7 @@
 # Pagination is a Rails button_to: POST /products/<cat>/filtered_products?page=N
 # with the session cookie + csrf-token from the page-1 GET.
 set -uo pipefail
+export LC_ALL=C  # sort/comm must agree on collation for the overlap dedupe
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
 PAGES="${PAGES:-10}"
 OUT="${1:?usage: build_category_urls.sh out.txt}"
