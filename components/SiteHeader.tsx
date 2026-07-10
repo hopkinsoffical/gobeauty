@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { label: "Get This Look", href: "/get-this-look" },
   { label: "Find Pros", href: "/find-pros" },
   { label: "Local Rankings", href: "/local-rankings" },
-  { label: "Shop Pro-Recommended Products", shortLabel: "Shop Products", href: "/shop-products" },
+  { label: "Shop Pro-Recommended Products", shortLabel: "Products", href: "/shop-products" },
   { label: "Looks & Trends", href: "/looks-trends" },
 ];
 
