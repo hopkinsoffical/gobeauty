@@ -123,6 +123,11 @@ export default function ProductActions({
               No similar products found yet.
             </p>
           ) : (
+            <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+              Similar products
+            </p>
+          )}
+          {dupes.length > 0 && (
             <ul>
               {dupes.map((d) => (
                 <li
@@ -161,6 +166,12 @@ export default function ProductActions({
               ))}
             </ul>
           )}
+          <Link
+            href={`/compare?a=${slug}`}
+            className="mt-1 flex items-center justify-center gap-1.5 rounded-xl border-t border-line/70 px-3 py-2.5 text-sm font-medium text-brand-700 transition hover:bg-brand-50"
+          >
+            Compare with any product →
+          </Link>
         </div>
       )}
     </div>

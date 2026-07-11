@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BADGE_LABELS, compareProducts, listProducts, type ProductDetail } from "@/lib/gbApi";
+import { BADGE_LABELS, compareProducts, getProduct, listProducts, type ProductDetail } from "@/lib/gbApi";
 import { RatingPill } from "@/components/gb/ProductBits";
 import { Stars, fmtUsd } from "@/components/gb/CategoryBits";
 
@@ -205,32 +205,69 @@ function IngredientList({ p, sharedSlugs }: { p: ProductDetail; sharedSlugs: Set
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: { a?: string; b?: string };
+  searchParams: { a?: string; b?: string; q?: string };
 }) {
-  const { a, b } = searchParams;
+  const { a, b, q = "" } = searchParams;
 
   if (!a || !b) {
-    const { products } = await listProducts();
+    const [{ products }, first] = await Promise.all([
+      listProducts(q, { limit: 60 }),
+      a ? getProduct(a).catch(() => null) : Promise.resolve(null),
+    ]);
     const other = a ? products.filter((p) => p.slug !== a) : products;
     return (
       <div className="mx-auto max-w-[800px] px-6 py-10">
         <h1 className="font-display text-3xl text-ink">Compare products</h1>
         <p className="mt-1 text-ink-soft">
-          {a ? "Pick the second product." : "Pick two products to compare side by side."}
+          {first ? (
+            <>
+              Comparing <span className="font-medium text-ink">{first.brand} {first.name}</span> with — pick
+              the second product.
+            </>
+          ) : a ? (
+            "Pick the second product."
+          ) : (
+            "Pick two products to compare side by side."
+          )}
         </p>
-        <ul className="mt-6 space-y-2">
-          {other.map((p) => (
-            <li key={p.slug}>
-              <Link
-                href={a ? `/compare?a=${a}&b=${p.slug}` : `/compare?a=${p.slug}`}
-                className="block rounded-xl border border-line bg-white px-4 py-3 transition hover:border-brand-300"
-              >
-                <span className="text-xs font-semibold uppercase text-ink-muted">{p.brand}</span>{" "}
-                <span className="font-medium text-ink">{p.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <form action="/compare" className="mt-6 flex gap-2">
+          {a && <input type="hidden" name="a" value={a} />}
+          <input
+            type="search"
+            name="q"
+            defaultValue={q}
+            placeholder="Search by product or brand…"
+            className="h-11 w-full rounded-full border border-line bg-white px-5 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-brand-400"
+          />
+          <button
+            type="submit"
+            className="h-11 flex-none rounded-full bg-brand-600 px-6 text-sm font-semibold text-white transition hover:bg-brand-700"
+          >
+            Search
+          </button>
+        </form>
+        {other.length === 0 ? (
+          <p className="mt-6 text-sm text-ink-muted">
+            No products match “{q}”.{" "}
+            <Link href={a ? `/compare?a=${a}` : "/compare"} className="text-brand-700 underline">
+              Show all
+            </Link>
+          </p>
+        ) : (
+          <ul className="mt-6 space-y-2">
+            {other.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={a ? `/compare?a=${a}&b=${p.slug}` : `/compare?a=${p.slug}`}
+                  className="block rounded-xl border border-line bg-white px-4 py-3 transition hover:border-brand-300"
+                >
+                  <span className="text-xs font-semibold uppercase text-ink-muted">{p.brand}</span>{" "}
+                  <span className="font-medium text-ink">{p.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     );
   }
