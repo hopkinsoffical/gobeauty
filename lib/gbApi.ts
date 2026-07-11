@@ -230,6 +230,66 @@ export const getBrand = (slug: string) =>
 export const compareProducts = (a: string, b: string) =>
   get<CompareResult>(`/api/gb/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
 
+// --- First-party store ----------------------------------------------------
+
+export interface BrandListing {
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+  productCount: number;
+  image: string | null;
+}
+
+export const listBrands = (limit = 60) =>
+  get<{ brands: BrandListing[] }>(`/api/gb/brands?limit=${limit}`);
+
+export interface OrderInput {
+  customer_name: string;
+  email: string;
+  phone?: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  zip: string;
+  notes?: string;
+  items: { slug: string; qty: number }[];
+}
+
+export interface OrderDetail {
+  orderNo: string;
+  customerName: string;
+  city: string;
+  state: string;
+  subtotalCents: number;
+  status: string;
+  paymentMethod: string;
+  createdAt: string;
+  items: {
+    product_slug: string;
+    product_name: string;
+    brand: string;
+    unit_price_cents: number;
+    qty: number;
+  }[];
+}
+
+export async function createOrder(input: OrderInput): Promise<{ orderNo: string; subtotalCents: number }> {
+  const res = await fetch(`${BASE}/api/gb/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`order create failed: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+export const getOrder = (orderNo: string) =>
+  fetch(`${BASE}/api/gb/orders/${encodeURIComponent(orderNo)}`, { cache: "no-store" }).then(
+    (r) => (r.ok ? (r.json() as Promise<OrderDetail>) : null),
+  );
+
 // --- Local salon rankings (salon_ai_leaderboard via the same shim) --------
 
 export interface SalonCard {

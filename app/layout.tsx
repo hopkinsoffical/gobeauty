@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth/useAuth";
 import AuthModal from "@/components/AuthModal";
 import SiteHeader from "@/components/SiteHeader";
+import { CartProvider } from "@/lib/cart";
 import SiteFooter from "@/components/SiteFooter";
 import MobileTabBar from "@/components/MobileTabBar";
 
@@ -73,11 +74,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSONLD) }}
         />
         <AuthProvider>
-          <SiteHeader />
-          <AuthModal />
-          <main className="pb-20 md:pb-0">{children}</main>
-          <SiteFooter />
-          <MobileTabBar />
+          <CartProvider>
+            <SiteHeader />
+            <AuthModal />
+            <main className="pb-20 md:pb-0">{children}</main>
+            <SiteFooter />
+            <MobileTabBar />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

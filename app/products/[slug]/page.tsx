@@ -6,6 +6,7 @@ import { BadgeChips, RatingPill } from "@/components/gb/ProductBits";
 import { Stars, fmtUsd } from "@/components/gb/CategoryBits";
 import CategoryView from "@/components/gb/CategoryView";
 import ProductActions from "@/components/gb/ProductActions";
+import BuyBox from "@/components/gb/BuyBox";
 
 export const revalidate = 300;
 
@@ -92,6 +93,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const keyIngredients = p.ingredients.filter((i) => i.isKey);
   const benefits = p.effects.benefits;
   const rc = p.ratingCounts;
+  // Our direct price mirrors the lowest live retailer offer (no first-party
+  // price list yet); the order API re-derives it, so this is display-only.
+  const offerPrices = p.offers.map((o) => o.price_cents).filter((c): c is number => c != null);
+  const storePriceCents = offerPrices.length ? Math.min(...offerPrices) : null;
 
   return (
     <div className="mx-auto max-w-[1000px] px-6 py-10">
@@ -164,7 +169,21 @@ export default async function ProductPage({ params }: { params: { slug: string }
       {p.offers.length > 0 && (
         <section className="border-t border-line py-10">
           <SectionHeader icon={ICON_BAG} title="Where to buy" />
-          <div className="mt-5 flex flex-wrap gap-3">
+          {storePriceCents != null && (
+            <div className="mt-5">
+              <BuyBox
+                slug={p.slug}
+                name={p.name}
+                brand={p.brand}
+                imageUrl={p.images[0]?.url ?? null}
+                priceCents={storePriceCents}
+              />
+            </div>
+          )}
+          <p className="mt-5 text-[12px] font-semibold uppercase tracking-wide text-ink-muted">
+            Also available at
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
             {p.offers.map((o) => (
               <a
                 key={o.url}

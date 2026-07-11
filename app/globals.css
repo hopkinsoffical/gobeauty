@@ -26,3 +26,25 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Partner-brand marquee (/brands): track holds two copies of the row, so
+   translating -50% loops seamlessly. Second row reverses for the two-band
+   effect; pause on hover so names stay readable. */
+@keyframes gb-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.gb-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: gb-marquee var(--gb-marquee-duration, 60s) linear infinite;
+}
+.gb-marquee-track.gb-marquee-reverse {
+  animation-direction: reverse;
+}
+.gb-marquee:hover .gb-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gb-marquee-track { animation: none; }
+}

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import LeadForm from "@/components/LeadForm";
+import BrandCarousel from "@/components/gb/BrandCarousel";
+import { listBrands } from "@/lib/gbApi";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "For Beauty Brands — reach salon owners and serious beauty buyers",
@@ -43,7 +47,8 @@ const STEPS = [
   { n: "3", title: "You get qualified leads", body: "Sample requests, wholesale inquiries, booked demos — reported weekly." },
 ];
 
-export default function ForBrandsPage() {
+export default async function ForBrandsPage() {
+  const partnerBrands = await listBrands(60).then((r) => r.brands).catch(() => []);
   return (
     <>
       {/* Hero — deep charcoal B2B treatment (PRD §10) */}
@@ -144,6 +149,24 @@ export default function ForBrandsPage() {
           />
         </div>
       </section>
+
+      {/* Partner brands marquee — every brand with live products on goBeauty */}
+      {partnerBrands.length > 0 && (
+        <section className="border-t border-line-soft bg-surface-soft">
+          <div className="mx-auto max-w-[1200px] px-5 py-12 md:py-16">
+            <h2 className="text-center font-display text-[1.6rem] leading-tight text-ink md:text-[2rem]">
+              Brands already on goBeauty.
+            </h2>
+            <p className="mt-2 text-center text-[14.5px] text-ink-soft">
+              {partnerBrands.length}+ beauty brands with products decoded and
+              discoverable — ingredient by ingredient.
+            </p>
+            <div className="mt-8">
+              <BrandCarousel brands={partnerBrands} />
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

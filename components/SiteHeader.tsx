@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
+import CartLink from "@/components/gb/CartLink";
 
 // PRD v2 §5 — top-level channel navigation.
 const NAV_LINKS = [
@@ -124,6 +125,7 @@ export default function SiteHeader() {
 
         {/* Desktop account actions */}
         <div className="hidden flex-none items-center gap-3 lg:flex">
+          <CartLink />
           {user ? (
             <div className="flex items-center gap-3">
               <Link
@@ -164,6 +166,7 @@ export default function SiteHeader() {
 
         {/* Mobile: search + menu icons on the right (PRD §5) */}
         <div className="flex items-center gap-1 lg:hidden">
+          <CartLink compact />
           <button
             className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-soft transition hover:bg-surface-tint"
             onClick={() => {

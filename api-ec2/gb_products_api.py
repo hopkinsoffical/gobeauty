@@ -399,6 +399,29 @@ async def ingredient_detail(slug: str):
     }
 
 
+@router.get("/brands")
+async def list_brands(limit: int = Query(60, le=400)):
+    """Brands carrying live products, with a representative product image
+    (their most-reviewed product) — powers the partner-brand carousel."""
+    pool = await _db()
+    rows = await pool.fetch(
+        """select b.slug, b.name, b.logo_url, count(p.id) as product_count,
+                  (select p2.images->0->>'url' from gb_products p2
+                    where p2.brand_id = b.id and p2.status <> 'discontinued'
+                      and jsonb_array_length(p2.images) > 0
+                    order by p2.rating_count desc limit 1) as image
+           from gb_brands b
+           join gb_products p on p.brand_id = b.id and p.status <> 'discontinued'
+           group by b.id
+           order by count(p.id) desc, b.name
+           limit $1""", int(limit))
+    return {"brands": [
+        {"slug": r["slug"], "name": r["name"], "logoUrl": r["logo_url"],
+         "productCount": r["product_count"], "image": r["image"]}
+        for r in rows
+    ]}
+
+
 @router.get("/brands/{slug}")
 async def brand_detail(slug: str):
     pool = await _db()
@@ -539,3 +562,84 @@ async def top_salons(
         if len(rows) >= min(limit, 3):
             return {"scope": scope, "salons": [_salon_row(r) for r in rows]}
     return {"scope": tiers[-1][0], "salons": [_salon_row(r) for r in rows]}
+
+
+# --- First-party store orders --------------------------------------------
+# Prices are resolved server-side (lowest live retailer offer) so the client
+# can never set its own. Payment is collected after order placement.
+
+from pydantic import BaseModel, EmailStr, Field  # noqa: E402
+
+
+class OrderItemIn(BaseModel):
+    slug: str
+    qty: int = Field(ge=1, le=20)
+
+
+class OrderIn(BaseModel):
+    customer_name: str = Field(min_length=2, max_length=120)
+    email: EmailStr
+    phone: str | None = Field(default=None, max_length=32)
+    address_line1: str = Field(min_length=3, max_length=200)
+    address_line2: str | None = Field(default=None, max_length=200)
+    city: str = Field(min_length=2, max_length=80)
+    state: str = Field(min_length=2, max_length=40)
+    zip: str = Field(min_length=3, max_length=12)
+    notes: str | None = Field(default=None, max_length=500)
+    items: list[OrderItemIn] = Field(min_length=1, max_length=20)
+
+
+@router.post("/orders")
+async def create_order(order: OrderIn):
+    pool = await _db()
+    slugs = [i.slug for i in order.items]
+    rows = await pool.fetch(
+        """select p.id, p.slug, p.name, b.name as brand,
+                  (select min(o.price_cents) from gb_product_offers o
+                    where o.product_id = p.id and o.price_cents is not null) as price_cents
+           from gb_products p join gb_brands b on b.id = p.brand_id
+           where p.slug = any($1) and p.status <> 'discontinued'""", slugs)
+    by_slug = {r["slug"]: r for r in rows}
+    missing = [s for s in slugs if s not in by_slug or by_slug[s]["price_cents"] is None]
+    if missing:
+        raise HTTPException(422, f"unavailable: {', '.join(missing)}")
+
+    subtotal = sum(by_slug[i.slug]["price_cents"] * i.qty for i in order.items)
+    async with pool.acquire() as conn, conn.transaction():
+        o = await conn.fetchrow(
+            """insert into gb_orders (customer_name, email, phone, address_line1, address_line2,
+                                      city, state, zip, notes, subtotal_cents)
+               values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+               returning id, order_no""",
+            order.customer_name, str(order.email), order.phone, order.address_line1,
+            order.address_line2, order.city, order.state, order.zip, order.notes, subtotal)
+        for i in order.items:
+            r = by_slug[i.slug]
+            await conn.execute(
+                """insert into gb_order_items (order_id, product_id, product_slug, product_name,
+                                               brand, unit_price_cents, qty)
+                   values ($1,$2,$3,$4,$5,$6,$7)""",
+                o["id"], r["id"], r["slug"], r["name"], r["brand"], r["price_cents"], i.qty)
+    return {"orderNo": o["order_no"], "subtotalCents": subtotal}
+
+
+@router.get("/orders/{order_no}")
+async def order_detail(order_no: str):
+    pool = await _db()
+    o = await pool.fetchrow(
+        """select order_no, customer_name, email, city, state, subtotal_cents, status,
+                  payment_method, created_at
+           from gb_orders where order_no = $1""", order_no)
+    if not o:
+        raise HTTPException(404, "order not found")
+    items = await pool.fetch(
+        """select i.product_slug, i.product_name, i.brand, i.unit_price_cents, i.qty
+           from gb_order_items i join gb_orders og on og.id = i.order_id
+           where og.order_no = $1""", order_no)
+    return {
+        "orderNo": o["order_no"], "customerName": o["customer_name"],
+        "city": o["city"], "state": o["state"],
+        "subtotalCents": o["subtotal_cents"], "status": o["status"],
+        "paymentMethod": o["payment_method"], "createdAt": o["created_at"].isoformat(),
+        "items": [dict(i) for i in items],
+    }
