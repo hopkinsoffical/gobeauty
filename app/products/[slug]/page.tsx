@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCategory, getProduct } from "@/lib/gbApi";
+import { decodeSlug, getCategory, getProduct } from "@/lib/gbApi";
 import { BadgeChips, RatingPill } from "@/components/gb/ProductBits";
 import { Stars, fmtUsd } from "@/components/gb/CategoryBits";
 import CategoryView from "@/components/gb/CategoryView";
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const r = await load(params.slug);
+  const r = await load(decodeSlug(params.slug));
   if (!r) return { title: "Not found" };
   if (r.kind === "category") {
     const c = r.category;
@@ -84,7 +84,7 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const r = await load(params.slug);
+  const r = await load(decodeSlug(params.slug));
   if (!r) notFound();
   if (r.kind === "category") return <CategoryView c={r.category} />;
   const p = r.product;

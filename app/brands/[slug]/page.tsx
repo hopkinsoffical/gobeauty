@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBrand } from "@/lib/gbApi";
+import { decodeSlug, getBrand } from "@/lib/gbApi";
 import { ProductCardTile } from "@/components/gb/ProductBits";
 
 export const revalidate = 300;
@@ -19,7 +19,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const b = await load(params.slug);
+  const b = await load(decodeSlug(params.slug));
   if (!b) return { title: "Brand not found" };
   return {
     title: `${b.name} — products & ingredient analysis`,
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }
 
 export default async function BrandPage({ params }: { params: { slug: string } }) {
-  const b = await load(params.slug);
+  const b = await load(decodeSlug(params.slug));
   if (!b) notFound();
 
   return (

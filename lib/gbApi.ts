@@ -161,6 +161,16 @@ export interface CategoryDetail {
   };
 }
 
+// App-router params arrive still percent-encoded; decode before passing to
+// the API (which encodes again) or accented slugs like estée-lauder 404.
+export function decodeSlug(s: string): string {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
+
 // skinsort blocks hotlinking (CORP: same-origin + Cloudflare rule), so every
 // scraped image URL must go through our same-origin /img proxy to render.
 const PROXIED_HOSTS = /^https:\/\/(storage\.)?skinsort\.com\//;

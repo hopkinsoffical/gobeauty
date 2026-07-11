@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getIngredient } from "@/lib/gbApi";
+import { decodeSlug, getIngredient } from "@/lib/gbApi";
 import { EffectChips, ProductCardTile, RatingPill } from "@/components/gb/ProductBits";
 
 export const revalidate = 300;
@@ -19,7 +19,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const i = await load(params.slug);
+  const i = await load(decodeSlug(params.slug));
   if (!i) return { title: "Ingredient not found" };
   const name = i.displayName ?? i.inciName;
   return {
@@ -31,7 +31,7 @@ export async function generateMetadata({
 }
 
 export default async function IngredientPage({ params }: { params: { slug: string } }) {
-  const i = await load(params.slug);
+  const i = await load(decodeSlug(params.slug));
   if (!i) notFound();
 
   const name = i.displayName ?? i.inciName;
