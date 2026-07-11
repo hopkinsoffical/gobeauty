@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { analyzePhoto, type SupportedMediaType } from "@/lib/anthropic";
+import {
+  analyzePhoto,
+  isAnthropicConfigured,
+  type SupportedMediaType,
+} from "@/lib/anthropic";
 import {
   getUserIdFromToken,
   saveAnalysis,
@@ -22,6 +26,13 @@ const MAX_BASE64_LENGTH = 8_000_000;
 function bearer(req: Request): string | null {
   const h = req.headers.get("authorization") ?? "";
   return h.toLowerCase().startsWith("bearer ") ? h.slice(7).trim() : null;
+}
+
+/** Public config probe — never returns the key, only whether it is set. */
+export async function GET() {
+  return NextResponse.json({
+    anthropicConfigured: isAnthropicConfigured(),
+  });
 }
 
 export async function POST(req: Request) {

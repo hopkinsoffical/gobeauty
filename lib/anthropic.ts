@@ -6,12 +6,18 @@ const MODEL = "claude-opus-4-8";
 
 let cachedClient: Anthropic | null = null;
 
+/** True when a non-empty Anthropic key is present in the server env. */
+export function isAnthropicConfigured(): boolean {
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+}
+
 export function getAnthropic(): Anthropic {
   if (cachedClient) return cachedClient;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // Trim: Vercel / paste often include trailing newlines or spaces.
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "Missing ANTHROPIC_API_KEY. Set it in .env.local to enable photo analysis.",
+      "Missing ANTHROPIC_API_KEY. Set it in Vercel (Production) or .env.local to enable photo analysis.",
     );
   }
   cachedClient = new Anthropic({ apiKey });
