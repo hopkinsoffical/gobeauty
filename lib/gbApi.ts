@@ -161,10 +161,25 @@ export interface CategoryDetail {
   };
 }
 
+// skinsort blocks hotlinking (CORP: same-origin + Cloudflare rule), so every
+// scraped image URL must go through our same-origin /img proxy to render.
+const PROXIED_HOSTS = /^https:\/\/(storage\.)?skinsort\.com\//;
+
+function proxyImageUrls(v: unknown): unknown {
+  if (typeof v === "string")
+    return PROXIED_HOSTS.test(v) ? `/img?u=${encodeURIComponent(v)}` : v;
+  if (Array.isArray(v)) return v.map(proxyImageUrls);
+  if (v && typeof v === "object")
+    return Object.fromEntries(
+      Object.entries(v).map(([k, x]) => [k, proxyImageUrls(x)]),
+    );
+  return v;
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`gb api ${res.status} for ${path}`);
-  return res.json() as Promise<T>;
+  return proxyImageUrls(await res.json()) as T;
 }
 
 export const listProducts = (
