@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BADGE_LABELS, compareProducts, getProduct, listProducts, type ProductDetail } from "@/lib/gbApi";
 import { RatingPill } from "@/components/gb/ProductBits";
 import { Stars, fmtUsd } from "@/components/gb/CategoryBits";
+import CompareBuy from "@/components/gb/CompareBuy";
 
 export const metadata: Metadata = {
   title: "Compare products — ingredient by ingredient",
@@ -291,6 +292,19 @@ export default async function ComparePage({
   const { overlap } = data;
   const pa = data.a;
   const pb = data.b;
+  const storePrice = (p: ProductDetail) => {
+    const prices = p.offers.map((o) => o.price_cents).filter((c): c is number => c != null);
+    return prices.length ? Math.min(...prices) : null;
+  };
+  const buyCell = (p: ProductDetail) => (
+    <CompareBuy
+      slug={p.slug}
+      name={p.name}
+      brand={p.brand}
+      imageUrl={p.images[0]?.url ?? null}
+      priceCents={storePrice(p)}
+    />
+  );
   const sharedA = new Set(pa.ingredients.filter((i) => pb.ingredients.some((j) => j.slug === i.slug)).map((i) => i.slug));
   const matchPct = (p: ProductDetail) =>
     p.ingredients.length ? Math.round((overlap.sharedCount / p.ingredients.length) * 100) : 0;
@@ -328,6 +342,7 @@ export default async function ComparePage({
 
       <div className="mt-6 rounded-3xl border border-line bg-white px-4 py-2 sm:px-8">
         <Row a={<TitleCell p={pa} />} b={<TitleCell p={pb} />} />
+        <Row a={buyCell(pa)} b={buyCell(pb)} />
         <Row
           a={<p className="text-center font-display text-2xl text-brand-700">{matchPct(pa)}% <span className="text-sm text-ink-muted">match</span></p>}
           b={<p className="text-center font-display text-2xl text-brand-700">{matchPct(pb)}% <span className="text-sm text-ink-muted">match</span></p>}
