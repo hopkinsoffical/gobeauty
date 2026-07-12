@@ -40,15 +40,25 @@ function sixDigit(): string {
   return String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
 }
 
+function envTrim(name: string): string {
+  return String(process.env[name] || "").trim();
+}
+
 function requireTwilio() {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID || "";
-  const authToken = process.env.TWILIO_AUTH_TOKEN || "";
+  const accountSid = envTrim("TWILIO_ACCOUNT_SID");
+  const authToken = envTrim("TWILIO_AUTH_TOKEN");
+  // Prefer an explicit From number for OTP so a stale/invalid
+  // TWILIO_MESSAGING_SERVICE_SID (e.g. from other apps on the same Vercel
+  // project) cannot hijack the send. Default From is the shared toll-free
+  // that already delivers gobeauty / rankmysalon OTP traffic.
   const from =
-    process.env.TWILIO_SMS_FROM || process.env.TWILIO_PHONE_NUMBER || "";
-  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID || "";
-  if (!accountSid || !authToken || (!from && !messagingServiceSid)) {
+    envTrim("TWILIO_SMS_FROM") ||
+    envTrim("TWILIO_PHONE_NUMBER") ||
+    "+18776001886";
+  const messagingServiceSid = envTrim("TWILIO_MESSAGING_SERVICE_SID");
+  if (!accountSid || !authToken) {
     throw new Error(
-      "Twilio is not configured (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_SMS_FROM or TWILIO_MESSAGING_SERVICE_SID)",
+      "Twilio is not configured (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN required)",
     );
   }
   return { accountSid, authToken, from, messagingServiceSid };
@@ -57,8 +67,9 @@ function requireTwilio() {
 async function sendSms(to: string, body: string): Promise<void> {
   const { accountSid, authToken, from, messagingServiceSid } = requireTwilio();
   const params: Record<string, string> = { To: to, Body: body };
-  if (messagingServiceSid) params.MessagingServiceSid = messagingServiceSid;
-  else params.From = from;
+  // From wins when set — matches the number that already delivers OTP traffic.
+  if (from) params.From = from;
+  else params.MessagingServiceSid = messagingServiceSid;
 
   const res = await fetch(
     `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
