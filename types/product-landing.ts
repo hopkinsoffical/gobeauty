@@ -43,6 +43,11 @@ export interface CategoryCardData {
   href: string;
   imageSrc: string;
   imageAlt: string;
+  /**
+   * CSS object-position for responsive crops (e.g. "center 40%").
+   * Pair with object-cover / object-contain — never stretch.
+   */
+  imageObjectPosition: string;
   /** Tailwind-friendly background class token. */
   tone: "blush" | "lavender" | "sage" | "peach";
 }

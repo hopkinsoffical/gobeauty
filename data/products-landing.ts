@@ -70,6 +70,7 @@ export const CATEGORIES: CategoryCardData[] = [
     href: "/products?category=skincare",
     imageSrc: "/images/products/skincare-category.webp",
     imageAlt: "Skincare jars, serum bottles and botanical leaves",
+    imageObjectPosition: "center 45%",
     tone: "blush",
   },
   {
@@ -88,6 +89,7 @@ export const CATEGORIES: CategoryCardData[] = [
     href: "/products?category=makeup",
     imageSrc: "/images/products/makeup-category.webp",
     imageAlt: "Makeup compact, lipstick and brush",
+    imageObjectPosition: "62% 50%",
     tone: "lavender",
   },
   {
@@ -106,6 +108,7 @@ export const CATEGORIES: CategoryCardData[] = [
     href: "/products?category=haircare",
     imageSrc: "/images/products/haircare-category.webp",
     imageAlt: "Green shampoo bottles, comb and leaves",
+    imageObjectPosition: "48% 40%",
     tone: "sage",
   },
   {
@@ -124,6 +127,7 @@ export const CATEGORIES: CategoryCardData[] = [
     href: "/products?category=bodycare",
     imageSrc: "/images/products/bodycare-category.webp",
     imageAlt: "Body lotion bottle, pump and folded towel",
+    imageObjectPosition: "55% 42%",
     tone: "peach",
   },
 ];

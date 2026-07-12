@@ -64,14 +64,15 @@ export default function CategoryCard({ category }: { category: CategoryCardData 
             <IconArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
           </Link>
         </div>
-        <div className="relative mx-auto aspect-square w-full max-w-[200px] sm:max-w-none">
+        <div className="relative mx-auto aspect-[3/2] w-full max-w-[240px] sm:aspect-square sm:max-w-none">
           <div className="relative h-full min-h-[160px] w-full overflow-hidden rounded-2xl bg-white/40">
             <Image
               src={category.imageSrc}
               alt={category.imageAlt}
               fill
-              sizes="(max-width: 640px) 200px, 240px"
-              className="object-cover object-center"
+              sizes="(max-width: 640px) 240px, 280px"
+              className="object-cover"
+              style={{ objectPosition: category.imageObjectPosition }}
             />
           </div>
         </div>
