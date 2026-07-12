@@ -126,6 +126,9 @@ export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
   const codeHash = hashOtp(phone, code);
   const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
 
+  // Send first so a Twilio failure does not consume the resend window.
+  await sendSms(phone, formatOtpSms(code));
+
   const { error: insertErr } = await admin.from("gobeauty_phone_otps").insert({
     phone,
     code_hash: codeHash,
@@ -133,7 +136,6 @@ export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
   });
   if (insertErr) throw insertErr;
 
-  await sendSms(phone, formatOtpSms(code));
   return { sent: true };
 }
 
