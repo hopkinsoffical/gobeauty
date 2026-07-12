@@ -28,13 +28,29 @@ export async function POST(req: Request) {
     );
   }
 
+  // Marketplace inquiries (supplier listing, product ask, claim) ride the same
+  // table; extra fields are folded into message + logged for CRM enrichment.
+  const inquiryType = String(body.inquiryType ?? "").trim() || null;
+  const supplierSlug = String(body.supplierSlug ?? "").trim() || null;
+  const productId = String(body.productId ?? "").trim() || null;
+  const baseMessage = String(body.message ?? "").trim() || null;
+  const extras = [
+    inquiryType && `inquiry_type=${inquiryType}`,
+    supplierSlug && `supplier_slug=${supplierSlug}`,
+    productId && `product_id=${productId}`,
+  ].filter(Boolean);
+  const message =
+    extras.length && baseMessage
+      ? `${baseMessage}\n\n[${extras.join(" · ")}]`
+      : baseMessage || (extras.length ? extras.join(" · ") : null);
+
   const lead = {
     audience_type: audience,
     name,
     business_name: String(body.businessName ?? "").trim() || null,
     contact,
     interest: String(body.interest ?? "").trim() || null,
-    message: String(body.message ?? "").trim() || null,
+    message,
     source_page: String(body.sourcePage ?? "").trim() || null,
     status: "new",
   };
@@ -45,7 +61,12 @@ export async function POST(req: Request) {
     if (error) throw error;
   } catch (err) {
     // Keep the lead in the server logs even when persistence is down.
-    console.error("[leads] persist failed, logging instead:", err, lead);
+    console.error("[leads] persist failed, logging instead:", err, {
+      ...lead,
+      inquiryType,
+      supplierSlug,
+      productId,
+    });
   }
 
   return NextResponse.json({ ok: true });

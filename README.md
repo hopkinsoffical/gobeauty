@@ -5,14 +5,18 @@ Consumer-facing AI beauty discovery site with a pro-first commercial engine
 
 | Route | Channel |
 | --- | --- |
-| `/` | Homepage — hero upload, finite trend grid, channel cards, local teaser, B2B entries |
+| `/` | Homepage — hero upload, finite trend grid, channel cards, local teaser, salon marketplace module, B2B entries |
 | `/get-this-look` | AI Beauty Path — photo upload + structured analysis + chat (`/analyze` redirects here) |
 | `/find-pros` | Best-fit pro search, Top-3 match model, owner claim CTA |
 | `/local-rankings` | Best [Service] in [City] SEO pages (first: nail salons, Edison NJ) |
 | `/shop-products` | Shop Pro-Recommended Products — browse modes + sample/wholesale CTAs |
+| `/marketplace` | Products for Salons — supplier marketplace (lead-gen, no multi-supplier cart) |
+| `/marketplace/suppliers` | Supplier / brand directory + 8 seed profiles |
+| `/marketplace/services/[slug]` | Service-specific product discovery |
 | `/looks-trends` | Trend/look intelligence grid |
-| `/for-beauty-pros` | Professional conversion + RankMySalon bridge + lead form |
-| `/for-brands` | Supplier campaigns + lead form |
+| `/beauty-pros` | Professional conversion + RankMySalon bridge + lead form |
+| `/brands` | Supplier campaigns + lead form |
+| `/brands/list-your-products` | Supplier listing / profile-claim form |
 
 Professional/supplier leads POST to `/api/leads` → Supabase `gobeauty_leads`
 (`supabase/leads.sql`), best-effort with server-log fallback.

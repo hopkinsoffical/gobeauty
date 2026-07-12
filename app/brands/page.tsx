@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import LeadForm from "@/components/LeadForm";
 import BrandCarousel from "@/components/gb/BrandCarousel";
 import { listBrands } from "@/lib/gbApi";
@@ -72,12 +73,12 @@ export default async function ForBrandsPage() {
             >
               Request Brand Demo
             </a>
-            <a
-              href="#demo"
+            <Link
+              href="/brands/list-your-products"
               className="inline-flex h-12 items-center justify-center rounded-pill border border-white/25 bg-white/5 px-7 text-[15px] font-semibold text-white transition hover:bg-white/10"
             >
-              Start Sample Campaign
-            </a>
+              List Your Products
+            </Link>
           </div>
         </div>
       </section>

@@ -49,6 +49,7 @@ export default function SiteFooter() {
               { label: "Product Library", href: "/products" },
               { label: "Ingredients", href: "/ingredients" },
               { label: "Compare Products", href: "/compare" },
+              { label: "Products for Salons", href: "/marketplace" },
             ]}
           />
           <FooterCol
@@ -56,8 +57,9 @@ export default function SiteFooter() {
             items={[
               { label: "For Beauty Professionals", href: "/beauty-pros" },
               { label: "For Beauty Brands", href: "/brands" },
+              { label: "List Your Products", href: "/brands/list-your-products" },
+              { label: "Beauty Suppliers", href: "/marketplace/suppliers" },
               { label: "Claim Your Profile", href: "/beauty-pros#claim" },
-              { label: "Contact Us", href: "/contact" },
             ]}
           />
         </div>

@@ -71,9 +71,11 @@ const MORE_LINKS = [
   { label: "Looks & Trends", href: "/looks-trends" },
   { label: "Local Rankings", href: "/local-rankings" },
   { label: "Product Library", href: "/products" },
+  { label: "Products for Salons", href: "/marketplace" },
   { label: "Ingredients", href: "/ingredients" },
   { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
+  { label: "List Your Products", href: "/brands/list-your-products" },
 ];
 
 export default function MobileTabBar() {

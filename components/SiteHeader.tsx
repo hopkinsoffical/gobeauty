@@ -7,17 +7,42 @@ import { useAuth } from "@/lib/auth/useAuth";
 import CartLink from "@/components/gb/CartLink";
 
 // PRD v2 §5 — top-level channel navigation.
+// Products is a mega menu (marketplace doc §2); other items stay simple links.
 const NAV_LINKS = [
   { label: "Get This Look", href: "/get-this-look" },
   { label: "Find Pros", href: "/find-pros" },
   { label: "Local Rankings", href: "/local-rankings" },
-  { label: "Products", href: "/shop-products" },
   { label: "Looks & Trends", href: "/looks-trends" },
+];
+
+const PRODUCTS_FOR_YOURSELF = [
+  { label: "Shop Pro-Recommended Products", href: "/shop-products" },
+  { label: "Product Library", href: "/products" },
+  { label: "Ingredients", href: "/ingredients" },
+  { label: "Compare Products", href: "/compare" },
+  { label: "Aftercare Products", href: "/shop-products?mode=aftercare" },
+];
+
+const PRODUCTS_FOR_SALON = [
+  { label: "Products for Salons", href: "/marketplace" },
+  { label: "Samples & Starter Kits", href: "/marketplace?use=samples" },
+  { label: "Professional Brands", href: "/marketplace/suppliers" },
+  { label: "Equipment & Demos", href: "/marketplace?use=equipment" },
+  { label: "Private Label", href: "/marketplace?use=private-label" },
 ];
 
 const BUSINESS_LINKS = [
   { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
+  { label: "List Your Products", href: "/brands/list-your-products" },
+];
+
+const PRODUCTS_ACTIVE_PREFIXES = [
+  "/shop-products",
+  "/products",
+  "/ingredients",
+  "/compare",
+  "/marketplace",
 ];
 
 function maskUsername(name: string) {
@@ -65,9 +90,9 @@ export default function SiteHeader() {
         {/* Desktop nav */}
         <nav
           aria-label="Primary"
-          className="hidden min-w-0 items-center gap-4 text-[13.5px] font-semibold text-ink-soft lg:flex xl:gap-6"
+          className="hidden min-w-0 items-center gap-4 text-[13.5px] font-semibold text-ink-soft lg:flex xl:gap-5"
         >
-          {NAV_LINKS.map((l) => (
+          {NAV_LINKS.slice(0, 3).map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -79,6 +104,115 @@ export default function SiteHeader() {
               {l.label}
             </Link>
           ))}
+
+          {/* Products mega menu — FOR YOURSELF / FOR YOUR SALON (marketplace §2) */}
+          <div className="group relative">
+            <button
+              type="button"
+              className={[
+                "flex items-center gap-1 whitespace-nowrap transition hover:text-ink",
+                PRODUCTS_ACTIVE_PREFIXES.some((p) => pathname?.startsWith(p))
+                  ? "text-brand-600"
+                  : "",
+              ].join(" ")}
+              aria-haspopup="menu"
+            >
+              Products
+              <svg
+                className="h-3.5 w-3.5 transition group-hover:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div className="invisible absolute left-1/2 top-full z-50 w-[min(92vw,640px)] -translate-x-1/2 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <div className="rounded-2xl border border-line-soft bg-white p-4 shadow-cardHover">
+                <div className="grid gap-4 sm:grid-cols-[1fr_1fr_0.9fr]">
+                  <div>
+                    <p className="px-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                      For yourself
+                    </p>
+                    <p className="mt-1 px-2 text-[12px] leading-snug text-ink-muted">
+                      Find products for your beauty goal, routine, ingredients, and aftercare.
+                    </p>
+                    <div className="mt-2">
+                      {PRODUCTS_FOR_YOURSELF.map((l) => (
+                        <Link
+                          key={l.href}
+                          href={l.href}
+                          className={[
+                            "block rounded-xl px-2.5 py-2 text-[13.5px] font-semibold transition hover:bg-surface-tint hover:text-ink",
+                            pathname?.startsWith(l.href.split("?")[0])
+                              ? "text-brand-600"
+                              : "text-ink-soft",
+                          ].join(" ")}
+                        >
+                          {l.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="px-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                      For your salon
+                    </p>
+                    <p className="mt-1 px-2 text-[12px] leading-snug text-ink-muted">
+                      Find products to use in services, recommend to clients, and sell after appointments.
+                    </p>
+                    <div className="mt-2">
+                      {PRODUCTS_FOR_SALON.map((l) => (
+                        <Link
+                          key={l.href}
+                          href={l.href}
+                          className={[
+                            "block rounded-xl px-2.5 py-2 text-[13.5px] font-semibold transition hover:bg-surface-tint hover:text-ink",
+                            pathname?.startsWith(l.href.split("?")[0])
+                              ? "text-brand-600"
+                              : "text-ink-soft",
+                          ].join(" ")}
+                        >
+                          {l.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <Link
+                    href="/marketplace"
+                    className="flex flex-col justify-between rounded-xl bg-gradient-to-br from-brand-50 to-violet-50 p-4 ring-1 ring-brand-100 transition hover:ring-brand-300"
+                  >
+                    <div>
+                      <p className="text-[12px] font-bold uppercase tracking-wide text-brand-600">
+                        For salon and spa owners
+                      </p>
+                      <p className="mt-2 text-[13.5px] font-semibold leading-snug text-ink">
+                        Find products for treatments, client aftercare, and your retail shelf.
+                      </p>
+                    </div>
+                    <span className="mt-4 inline-flex h-10 items-center justify-center rounded-pill bg-brand-500 text-[13px] font-semibold text-white">
+                      Explore Salon Products
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {NAV_LINKS.slice(3).map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={[
+                "whitespace-nowrap transition hover:text-ink",
+                pathname?.startsWith(l.href) ? "text-brand-600" : "",
+              ].join(" ")}
+            >
+              {l.label}
+            </Link>
+          ))}
+
           <span aria-hidden className="h-4 w-px bg-line" />
           {/* Business links collapsed into a dropdown — CSS-only (hover +
               focus-within) so the bar stays narrow as links grow */}
@@ -237,7 +371,40 @@ export default function SiteHeader() {
       {menuOpen && (
         <div className="border-t border-line-soft bg-white px-5 pb-6 pt-4 lg:hidden">
           <nav className="flex flex-col" aria-label="Mobile primary">
-            {NAV_LINKS.map((l) => (
+            {NAV_LINKS.slice(0, 3).map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="flex h-12 items-center text-[15.5px] font-semibold text-ink transition hover:text-brand-600"
+              >
+                {l.label}
+              </Link>
+            ))}
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+              Products · for yourself
+            </p>
+            {PRODUCTS_FOR_YOURSELF.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="flex h-11 items-center text-[14.5px] font-semibold text-ink-soft transition hover:text-brand-600"
+              >
+                {l.label}
+              </Link>
+            ))}
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+              Products · for your salon
+            </p>
+            {PRODUCTS_FOR_SALON.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="flex h-11 items-center text-[14.5px] font-semibold text-ink-soft transition hover:text-brand-600"
+              >
+                {l.label}
+              </Link>
+            ))}
+            {NAV_LINKS.slice(3).map((l) => (
               <Link
                 key={l.href}
                 href={l.href}

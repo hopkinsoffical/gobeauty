@@ -18,9 +18,9 @@ const ENTRIES = [
   },
   {
     eyebrow: "For Beauty Brands & Suppliers",
-    copy: "Reach salon owners, professionals, and serious beauty shoppers with product pages, samples, and campaigns.",
-    cta: "Explore Supplier Promotion",
-    href: "/brands",
+    copy: "List products on the salon marketplace, run sample campaigns, and reach owners looking by service and retail fit.",
+    cta: "List Your Products",
+    href: "/brands/list-your-products",
   },
 ];
 
