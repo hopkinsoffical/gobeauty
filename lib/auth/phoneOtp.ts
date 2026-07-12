@@ -126,15 +126,26 @@ export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
   const codeHash = hashOtp(phone, code);
   const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
 
-  // Send first so a Twilio failure does not consume the resend window.
-  await sendSms(phone, formatOtpSms(code));
-
-  const { error: insertErr } = await admin.from("gobeauty_phone_otps").insert({
-    phone,
-    code_hash: codeHash,
-    expires_at: expiresAt,
-  });
+  const { data: inserted, error: insertErr } = await admin
+    .from("gobeauty_phone_otps")
+    .insert({
+      phone,
+      code_hash: codeHash,
+      expires_at: expiresAt,
+    })
+    .select("id")
+    .single();
   if (insertErr) throw insertErr;
+
+  try {
+    await sendSms(phone, formatOtpSms(code));
+  } catch (smsErr) {
+    // Roll back so a Twilio failure does not burn the resend window.
+    if (inserted?.id) {
+      await admin.from("gobeauty_phone_otps").delete().eq("id", inserted.id);
+    }
+    throw smsErr;
+  }
 
   return { sent: true };
 }
