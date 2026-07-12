@@ -66,19 +66,30 @@ export default function AuthModal() {
     if (mode === "sign-up" && !username.trim()) { setError("Please enter a username"); return; }
 
     setLoading(true);
-    const supabase = getClient();
-    if (!supabase) {
-      // Dev mode: skip actual SMS
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: fullPhone }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Dev fallback when server OTP is not configured yet
+        if (res.status === 500 && !getClient()) {
+          setStep("otp");
+          setCountdown(60);
+          setLoading(false);
+          return;
+        }
+        setError(data.error || "Failed to send verification code");
+        setLoading(false);
+        return;
+      }
       setStep("otp");
       setCountdown(60);
-      setLoading(false);
-      return;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to send verification code");
     }
-
-    const { error: err } = await supabase.auth.signInWithOtp({ phone: fullPhone });
-    if (err) { setError(err.message); setLoading(false); return; }
-    setStep("otp");
-    setCountdown(60);
     setLoading(false);
   }
 
@@ -88,30 +99,53 @@ export default function AuthModal() {
     setError("");
     setLoading(true);
 
-    const supabase = getClient();
-    if (!supabase) {
-      // Dev mode: auto-succeed with mock profile
-      setProfile({ id: "dev-user", username: username || "demo_user", phone: fullPhone });
-      closeAuth();
-      setLoading(false);
-      return;
-    }
-
-    const { data, error: err } = await supabase.auth.verifyOtp({
-      phone: fullPhone,
-      token,
-      type: "sms",
-    });
-    if (err) { setError(err.message); setLoading(false); return; }
-
-    if (mode === "sign-up" && data.user) {
-      await supabase.from("gobeauty_users").upsert({
-        auth_user_id: data.user.id,
-        username: username.trim(),
-        phone: fullPhone,
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: fullPhone,
+          code: token,
+          mode,
+          username: username.trim(),
+        }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 500 && !getClient()) {
+          setProfile({ id: "dev-user", username: username || "demo_user", phone: fullPhone });
+          closeAuth();
+          setLoading(false);
+          return;
+        }
+        setError(data.error || "Verification failed");
+        setLoading(false);
+        return;
+      }
+
+      const supabase = getClient();
+      if (supabase && data.session?.access_token && data.session?.refresh_token) {
+        const { error: sessErr } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+        if (sessErr) {
+          setError(sessErr.message);
+          setLoading(false);
+          return;
+        }
+      } else if (!supabase) {
+        setProfile({
+          id: data.user?.id || "dev-user",
+          username: username || "demo_user",
+          phone: fullPhone,
+        });
+      }
+
+      closeAuth();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Verification failed");
     }
-    closeAuth();
     setLoading(false);
   }
 
