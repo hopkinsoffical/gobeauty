@@ -1,146 +1,117 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { BADGE_LABELS, listCategories, listProducts } from "@/lib/gbApi";
-import type { CategoryNode, CategoryRef } from "@/lib/gbApi";
-import { ProductCardTile } from "@/components/gb/ProductBits";
-import { CategoryChip } from "@/components/gb/CategoryBits";
+import ProductsHero from "@/components/products/products-hero";
+import PopularFilters from "@/components/products/popular-filters";
+import CategoryGrid from "@/components/products/category-grid";
+import TopBrands from "@/components/products/top-brands";
+import ProductBenefits from "@/components/products/product-benefits";
+import ProductResults from "@/components/products/product-results";
+import { BADGE_LABELS, listProducts } from "@/lib/gbApi";
+import { parseFilterKeys } from "@/lib/products-url";
 
 export const metadata: Metadata = {
-  title: "Products — ingredient-checked skincare & makeup",
+  title: "Beauty Products & Ingredient Analysis",
   description:
-    "Browse skincare and makeup by category with full ingredient transparency: INCI breakdowns, benefit and concern analysis, and side-by-side comparisons.",
+    "Search beauty products, decode ingredients, compare formulas, and discover skincare, makeup, hair care, and body care with AI-powered analysis.",
+  alternates: { canonical: "/products" },
+  openGraph: {
+    title: "Beauty Products & Ingredient Analysis | goBeauty.ai",
+    description:
+      "Search beauty products, decode ingredients, compare formulas, and discover skincare, makeup, hair care, and body care with AI-powered analysis.",
+    url: "/products",
+    images: ["/images/products/products-hero.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Beauty Products & Ingredient Analysis | goBeauty.ai",
+    description:
+      "Search beauty products, decode ingredients, and discover skincare with AI-powered analysis.",
+    images: ["/images/products/products-hero.webp"],
+  },
 };
 
 export const revalidate = 300;
 
-function filterHref(q: string, category: string, active: string[], key: string) {
-  const next = active.includes(key) ? active.filter((k) => k !== key) : [...active, key];
-  const params = new URLSearchParams();
-  if (q) params.set("q", q);
-  if (category) params.set("category", category);
-  if (next.length) params.set("badge", next.join(","));
-  const qs = params.toString();
-  return `/products${qs ? `?${qs}` : ""}`;
-}
-
-/** Chips for one root: level-1 groups always, deeper levels when they have products. */
-function rootChips(root: CategoryNode): CategoryRef[] {
-  const chips: CategoryRef[] = [];
-  const walk = (n: CategoryNode, depth: number) => {
-    if (depth > 0 && (depth === 1 || n.productCount > 0)) {
-      chips.push({ slug: n.slug, name: n.name, productCount: n.productCount });
-    }
-    n.children.forEach((ch) => walk(ch, depth + 1));
-  };
-  walk(root, 0);
-  return chips;
-}
+const JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Beauty Products & Ingredient Analysis",
+  description:
+    "Search beauty products, decode ingredients, and discover skincare, makeup, hair care, and body care with AI-powered analysis.",
+  url: "https://www.gobeauty.ai/products",
+  isPartOf: {
+    "@type": "WebSite",
+    name: "goBeauty.ai",
+    url: "https://www.gobeauty.ai/",
+  },
+};
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; badge?: string; category?: string };
+  searchParams: {
+    q?: string;
+    badge?: string;
+    filters?: string;
+    category?: string;
+    sort?: string;
+    view?: string;
+  };
 }) {
-  const q = searchParams.q ?? "";
-  const category = searchParams.category ?? "";
-  const active = (searchParams.badge ?? "").split(",").filter((k) => k in BADGE_LABELS);
-  const [{ products }, cats] = await Promise.all([
-    listProducts(q, { badge: active.join(","), category }),
-    listCategories().catch(() => ({ categories: [] as CategoryNode[] })),
-  ]);
-  const browsing = !q && !category && active.length === 0;
-  const categoryName = category
-    ? category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    : "";
+  const q = (searchParams.q ?? "").trim();
+  const category = (searchParams.category ?? "").trim();
+  const sort = searchParams.sort ?? "relevance";
+  const viewAll = searchParams.view === "all";
+
+  // Accept both filters= (hyphenated public URL) and badge= (API-style).
+  const fromFilters = parseFilterKeys(searchParams.filters);
+  const fromBadge = parseFilterKeys(searchParams.badge);
+  const merged = Array.from(new Set([...fromFilters, ...fromBadge]));
+  const activeFilters = merged.filter(
+    (k) => k in BADGE_LABELS || k === "sensitive_skin" || k === "pregnancy_friendly",
+  );
+  const apiBadges = activeFilters.filter((k) => k in BADGE_LABELS);
+
+  const isDiscovery = !q && !category && activeFilters.length === 0 && !viewAll;
+
+  let products: Awaited<ReturnType<typeof listProducts>>["products"] = [];
+  if (!isDiscovery) {
+    try {
+      const res = await listProducts(q, {
+        badge: apiBadges.join(","),
+        category: category || undefined,
+        sort: sort !== "relevance" ? sort : undefined,
+        limit: 48,
+      });
+      products = res.products ?? [];
+    } catch {
+      products = [];
+    }
+  }
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-10">
-      <header className="mb-8">
-        <h1 className="font-display text-3xl text-ink">Products</h1>
-        <p className="mt-1 text-ink-soft">
-          Every product decoded: full INCI list, what each ingredient does, and what to watch for.
-        </p>
-        <form className="mt-4" action="/products">
-          {active.length > 0 && <input type="hidden" name="badge" value={active.join(",")} />}
-          {category && <input type="hidden" name="category" value={category} />}
-          <input
-            type="search"
-            name="q"
-            defaultValue={q}
-            placeholder="Search products or brands…"
-            className="w-full max-w-md rounded-full border border-line bg-white px-5 py-2.5 text-sm outline-none focus:border-brand-400"
-          />
-        </form>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {category && (
-            <Link
-              href={`/products${q ? `?q=${encodeURIComponent(q)}` : ""}`}
-              className="rounded-full bg-ink px-3 py-1 text-xs font-medium text-white"
-            >
-              in {categoryName} ✕
-            </Link>
-          )}
-          {Object.entries(BADGE_LABELS).map(([key, label]) => {
-            const on = active.includes(key);
-            return (
-              <Link
-                key={key}
-                href={filterHref(q, category, active, key)}
-                className={`rounded-full px-3 py-1 text-xs font-medium ring-1 transition ${
-                  on
-                    ? "bg-brand-600 text-white ring-brand-600"
-                    : "bg-white text-ink-soft ring-line hover:ring-brand-300"
-                }`}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-      </header>
+    <div className="products-landing bg-[var(--beauty-white)] text-[var(--beauty-text)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSONLD) }}
+      />
 
-      {browsing && cats.categories.length > 0 && (
-        <section className="mb-10" aria-label="Browse by category">
-          <div className="grid gap-4 md:grid-cols-2">
-            {cats.categories.map((root) => (
-              <div key={root.slug} className="rounded-2xl border border-line bg-surface-soft p-5">
-                <div className="flex items-baseline justify-between">
-                  <h2 className="font-display text-xl text-ink">
-                    <Link href={`/products/${root.slug}`} className="hover:text-brand-700">
-                      {root.name}
-                    </Link>
-                  </h2>
-                  <span className="text-xs tabular-nums text-ink-muted">
-                    {root.productCount} products
-                  </span>
-                </div>
-                {root.description && (
-                  <p className="mt-1 text-sm text-ink-muted">{root.description}</p>
-                )}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {rootChips(root).map((c) => (
-                    <CategoryChip key={c.slug} c={c} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <ProductsHero initialQuery={q} activeFilters={activeFilters} />
 
-      {products.length === 0 ? (
-        <p className="text-ink-muted">
-          No products found{q ? ` for “${q}”` : ""}
-          {(active.length > 0 || category) && " with those filters"}.
-        </p>
+      <PopularFilters active={activeFilters} q={q} category={category} />
+
+      {!isDiscovery ? (
+        <ProductResults
+          q={q}
+          category={category}
+          activeFilters={activeFilters}
+          products={products}
+          sort={sort}
+        />
       ) : (
         <>
-          {browsing && <h2 className="mb-4 font-display text-xl text-ink">All products</h2>}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((p) => (
-              <ProductCardTile key={p.slug} p={p} />
-            ))}
-          </div>
+          <CategoryGrid />
+          <TopBrands />
+          <ProductBenefits />
         </>
       )}
     </div>

@@ -6,6 +6,19 @@
   --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
   --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+
+  /* Products landing beauty tokens */
+  --beauty-pink: #eb4f78;
+  --beauty-pink-dark: #d93c67;
+  --beauty-pink-light: #fff0f4;
+  --beauty-blush: #fff8f9;
+  --beauty-purple-light: #f4eeff;
+  --beauty-green-light: #f1f8f2;
+  --beauty-peach-light: #fff4ed;
+  --beauty-text: #253247;
+  --beauty-muted: #718096;
+  --beauty-border: #e7e9ee;
+  --beauty-white: #ffffff;
 }
 
 html {

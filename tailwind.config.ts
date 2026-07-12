@@ -40,6 +40,18 @@ const config: Config = {
           DEFAULT: "#ececec",
           soft: "#f0eded",
         },
+        beauty: {
+          pink: "#EB4F78",
+          "pink-dark": "#D93C67",
+          "pink-light": "#FFF0F4",
+          blush: "#FFF8F9",
+          purple: "#F4EEFF",
+          green: "#F1F8F2",
+          peach: "#FFF4ED",
+          text: "#253247",
+          muted: "#718096",
+          border: "#E7E9EE",
+        },
       },
       boxShadow: {
         card: "0 1px 2px rgba(15,20,25,0.04), 0 1px 3px rgba(15,20,25,0.04)",
