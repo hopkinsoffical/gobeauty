@@ -289,15 +289,17 @@ export default function ListYourProductsPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1100px] px-5 py-12 md:py-14">
-        <h2 className="font-display text-[1.5rem] text-ink md:text-[1.75rem]">
-          How GoBeauty helps expand salon and spa sales channels
+      <section className="mx-auto max-w-[1100px] px-5 py-10 md:py-12">
+        <h2 className="font-display text-[1.4rem] text-ink md:text-[1.6rem]">
+          Why list on GoBeauty
         </h2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
           {BENEFITS.map((b) => (
-            <div key={b.title} className="rounded-2xl border border-line bg-white p-5 shadow-card">
-              <h3 className="text-[15px] font-bold text-ink">{b.title}</h3>
-              <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{b.body}</p>
+            <div
+              key={b.title}
+              className="rounded-2xl border border-line bg-white p-4 shadow-card"
+            >
+              <h3 className="text-[13.5px] font-bold leading-snug text-ink">{b.title}</h3>
             </div>
           ))}
         </div>

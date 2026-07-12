@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/marketplace";
 import SupplierCard from "@/components/marketplace/SupplierCard";
 import ProductDiscoveryGrid from "@/components/marketplace/ProductDiscoveryGrid";
+import { serviceImage } from "@/lib/marketplace/visuals";
 
 export function generateStaticParams() {
   return MARKETPLACE_SERVICES.map((s) => ({ slug: s.slug }));
@@ -43,17 +44,16 @@ export default function MarketplaceServicePage({
   ];
 
   const suppliers = SUPPLIERS.filter((s) => {
-    const hay = [
-      ...s.bestFitServices,
-      ...s.productCategories,
-      s.shortDescription,
-    ]
+    const hay = [...s.bestFitServices, ...s.productCategories, s.shortDescription]
       .join(" ")
       .toLowerCase();
-    return hints.some((h) => hay.includes(h) || s.bestFitServices.some((svc) => svc.toLowerCase().includes(h)));
+    return hints.some(
+      (h) =>
+        hay.includes(h) ||
+        s.bestFitServices.some((svc) => svc.toLowerCase().includes(h)),
+    );
   });
 
-  // Prefer service-fit suppliers; fall back to featured + all for sparse matches
   const shownSuppliers =
     suppliers.length > 0
       ? suppliers
@@ -76,15 +76,18 @@ export default function MarketplaceServicePage({
     products.length > 0 ? products : MARKETPLACE_PRODUCTS.slice(0, 4);
 
   const suppliersById = Object.fromEntries(SUPPLIERS.map((s) => [s.id, s]));
+  const hero = serviceImage(service.slug);
 
   return (
     <>
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full bg-gradient-to-b from-[#f5f0fb] to-transparent"
-        />
-        <div className="mx-auto max-w-[1200px] px-5 pb-8 pt-10 md:pt-14">
+        <div className="absolute inset-0 -z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={hero} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/30" />
+        </div>
+        <div className="mx-auto max-w-[1200px] px-5 pb-10 pt-10 md:pb-14 md:pt-14">
           <nav className="text-[13px] text-ink-muted" aria-label="Breadcrumb">
             <Link href="/marketplace" className="hover:text-ink">
               Products for Salons
@@ -92,17 +95,14 @@ export default function MarketplaceServicePage({
             <span className="mx-1.5">/</span>
             <span className="text-ink">{service.name}</span>
           </nav>
-          <h1 className="mt-3 font-display text-[2rem] leading-[1.1] text-ink md:text-[2.75rem]">
-            {service.name} products for your business
+          <h1 className="mt-3 max-w-[520px] font-display text-[2rem] leading-[1.1] text-ink md:text-[2.75rem]">
+            {service.name}
           </h1>
-          <p className="mt-3 max-w-[600px] text-[15.5px] leading-relaxed text-ink-soft">
-            {service.shortDescription}
-          </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {service.relatedCategories.map((c) => (
+            {service.relatedCategories.slice(0, 5).map((c) => (
               <span
                 key={c}
-                className="rounded-full border border-line bg-white px-3 py-1 text-[12.5px] font-medium text-ink-soft"
+                className="rounded-full border border-line bg-white/90 px-3 py-1 text-[12px] font-medium text-ink-soft backdrop-blur"
               >
                 {c}
               </span>
@@ -112,10 +112,16 @@ export default function MarketplaceServicePage({
       </section>
 
       <section className="mx-auto max-w-[1200px] px-5 pb-10">
-        <h2 className="font-display text-[1.5rem] text-ink">
-          Suppliers for {service.name}
-        </h2>
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex items-end justify-between gap-3">
+          <h2 className="font-display text-[1.4rem] text-ink">Suppliers</h2>
+          <Link
+            href="/marketplace/suppliers"
+            className="text-[13.5px] font-bold text-brand-600"
+          >
+            All →
+          </Link>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
           {shownSuppliers.map((s) => (
             <SupplierCard key={s.id} supplier={s} />
           ))}
@@ -124,44 +130,43 @@ export default function MarketplaceServicePage({
 
       <section className="border-t border-line-soft bg-surface-soft py-10 md:py-12">
         <div className="mx-auto max-w-[1200px] px-5">
-          <h2 className="font-display text-[1.5rem] text-ink">
-            Products to explore
-          </h2>
-          <p className="mt-1 text-[13.5px] text-ink-muted">
-            May fit {service.name.toLowerCase()} — confirm use and availability with the supplier.
-          </p>
-          <div className="mt-6">
+          <h2 className="font-display text-[1.4rem] text-ink">Products</h2>
+          <div className="mt-5">
             <ProductDiscoveryGrid
               products={shownProducts}
               suppliersById={suppliersById}
             />
           </div>
-          <div className="mt-8">
-            <Link
-              href={`/marketplace?q=${encodeURIComponent(service.name)}`}
-              className="text-[14px] font-bold text-brand-600 hover:text-brand-700"
-            >
-              Search all marketplace results for {service.name} →
-            </Link>
-          </div>
         </div>
       </section>
 
+      {/* Other services — horizontal image scroller */}
       <section className="mx-auto max-w-[1200px] px-5 py-10">
-        <h2 className="text-[15px] font-bold text-ink">All service categories</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+          More services
+        </h2>
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
           {MARKETPLACE_SERVICES.map((s) => (
             <Link
               key={s.slug}
               href={`/marketplace/services/${s.slug}`}
               className={[
-                "rounded-pill border px-3.5 py-1.5 text-[13px] font-semibold transition",
-                s.slug === service.slug
-                  ? "border-brand-300 bg-brand-50 text-brand-700"
-                  : "border-line bg-white text-ink-soft hover:border-brand-300",
+                "group relative w-[140px] flex-none overflow-hidden rounded-2xl sm:w-[160px]",
+                s.slug === service.slug ? "ring-2 ring-brand-400" : "",
               ].join(" ")}
             >
-              {s.name}
+              <div className="aspect-[4/5]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={serviceImage(s.slug)}
+                  alt=""
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
+              <span className="absolute bottom-2.5 left-2.5 right-2.5 text-[12.5px] font-bold leading-snug text-white">
+                {s.name}
+              </span>
             </Link>
           ))}
         </div>

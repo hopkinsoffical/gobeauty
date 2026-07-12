@@ -49,10 +49,8 @@ export default function HomeHero() {
           <h1 className="font-display text-[2.35rem] leading-[1.08] text-ink md:text-[3.5rem]">
             Your <span className="text-brand-600">AI Beauty Advisor</span>.
           </h1>
-          <p className="mt-3 max-w-[480px] text-[16px] leading-relaxed text-ink-soft md:mt-4 md:text-[17px]">
-            Upload a photo, describe your goal, or search anything. Our AI
-            recommends the right treatment, products, professionals, and
-            aftercare—all personalized for you.
+          <p className="mt-3 max-w-[420px] text-[16px] leading-relaxed text-ink-soft md:mt-4 md:text-[17px]">
+            Upload a look — get the right service, pro, products, and aftercare.
           </p>
 
           {/* Single prominent input card — thumb-friendly, upload separated (PRD §6.2) */}

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Link from "next/link";
 import MarketplaceSearch from "@/components/marketplace/MarketplaceSearch";
 import SupplierCard from "@/components/marketplace/SupplierCard";
@@ -12,49 +11,17 @@ import {
   searchMarketplaceProducts,
   searchSuppliers,
 } from "@/lib/data/marketplace";
+import {
+  LOOKING_FOR_IMAGES,
+  MARKETPLACE_HERO,
+  serviceImage,
+} from "@/lib/marketplace/visuals";
 
 export const metadata: Metadata = {
   title: "Salon Products, Beauty Suppliers & Professional Brands",
   description:
     "Discover products for salon services, client aftercare, retail, equipment, and private label. Explore beauty suppliers and request product information through GoBeauty.",
   alternates: { canonical: "/marketplace" },
-};
-
-const LOOKING_ICONS: Record<string, ReactNode> = {
-  treatments: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <path d="M12 3v18M8 7h8M7 12h10M9 17h6" strokeLinecap="round" />
-    </svg>
-  ),
-  retail: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <path d="M6 8h12l-1 12H7L6 8z" strokeLinejoin="round" />
-      <path d="M9 8V6a3 3 0 0 1 6 0v2" strokeLinecap="round" />
-    </svg>
-  ),
-  aftercare: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <path d="M12 21c4.4-2 7-5.4 7-9V6l-7-3-7 3v6c0 3.6 2.6 7 7 9z" strokeLinejoin="round" />
-    </svg>
-  ),
-  samples: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M8 10h8M8 14h5" strokeLinecap="round" />
-    </svg>
-  ),
-  equipment: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" strokeLinecap="round" />
-    </svg>
-  ),
-  "private-label": (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-6 w-6">
-      <path d="M4 7h16v12H4z" strokeLinejoin="round" />
-      <path d="M8 7V5a4 4 0 0 1 8 0v2" strokeLinecap="round" />
-    </svg>
-  ),
 };
 
 export default function MarketplacePage({
@@ -86,25 +53,27 @@ export default function MarketplacePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
 
-      {/* Hero */}
+      {/* Visual hero */}
       <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-full bg-gradient-to-b from-[#f5f0fb] via-[#fbf5f7] to-transparent"
-        />
-        <div className="mx-auto max-w-[1200px] px-5 pb-10 pt-10 md:pb-14 md:pt-14">
+        <div className="absolute inset-0 -z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={MARKETPLACE_HERO}
+            alt=""
+            className="h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/92 to-white/55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/40" />
+        </div>
+
+        <div className="mx-auto max-w-[1200px] px-5 pb-12 pt-12 md:pb-16 md:pt-16">
           <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-600">
-            For salons, spas &amp; beauty professionals
+            For salons, spas &amp; pros
           </p>
-          <h1 className="mt-2 max-w-[720px] font-display text-[2.1rem] leading-[1.1] text-ink md:text-[3rem]">
-            Find products your business can use and sell
+          <h1 className="mt-2 max-w-[560px] font-display text-[2.2rem] leading-[1.08] text-ink md:text-[3.1rem]">
+            Products your business can use and sell
           </h1>
-          <p className="mt-3 max-w-[620px] text-[15.5px] leading-relaxed text-ink-soft">
-            Discover products for your services, client aftercare, and retail
-            shelf. Explore brands, request product information, and connect with
-            suppliers that fit your business.
-          </p>
-          <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+          <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
             <a
               href="#products"
               className="inline-flex h-12 items-center justify-center rounded-pill bg-brand-500 px-7 text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(232,90,130,0.30)] transition hover:bg-brand-600"
@@ -113,7 +82,7 @@ export default function MarketplacePage({
             </a>
             <Link
               href="/marketplace/suppliers"
-              className="inline-flex h-12 items-center justify-center rounded-pill border border-line bg-white px-7 text-[15px] font-semibold text-ink transition hover:bg-surface-tint"
+              className="inline-flex h-12 items-center justify-center rounded-pill border border-line bg-white/90 px-7 text-[15px] font-semibold text-ink backdrop-blur transition hover:bg-white"
             >
               Explore Suppliers
             </Link>
@@ -123,56 +92,70 @@ export default function MarketplacePage({
               href="/brands/list-your-products"
               className="font-semibold text-brand-600 hover:text-brand-700"
             >
-              Are you a supplier? List your products →
+              Supplier? List your products →
             </Link>
           </p>
 
-          <div className="mt-8 max-w-[720px]">
+          <div className="mt-8 max-w-[640px]">
             <MarketplaceSearch initialQuery={q} />
           </div>
         </div>
       </section>
 
-      {/* What are you looking for */}
-      <section className="border-t border-line-soft bg-white py-12 md:py-14">
+      {/* Looking for — photo cards */}
+      <section className="bg-white py-10 md:py-12">
         <div className="mx-auto max-w-[1200px] px-5">
-          <h2 className="font-display text-[1.6rem] leading-tight text-ink md:text-[2rem]">
+          <h2 className="font-display text-[1.5rem] leading-tight text-ink md:text-[1.85rem]">
             What are you looking for?
           </h2>
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
             {LOOKING_FOR_CARDS.map((c) => (
               <Link
                 key={c.title}
                 href={c.href}
-                className="group flex gap-4 rounded-2xl border border-line bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-cardHover"
+                className="group relative aspect-[5/4] overflow-hidden rounded-2xl shadow-card sm:aspect-[16/10]"
               >
-                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                  {LOOKING_ICONS[c.icon]}
-                </span>
-                <span>
-                  <h3 className="text-[15.5px] font-bold text-ink">{c.title}</h3>
-                  <p className="mt-1 text-[13.5px] leading-relaxed text-ink-soft">{c.body}</p>
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={LOOKING_FOR_IMAGES[c.icon] ?? LOOKING_FOR_IMAGES.treatments}
+                  alt=""
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-4">
+                  <h3 className="text-[14px] font-bold text-white sm:text-[16px]">{c.title}</h3>
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Shop by service */}
-      <section className="border-t border-line-soft bg-surface-soft py-12 md:py-14">
+      {/* Shop by service — image tiles */}
+      <section className="border-t border-line-soft bg-surface-soft py-10 md:py-12">
         <div className="mx-auto max-w-[1200px] px-5">
-          <h2 className="font-display text-[1.6rem] leading-tight text-ink md:text-[2rem]">
-            Find products for the services you offer
+          <h2 className="font-display text-[1.5rem] leading-tight text-ink md:text-[1.85rem]">
+            Shop by service
           </h2>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-5 flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
             {MARKETPLACE_SERVICES.map((s) => (
               <Link
                 key={s.slug}
                 href={`/marketplace/services/${s.slug}`}
-                className="rounded-2xl border border-line bg-white p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-cardHover"
+                className="group relative w-[42vw] flex-none overflow-hidden rounded-2xl shadow-card sm:w-[28vw] md:w-auto md:aspect-[4/5]"
               >
-                <span className="text-[14px] font-bold text-ink">{s.name}</span>
+                <div className="aspect-[4/5] w-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={serviceImage(s.slug)}
+                    alt=""
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-3 right-3 text-[13px] font-bold leading-snug text-white">
+                  {s.name}
+                </span>
               </Link>
             ))}
           </div>
@@ -180,95 +163,66 @@ export default function MarketplacePage({
       </section>
 
       {/* Suppliers */}
-      <section className="bg-white py-12 md:py-14" id="suppliers">
+      <section className="bg-white py-10 md:py-14" id="suppliers">
         <div className="mx-auto max-w-[1200px] px-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="font-display text-[1.6rem] leading-tight text-ink md:text-[2rem]">
-                Suppliers and brands to explore
-              </h2>
-              <p className="mt-2 max-w-[560px] text-[14.5px] text-ink-soft">
-                Discover distributors and beauty brands by product category,
-                service fit, professional use, and retail opportunity.
-              </p>
-            </div>
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="font-display text-[1.5rem] leading-tight text-ink md:text-[1.85rem]">
+              Suppliers &amp; brands
+            </h2>
             <Link
               href="/marketplace/suppliers"
               className="text-[14px] font-bold text-brand-600 hover:text-brand-700"
             >
-              View all suppliers →
+              View all →
             </Link>
           </div>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {suppliers.map((s) => (
               <SupplierCard key={s.id} supplier={s} />
             ))}
           </div>
           {q && suppliers.length === 0 && (
             <p className="mt-6 text-center text-[14.5px] text-ink-muted">
-              No suppliers matched “{q}”. Try a broader search or{" "}
+              No match for “{q}”.{" "}
               <Link href="/marketplace/suppliers" className="font-semibold text-brand-600">
-                browse all suppliers
+                Browse all
               </Link>
-              .
             </p>
           )}
         </div>
       </section>
 
       {/* Products */}
-      <section className="border-t border-line-soft bg-surface-soft py-12 md:py-14" id="products">
+      <section className="border-t border-line-soft bg-surface-soft py-10 md:py-14" id="products">
         <div className="mx-auto max-w-[1200px] px-5">
-          <h2 className="font-display text-[1.6rem] leading-tight text-ink md:text-[2rem]">
-            Products for salon services and retail
+          <h2 className="font-display text-[1.5rem] leading-tight text-ink md:text-[1.85rem]">
+            Products to explore
           </h2>
-          <p className="mt-2 text-[14px] text-ink-muted">
-            Product details are for discovery. Confirm availability, pricing, and
-            professional use with the supplier.
-          </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <ProductDiscoveryGrid products={products} suppliersById={suppliersById} />
           </div>
         </div>
       </section>
 
-      {/* Supplier acquisition */}
-      <section className="bg-gradient-to-br from-[#16181d] to-[#262a33] py-12 text-white md:py-16">
-        <div className="mx-auto max-w-[1200px] px-5">
+      {/* Supplier CTA — split visual */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/salon_02_luxe.jpg"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-ink/75" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px] px-5 py-14 text-white md:py-20">
           <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-300">
-            For beauty brands &amp; suppliers
+            For brands &amp; suppliers
           </p>
-          <h2 className="mt-2 max-w-[640px] font-display text-[1.75rem] leading-tight md:text-[2.25rem]">
-            Reach salon and spa owners looking for new products
+          <h2 className="mt-2 max-w-[480px] font-display text-[1.75rem] leading-tight md:text-[2.25rem]">
+            Reach salon owners looking for products
           </h2>
-          <p className="mt-3 max-w-[580px] text-[15px] leading-relaxed text-white/70">
-            Create a supplier profile, showcase your products by professional use
-            case, and generate inquiries from beauty businesses interested in
-            product trials, salon pricing, training, demos, or wholesale
-            opportunities.
-          </p>
-          <ul className="mt-6 grid gap-2 text-[14px] text-white/75 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              "Supplier profile hosted on GoBeauty",
-              "Product Intelligence Cards",
-              "Treatment and aftercare placement",
-              "Salon and spa buyer discovery",
-              "Product inquiry forms",
-              "Sample campaign support",
-              "Salon pricing inquiries",
-              "Training and demo requests",
-              "CRM lead capture",
-              "Campaign reporting",
-            ].map((b) => (
-              <li key={b} className="flex items-start gap-2">
-                <span className="mt-1 text-brand-300" aria-hidden>
-                  ✓
-                </span>
-                {b}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-col gap-2.5 sm:flex-row">
+          <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
             <Link
               href="/brands/list-your-products"
               className="inline-flex h-12 items-center justify-center rounded-pill bg-brand-500 px-7 text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(232,90,130,0.35)] transition hover:bg-brand-600"
@@ -277,9 +231,9 @@ export default function MarketplacePage({
             </Link>
             <Link
               href="/brands#demo"
-              className="inline-flex h-12 items-center justify-center rounded-pill border border-white/25 bg-white/5 px-7 text-[15px] font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex h-12 items-center justify-center rounded-pill border border-white/30 bg-white/10 px-7 text-[15px] font-semibold text-white backdrop-blur transition hover:bg-white/15"
             >
-              Request a Supplier Demo
+              Request Demo
             </Link>
           </div>
         </div>

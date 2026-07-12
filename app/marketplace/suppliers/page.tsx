@@ -61,10 +61,6 @@ export default function SuppliersDirectoryPage({
           <h1 className="mt-3 font-display text-[2rem] leading-[1.1] text-ink md:text-[2.75rem]">
             Beauty suppliers and brands
           </h1>
-          <p className="mt-3 max-w-[600px] text-[15.5px] leading-relaxed text-ink-soft">
-            Explore product sources and brands for salon services, professional
-            use, client aftercare, and retail.
-          </p>
           <div className="mt-6 max-w-[640px]">
             <MarketplaceSearch
               initialQuery={searchParams?.q ?? ""}
@@ -144,17 +140,11 @@ export default function SuppliersDirectoryPage({
           </button>
         </form>
 
-        <p className="mt-4 text-[13px] text-ink-muted">
-          Sample, pricing, training, and private-label filters show “information
-          not yet provided” until GoBeauty confirms status — never as positive
-          availability for unconfirmed profiles.
-        </p>
-
-        <p className="mt-6 text-[14px] font-semibold text-ink">
+        <p className="mt-5 text-[13.5px] font-semibold text-ink-muted">
           {suppliers.length} supplier{suppliers.length === 1 ? "" : "s"}
         </p>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {suppliers.map((s) => (
             <SupplierCard key={s.id} supplier={s} />
           ))}

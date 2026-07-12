@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { MarketplaceProduct } from "@/lib/marketplace/types";
+import { productImage } from "@/lib/marketplace/visuals";
 
 interface Props {
   product: MarketplaceProduct;
@@ -9,49 +10,46 @@ interface Props {
   onAsk?: (product: MarketplaceProduct) => void;
 }
 
+/** Visual product tile — photo dominates; one-line fit tag. */
 export default function MarketplaceProductCard({ product, supplierSlug, onAsk }: Props) {
+  const img = productImage(product.id);
+
   return (
-    <article className="flex flex-col rounded-2xl border border-line bg-white p-4 shadow-card transition hover:shadow-cardHover">
-      <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-gradient-to-br from-surface-soft to-brand-50">
-        <span className="px-4 text-center text-[13px] font-semibold text-ink-muted">
-          {product.brandName}
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition hover:shadow-cardHover">
+      <Link href={`/marketplace/suppliers/${supplierSlug}`} className="relative block aspect-[4/5] overflow-hidden bg-surface-soft">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={img}
+          alt=""
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        />
+        <span className="absolute left-2.5 top-2.5 rounded-full bg-white/95 px-2.5 py-0.5 text-[11px] font-bold text-ink shadow-sm">
+          {product.category}
         </span>
-      </div>
-      <p className="mt-3 text-[11.5px] font-bold uppercase tracking-wide text-brand-600">
-        {product.category}
-      </p>
-      <h3 className="mt-0.5 text-[15px] font-bold leading-snug text-ink">
-        {product.productName}
-      </h3>
-      <p className="mt-1 text-[12.5px] text-ink-muted">{product.brandName}</p>
-      <dl className="mt-3 space-y-1 text-[12.5px] leading-snug text-ink-soft">
-        <div>
-          <dt className="inline font-semibold text-ink">Best for: </dt>
-          <dd className="inline">{product.bestFitBusiness}</dd>
+      </Link>
+      <div className="flex flex-1 flex-col p-3.5">
+        <p className="text-[12px] font-medium text-ink-muted">{product.brandName}</p>
+        <h3 className="mt-0.5 line-clamp-2 text-[14.5px] font-bold leading-snug text-ink">
+          {product.productName}
+        </h3>
+        <p className="mt-1.5 line-clamp-1 text-[12px] text-ink-soft">
+          {product.bestFitBusiness}
+        </p>
+        <div className="mt-3 flex gap-2">
+          <Link
+            href={`/marketplace/suppliers/${supplierSlug}`}
+            className="inline-flex h-9 flex-1 items-center justify-center rounded-pill border border-line text-[12.5px] font-semibold text-ink transition hover:bg-surface-tint"
+          >
+            View
+          </Link>
+          <button
+            type="button"
+            onClick={() => onAsk?.(product)}
+            className="inline-flex h-9 flex-1 items-center justify-center rounded-pill bg-brand-500 text-[12.5px] font-semibold text-white transition hover:bg-brand-600"
+          >
+            Ask
+          </button>
         </div>
-        <div>
-          <dt className="inline font-semibold text-ink">Use with: </dt>
-          <dd className="inline">{product.treatmentPairing}</dd>
-        </div>
-        <div>
-          <dt className="inline font-semibold text-ink">Salon use: </dt>
-          <dd className="inline">{product.retailFit}</dd>
-        </div>
-      </dl>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-        <Link
-          href={`/marketplace/suppliers/${supplierSlug}`}
-          className="inline-flex h-10 flex-1 items-center justify-center rounded-pill border border-line bg-white text-[13px] font-semibold text-ink transition hover:bg-surface-tint"
-        >
-          View Product
-        </Link>
-        <button
-          type="button"
-          onClick={() => onAsk?.(product)}
-          className="inline-flex h-10 flex-1 items-center justify-center rounded-pill bg-brand-500 text-[13px] font-semibold text-white transition hover:bg-brand-600"
-        >
-          Ask About This Product
-        </button>
       </div>
     </article>
   );
