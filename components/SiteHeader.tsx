@@ -49,6 +49,31 @@ function maskUsername(name: string) {
   return name.slice(0, 2) + "***" + name.slice(-2);
 }
 
+/** Small “i” icon that reveals a section description on hover/focus. */
+function SectionInfoTip({ label, description }: { label: string; description: string }) {
+  return (
+    <span className="group/tip relative inline-flex">
+      <button
+        type="button"
+        className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-line text-[10px] font-bold leading-none text-ink-faint transition hover:border-brand-300 hover:text-brand-600 focus:outline-none focus-visible:border-brand-400 focus-visible:text-brand-600"
+        aria-label={`${label}: ${description}`}
+      >
+        i
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-1/2 top-full z-[60] mt-1.5 w-52 -translate-x-1/2 rounded-lg bg-ink px-2.5 py-2 text-left text-[11.5px] font-medium leading-snug text-white opacity-0 shadow-lg transition group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+      >
+        {description}
+        <span
+          aria-hidden
+          className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-ink"
+        />
+      </span>
+    </span>
+  );
+}
+
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -142,12 +167,15 @@ export default function SiteHeader() {
               <div className="rounded-2xl border border-line-soft bg-white p-4 shadow-cardHover">
                 <div className="grid gap-4 sm:grid-cols-[1fr_1fr_0.9fr]">
                   <div>
-                    <p className="px-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
-                      For yourself
-                    </p>
-                    <p className="mt-1 px-2 text-[12px] leading-snug text-ink-muted">
-                      Find products for your beauty goal, routine, ingredients, and aftercare.
-                    </p>
+                    <div className="flex items-center gap-1.5 px-2">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                        For yourself
+                      </p>
+                      <SectionInfoTip
+                        label="For yourself"
+                        description="Find products for your beauty goal, routine, ingredients, and aftercare."
+                      />
+                    </div>
                     <div className="mt-2">
                       {PRODUCTS_FOR_YOURSELF.map((l) => (
                         <Link
@@ -166,12 +194,15 @@ export default function SiteHeader() {
                     </div>
                   </div>
                   <div>
-                    <p className="px-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
-                      For your salon
-                    </p>
-                    <p className="mt-1 px-2 text-[12px] leading-snug text-ink-muted">
-                      Find products to use in services, recommend to clients, and sell after appointments.
-                    </p>
+                    <div className="flex items-center gap-1.5 px-2">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                        For your salon
+                      </p>
+                      <SectionInfoTip
+                        label="For your salon"
+                        description="Find products to use in services, recommend to clients, and sell after appointments."
+                      />
+                    </div>
                     <div className="mt-2">
                       {PRODUCTS_FOR_SALON.map((l) => (
                         <Link
