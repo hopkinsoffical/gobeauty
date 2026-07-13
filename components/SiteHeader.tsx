@@ -20,7 +20,6 @@ const PRODUCTS_FOR_YOURSELF = [
   { label: "Product Library", href: "/products" },
   { label: "Ingredients", href: "/ingredients" },
   { label: "Compare Products", href: "/compare" },
-  { label: "Aftercare Products", href: "/shop-products?mode=aftercare" },
 ];
 
 const PRODUCTS_FOR_SALON = [
@@ -28,7 +27,6 @@ const PRODUCTS_FOR_SALON = [
   { label: "Samples & Starter Kits", href: "/marketplace?use=samples" },
   { label: "Professional Brands", href: "/marketplace/suppliers" },
   { label: "Equipment & Demos", href: "/marketplace?use=equipment" },
-  { label: "Private Label", href: "/marketplace?use=private-label" },
 ];
 
 const BUSINESS_LINKS = [
@@ -54,6 +52,7 @@ function maskUsername(name: string) {
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { user, profile, openAuth, signOut } = useAuth();
   const pathname = usePathname();
@@ -63,7 +62,18 @@ export default function SiteHeader() {
   useEffect(() => {
     setMenuOpen(false);
     setSearchOpen(false);
+    setProductsOpen(false);
   }, [pathname]);
+
+  // Lock body scroll while the mobile menu is open so the sheet stays usable.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,7 +328,10 @@ export default function SiteHeader() {
           <button
             className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-soft transition hover:bg-surface-tint"
             onClick={() => {
-              setMenuOpen(!menuOpen);
+              setMenuOpen((open) => {
+                if (open) setProductsOpen(false);
+                return !open;
+              });
               setSearchOpen(false);
             }}
             aria-label="Toggle menu"
@@ -367,65 +380,102 @@ export default function SiteHeader() {
         </div>
       )}
 
-      {/* Mobile menu sheet */}
+      {/* Mobile menu sheet — constrained to viewport + scrollable so nothing is cut off */}
       {menuOpen && (
-        <div className="border-t border-line-soft bg-white px-5 pb-6 pt-4 lg:hidden">
-          <nav className="flex flex-col" aria-label="Mobile primary">
-            {NAV_LINKS.slice(0, 3).map((l) => (
+        <div
+          className="overflow-y-auto overscroll-contain border-t border-line-soft bg-white lg:hidden"
+          style={{
+            // Header is h-16; leave room for bottom tab bar + safe area.
+            maxHeight: "calc(100dvh - 4rem - 4.5rem - env(safe-area-inset-bottom, 0px))",
+          }}
+        >
+          <nav className="flex flex-col px-5 pb-5 pt-3" aria-label="Mobile primary">
+            {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="flex h-12 items-center text-[15.5px] font-semibold text-ink transition hover:text-brand-600"
+                className={[
+                  "flex h-11 items-center text-[15px] font-semibold transition hover:text-brand-600",
+                  pathname?.startsWith(l.href) ? "text-brand-600" : "text-ink",
+                ].join(" ")}
               >
                 {l.label}
               </Link>
             ))}
-            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
-              Products · for yourself
-            </p>
-            {PRODUCTS_FOR_YOURSELF.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="flex h-11 items-center text-[14.5px] font-semibold text-ink-soft transition hover:text-brand-600"
+
+            {/* Products collapsed by default to keep the sheet short */}
+            <button
+              type="button"
+              onClick={() => setProductsOpen((v) => !v)}
+              className={[
+                "mt-1 flex h-11 w-full items-center justify-between text-left text-[15px] font-semibold transition hover:text-brand-600",
+                PRODUCTS_ACTIVE_PREFIXES.some((p) => pathname?.startsWith(p))
+                  ? "text-brand-600"
+                  : "text-ink",
+              ].join(" ")}
+              aria-expanded={productsOpen}
+            >
+              Products
+              <svg
+                className={[
+                  "h-4 w-4 text-ink-muted transition",
+                  productsOpen ? "rotate-180" : "",
+                ].join(" ")}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden
               >
-                {l.label}
-              </Link>
-            ))}
-            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
-              Products · for your salon
-            </p>
-            {PRODUCTS_FOR_SALON.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="flex h-11 items-center text-[14.5px] font-semibold text-ink-soft transition hover:text-brand-600"
-              >
-                {l.label}
-              </Link>
-            ))}
-            {NAV_LINKS.slice(3).map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="flex h-12 items-center text-[15.5px] font-semibold text-ink transition hover:text-brand-600"
-              >
-                {l.label}
-              </Link>
-            ))}
-            <div className="mt-2 border-t border-line-soft pt-2">
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {productsOpen && (
+              <div className="mb-1 rounded-xl bg-surface-soft/80 px-3 py-1.5">
+                <p className="pt-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                  For yourself
+                </p>
+                {PRODUCTS_FOR_YOURSELF.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="flex h-10 items-center text-[14px] font-semibold text-ink-soft transition hover:text-brand-600"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                <p className="mt-1.5 pt-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                  For your salon
+                </p>
+                {PRODUCTS_FOR_SALON.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="flex h-10 items-center text-[14px] font-semibold text-ink-soft transition hover:text-brand-600"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-1 border-t border-line-soft pt-1">
               {BUSINESS_LINKS.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="flex h-12 items-center text-[15px] font-medium text-ink-soft transition hover:text-ink"
+                  className={[
+                    "flex h-11 items-center text-[14.5px] font-medium transition hover:text-ink",
+                    pathname?.startsWith(l.href) ? "text-brand-600" : "text-ink-soft",
+                  ].join(" ")}
                 >
                   {l.label}
                 </Link>
               ))}
             </div>
+
             {user ? (
-              <div className="mt-3 flex items-center justify-between rounded-xl border border-line bg-surface-soft px-4 py-3">
+              <div className="mt-2 flex items-center justify-between rounded-xl border border-line bg-surface-soft px-4 py-2.5">
                 <Link href="/u/me" className="flex items-center gap-2">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">
                     {(profile?.username ?? "U")[0].toUpperCase()}
@@ -439,16 +489,16 @@ export default function SiteHeader() {
                 </button>
               </div>
             ) : (
-              <div className="mt-3 flex gap-3">
+              <div className="mt-2 flex gap-3">
                 <button
                   onClick={() => openAuth("sign-in")}
-                  className="h-11 flex-1 rounded-pill border border-line text-center text-[14px] font-semibold text-ink"
+                  className="h-10 flex-1 rounded-pill border border-line text-center text-[14px] font-semibold text-ink"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => openAuth("sign-up")}
-                  className="h-11 flex-1 rounded-pill bg-brand-500 text-center text-[14px] font-semibold text-white"
+                  className="h-10 flex-1 rounded-pill bg-brand-500 text-center text-[14px] font-semibold text-white"
                 >
                   Sign up
                 </button>
