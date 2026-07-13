@@ -163,9 +163,9 @@ export default function SiteHeader() {
                 <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <div className="invisible absolute left-1/2 top-full z-50 w-[min(92vw,640px)] -translate-x-1/2 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+            <div className="invisible absolute left-1/2 top-full z-50 w-[min(92vw,440px)] -translate-x-1/2 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
               <div className="rounded-2xl border border-line-soft bg-white p-4 shadow-cardHover">
-                <div className="grid gap-4 sm:grid-cols-[1fr_1fr_0.9fr]">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <div className="flex items-center gap-1.5 px-2">
                       <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-faint">
@@ -220,22 +220,6 @@ export default function SiteHeader() {
                       ))}
                     </div>
                   </div>
-                  <Link
-                    href="/marketplace"
-                    className="flex flex-col justify-between rounded-xl bg-gradient-to-br from-brand-50 to-violet-50 p-4 ring-1 ring-brand-100 transition hover:ring-brand-300"
-                  >
-                    <div>
-                      <p className="text-[12px] font-bold uppercase tracking-wide text-brand-600">
-                        For salon and spa owners
-                      </p>
-                      <p className="mt-2 text-[13.5px] font-semibold leading-snug text-ink">
-                        Find products for treatments, client aftercare, and your retail shelf.
-                      </p>
-                    </div>
-                    <span className="mt-4 inline-flex h-10 items-center justify-center rounded-pill bg-brand-500 text-[13px] font-semibold text-white">
-                      Explore Salon Products
-                    </span>
-                  </Link>
                 </div>
               </div>
             </div>
