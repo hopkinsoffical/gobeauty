@@ -23,7 +23,7 @@ export const HOME_MARKETPLACE_TILES = [
   {
     label: "Samples",
     image:
-      "https://images.unsplash.com/photo-1620916560917-dc5ee0b5b41d?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=800&q=80&auto=format&fit=crop",
   },
 ] as const;
 
@@ -34,7 +34,7 @@ export const LOOKING_FOR_IMAGES: Record<string, string> = {
   aftercare:
     "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=80&auto=format&fit=crop",
   samples:
-    "https://images.unsplash.com/photo-1620916560917-dc5ee0b5b41d?w=900&q=80&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=900&q=80&auto=format&fit=crop",
   equipment:
     "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=900&q=80&auto=format&fit=crop",
   "private-label":
@@ -67,7 +67,7 @@ export const SUPPLIER_COVERS: Record<string, string> = {
   "kbeauty-outlet-usa":
     "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=1200&q=80&auto=format&fit=crop",
   cosrx:
-    "https://images.unsplash.com/photo-1620916560917-dc5ee0b5b41d?w=1200&q=80&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=1200&q=80&auto=format&fit=crop",
   skin1004:
     "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=80&auto=format&fit=crop",
   "beauty-of-joseon":
@@ -84,7 +84,7 @@ export const SUPPLIER_COVERS: Record<string, string> = {
 
 export const PRODUCT_IMAGES: Record<string, string> = {
   "mp-barrier-support-cream":
-    "https://images.unsplash.com/photo-1620916560917-dc5ee0b5b41d?w=800&q=80&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=800&q=80&auto=format&fit=crop",
   "mp-centella-ampoule":
     "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80&auto=format&fit=crop",
   "mp-relief-sun":
@@ -172,7 +172,7 @@ export function supplierCover(slug: string): string {
 export function productImage(id: string): string {
   return (
     PRODUCT_IMAGES[id] ??
-    "https://images.unsplash.com/photo-1620916560917-dc5ee0b5b41d?w=800&q=80&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=800&q=80&auto=format&fit=crop"
   );
 }
 
