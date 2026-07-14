@@ -32,6 +32,7 @@ const PRODUCTS_FOR_SALON = [
 const BUSINESS_LINKS = [
   { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
+  { label: "Services", href: "/services" },
   { label: "Marketplace", href: "/marketplace/suppliers" },
 ];
 

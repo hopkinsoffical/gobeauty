@@ -75,6 +75,7 @@ const MORE_LINKS = [
   { label: "Ingredients", href: "/ingredients" },
   { label: "For Beauty Professionals", href: "/beauty-pros" },
   { label: "For Beauty Brands", href: "/brands" },
+  { label: "Services", href: "/services" },
   { label: "List Your Products", href: "/brands/list-your-products" },
 ];
 

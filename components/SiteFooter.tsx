@@ -57,6 +57,7 @@ export default function SiteFooter() {
             items={[
               { label: "For Beauty Professionals", href: "/beauty-pros" },
               { label: "For Beauty Brands", href: "/brands" },
+              { label: "Services", href: "/services" },
               { label: "List Your Products", href: "/brands/list-your-products" },
               { label: "Beauty Suppliers", href: "/marketplace/suppliers" },
               { label: "Claim Your Profile", href: "/beauty-pros#claim" },
