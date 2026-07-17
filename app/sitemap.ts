@@ -38,6 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/products`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/ingredients`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/compare`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/sms-consent`, changeFrequency: "yearly", priority: 0.4 },
+    { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   // Best-effort: the gb API can be briefly down without breaking the sitemap.

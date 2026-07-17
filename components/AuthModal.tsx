@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 
+const SMS_CONSENT_VERSION = "2026-07-17";
+
 const COUNTRY_CODES = [
   { code: "+86", flag: "🇨🇳", label: "CN" },
   { code: "+1",  flag: "🇺🇸", label: "US" },
@@ -32,6 +34,7 @@ export default function AuthModal() {
   const [countryCode, setCountryCode] = useState("+1");
   const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -45,6 +48,7 @@ export default function AuthModal() {
     setStep("phone");
     setPhone("");
     setUsername("");
+    setSmsConsent(false);
     setOtp(["", "", "", "", "", ""]);
     setError("");
   }, [authMode, authOpen]);
@@ -64,13 +68,21 @@ export default function AuthModal() {
     setError("");
     if (!phone.trim()) { setError("Please enter your phone number"); return; }
     if (mode === "sign-up" && !username.trim()) { setError("Please enter a username"); return; }
+    if (!smsConsent) {
+      setError("Please agree to receive the verification text message");
+      return;
+    }
 
     setLoading(true);
     try {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: fullPhone }),
+        body: JSON.stringify({
+          phone: fullPhone,
+          smsConsent,
+          consentVersion: SMS_CONSENT_VERSION,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -185,7 +197,7 @@ export default function AuthModal() {
         role="dialog"
         aria-modal
         aria-label={mode === "sign-in" ? "Sign in" : "Sign up"}
-        className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-3xl bg-white shadow-[0_24px_64px_rgba(15,20,25,0.18)] sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2"
+        className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100vh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto rounded-3xl bg-white shadow-[0_24px_64px_rgba(15,20,25,0.18)] sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2"
       >
         {/* Close */}
         <button
@@ -283,6 +295,50 @@ export default function AuthModal() {
                 </div>
               </div>
 
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-surface-soft p-3.5 transition hover:border-brand-200">
+                <input
+                  type="checkbox"
+                  checked={smsConsent}
+                  onChange={(e) => setSmsConsent(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-line text-brand-500 accent-[#e85a82]"
+                  required
+                />
+                <span className="text-[11.5px] leading-[1.65] text-ink-soft">
+                  I agree to receive SMS messages from GoBeauty AI at the phone
+                  number provided, including one-time verification codes and
+                  account-related messages. Message frequency varies. Message
+                  &amp; data rates may apply. Reply STOP to unsubscribe. Reply
+                  HELP for help. Consent is not a condition of purchase. See{" "}
+                  <a
+                    href="/sms-consent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-brand-600 hover:underline"
+                  >
+                    SMS Consent
+                  </a>
+                  ,{" "}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-brand-600 hover:underline"
+                  >
+                    Privacy Policy
+                  </a>
+                  , and{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-brand-600 hover:underline"
+                  >
+                    Terms of Service
+                  </a>
+                  .
+                </span>
+              </label>
+
               {error && <p className="text-[13px] text-red-500">{error}</p>}
 
               <button
@@ -293,12 +349,6 @@ export default function AuthModal() {
                 {loading ? "Sending…" : "Send verification code"}
               </button>
 
-              <p className="text-center text-[12.5px] text-ink-faint">
-                By continuing, you agree to our{" "}
-                <a href="/terms" className="text-brand-500 hover:underline">Terms of Service</a>
-                {" "}and{" "}
-                <a href="/privacy" className="text-brand-500 hover:underline">Privacy Policy</a>
-              </p>
             </div>
           ) : (
             <div className="space-y-5">

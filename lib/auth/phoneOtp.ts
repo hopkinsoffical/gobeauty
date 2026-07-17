@@ -9,7 +9,7 @@ const MAX_ATTEMPTS = 5;
 
 /** SMS body template for sign-in / sign-up codes. */
 export function formatOtpSms(code: string): string {
-  return `Your GoBeauty Code is:${code}`;
+  return `GoBeauty AI verification code: ${code}. Expires in 10 minutes. Message & data rates may apply. Reply STOP to opt out or HELP for help.`;
 }
 
 function otpHmacSecret(): string {
@@ -100,10 +100,21 @@ type OtpRow = {
   created_at: string;
 };
 
-export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
+type SmsConsentEvidence = {
+  version: string;
+  source: "auth-modal";
+};
+
+export async function sendPhoneOtp(
+  phoneRaw: string,
+  consent: SmsConsentEvidence,
+): Promise<{ sent: true }> {
   const phone = normalizePhone(phoneRaw);
   if (phone.replace(/\D/g, "").length < 10) {
     throw Object.assign(new Error("Enter a valid phone number"), { status: 400 });
+  }
+  if (!consent.version) {
+    throw Object.assign(new Error("SMS consent is required"), { status: 400 });
   }
 
   const admin = getSupabaseAdmin();
@@ -125,6 +136,7 @@ export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
   const code = sixDigit();
   const codeHash = hashOtp(phone, code);
   const expiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
+  const consentedAt = new Date().toISOString();
 
   const { data: inserted, error: insertErr } = await admin
     .from("gobeauty_phone_otps")
@@ -132,6 +144,9 @@ export async function sendPhoneOtp(phoneRaw: string): Promise<{ sent: true }> {
       phone,
       code_hash: codeHash,
       expires_at: expiresAt,
+      sms_consent_at: consentedAt,
+      sms_consent_version: consent.version,
+      sms_consent_source: consent.source,
     })
     .select("id")
     .single();
