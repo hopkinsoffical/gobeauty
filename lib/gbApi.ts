@@ -240,7 +240,7 @@ export interface BrandListing {
   image: string | null;
 }
 
-export const listBrands = (limit = 60) =>
+export const listBrands = (limit = 1000) =>
   get<{ brands: BrandListing[] }>(`/api/gb/brands?limit=${limit}`);
 
 export interface OrderInput {

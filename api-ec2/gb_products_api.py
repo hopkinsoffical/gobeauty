@@ -400,7 +400,7 @@ async def ingredient_detail(slug: str):
 
 
 @router.get("/brands")
-async def list_brands(limit: int = Query(60, le=400)):
+async def list_brands(limit: int = Query(1000, le=1000)):
     """Brands carrying live products, with a representative product image
     (their most-reviewed product) — powers the partner-brand carousel."""
     pool = await _db()

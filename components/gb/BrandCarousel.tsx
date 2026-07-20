@@ -1,16 +1,19 @@
 import Link from "next/link";
 import type { BrandListing } from "@/lib/gbApi";
 
-// Two opposite-direction marquee bands of partner brands. Pure CSS animation
-// (keyframes in globals.css) — no client JS. Each band's content is doubled
-// so the -50% translate loops seamlessly.
-function Band({ brands, reverse }: { brands: BrandListing[]; reverse?: boolean }) {
+// Single-row marquee of partner brands. Pure CSS animation (keyframes in
+// globals.css) — no client JS. Content is doubled so the -50% translate
+// loops seamlessly. Duration scales with list length so card speed stays
+// roughly constant (~1 card / 1.8s) even with hundreds of brands.
+export default function BrandCarousel({ brands }: { brands: BrandListing[] }) {
+  if (brands.length < 4) return null;
   const doubled = [...brands, ...brands];
+  const durationSec = Math.max(40, Math.round(brands.length * 1.8));
   return (
     <div className="gb-marquee overflow-hidden">
       <div
-        className={`gb-marquee-track gap-3 pr-3 ${reverse ? "gb-marquee-reverse" : ""}`}
-        style={{ ["--gb-marquee-duration" as string]: `${Math.max(30, brands.length * 3.2)}s` }}
+        className="gb-marquee-track gap-3 pr-3"
+        style={{ ["--gb-marquee-duration" as string]: `${durationSec}s` }}
       >
         {doubled.map((b, idx) => (
           <Link
@@ -42,18 +45,6 @@ function Band({ brands, reverse }: { brands: BrandListing[]; reverse?: boolean }
           </Link>
         ))}
       </div>
-    </div>
-  );
-}
-
-export default function BrandCarousel({ brands }: { brands: BrandListing[] }) {
-  if (brands.length < 4) return null;
-  const rowA = brands.filter((_, i) => i % 2 === 0);
-  const rowB = brands.filter((_, i) => i % 2 === 1);
-  return (
-    <div className="space-y-3">
-      <Band brands={rowA} />
-      <Band brands={rowB} reverse />
     </div>
   );
 }

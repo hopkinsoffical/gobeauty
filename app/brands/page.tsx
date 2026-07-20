@@ -50,7 +50,9 @@ const STEPS = [
 ];
 
 export default async function ForBrandsPage() {
-  const partnerBrands = await listBrands(60).then((r) => r.brands).catch(() => []);
+  // Full catalog of brands that currently carry live products in RDS
+  // (skinsort + KBeauty Outlet USA ingest, etc.). Cap matches API max.
+  const partnerBrands = await listBrands(1000).then((r) => r.brands).catch(() => []);
   return (
     <>
       {/* Hero — deep charcoal B2B treatment (PRD §10) */}
@@ -168,8 +170,8 @@ export default async function ForBrandsPage() {
               Brands already on goBeauty.
             </h2>
             <p className="mt-2 text-center text-[14.5px] text-ink-soft">
-              {partnerBrands.length}+ beauty brands with products decoded and
-              discoverable — ingredient by ingredient.
+              {partnerBrands.length} beauty brands with products on goBeauty —
+              from K-beauty favorites to pro-facing lines.
             </p>
             <div className="mt-8">
               <BrandCarousel brands={partnerBrands} />
