@@ -16,6 +16,7 @@ Consumer-facing AI beauty discovery site with a pro-first commercial engine
 | `/looks-trends` | Trend/look intelligence grid |
 | `/beauty-pros` | Professional conversion + RankMySalon bridge + lead form |
 | `/brands` | Supplier campaigns + lead form |
+| `/brands/kbeauty` | K-beauty brand catalog A–Z (~126 brands, US top-30 tiers) |
 | `/brands/list-your-products` | Supplier listing / profile-claim form |
 
 Professional/supplier leads POST to `/api/leads` → Supabase `gobeauty_leads`

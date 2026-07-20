@@ -20,10 +20,10 @@ export default function TopBrands() {
           </p>
         </div>
         <Link
-          href="/brands"
+          href="/brands/kbeauty"
           className="shrink-0 text-[14px] font-semibold text-[var(--beauty-pink)] transition hover:text-[var(--beauty-pink-dark)]"
         >
-          View all brands
+          View all K-beauty brands
         </Link>
       </div>
 

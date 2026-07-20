@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LeadForm from "@/components/LeadForm";
 import BrandCarousel from "@/components/gb/BrandCarousel";
+import { KBEAUTY_STATS } from "@/data/kbeauty-brands";
 import { listBrands } from "@/lib/gbApi";
 
 export const revalidate = 3600;
@@ -86,8 +87,16 @@ export default async function ForBrandsPage() {
       {/* Who it's for + how it works */}
       <section className="mx-auto max-w-[1100px] px-5 py-12 md:py-16">
         <p className="text-center text-[13px] text-ink-muted">
-          Boutique skincare · Professional product lines · Aftercare brands ·
-          Tools &amp; devices · Spa retail
+          Boutique skincare · K-beauty · Professional product lines · Aftercare
+          brands · Tools &amp; devices · Spa retail
+        </p>
+        <p className="mt-3 text-center text-[13.5px]">
+          <Link
+            href="/brands/kbeauty"
+            className="font-semibold text-brand-600 hover:text-brand-700"
+          >
+            Browse {KBEAUTY_STATS.total} K-beauty brands A–Z →
+          </Link>
         </p>
         <div className="mt-8 grid gap-3 md:grid-cols-3">
           {STEPS.map((s) => (

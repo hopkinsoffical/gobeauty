@@ -132,14 +132,18 @@ export const CATEGORIES: CategoryCardData[] = [
   },
 ];
 
+/** Top-tier US K-beauty traffic brands (+ a few global staples). See data/kbeauty-brands.ts. */
 export const TOP_BRANDS: BrandCardData[] = [
   { name: "Beauty of Joseon", href: "/brands/beauty-of-joseon" },
-  { name: "Anua", href: "/brands/anua" },
   { name: "COSRX", href: "/brands/cosrx" },
-  { name: "The Ordinary", href: "/brands/the-ordinary" },
+  { name: "Anua", href: "/brands/anua" },
   { name: "Round Lab", href: "/brands/round-lab" },
-  { name: "Laneige", href: "/brands/laneige" },
-  { name: "Innisfree", href: "/brands/innisfree" },
+  { name: "SKIN1004", href: "/brands/skin1004" },
+  { name: "Medicube", href: "/brands/medicube" },
+  { name: "Torriden", href: "/brands/torriden" },
+  { name: "Mixsoon", href: "/brands/mixsoon" },
+  { name: "VT Cosmetics", href: "/brands/vt-cosmetics" },
+  { name: "Numbuzin", href: "/brands/numbuzin" },
 ];
 
 export const BENEFITS: BenefitItem[] = [

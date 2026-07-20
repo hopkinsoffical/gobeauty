@@ -2,7 +2,16 @@
  * Seed marketplace data (goBeauty_marketplace.docx §§4–8).
  * Profiles use cautious wording; commercial fields default to "pending"
  * unless GoBeauty has confirmed availability.
+ *
+ * K-beauty brand profiles (top 30 US traffic tiers) are generated from
+ * data/kbeauty-brands.ts so marketplace + product catalog stay in sync.
  */
+import {
+  kbeautyGbSlug,
+  kbeautyMarketplacePriority,
+  type KBeautyBrand,
+  type MarketplaceTier,
+} from "@/data/kbeauty-brands";
 import type {
   MarketplaceProduct,
   MarketplaceService,
@@ -15,6 +24,84 @@ const PENDING_DISCLAIMER =
 const BRAND_DISCLAIMER =
   "Brand Profile — supplier relationship not yet confirmed. Information is for discovery only and does not imply endorsement or wholesale availability.";
 
+/** Stable pastel palette for brand logo tiles. */
+const BRAND_COLORS = [
+  "#111827",
+  "#be185d",
+  "#0d9488",
+  "#b45309",
+  "#1d4ed8",
+  "#0369a1",
+  "#7c3aed",
+  "#b91c1c",
+  "#047857",
+  "#c2410c",
+  "#4f46e5",
+  "#0f766e",
+  "#9d174d",
+  "#1e3a8a",
+  "#854d0e",
+];
+
+function colorForSlug(slug: string): string {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  return BRAND_COLORS[h % BRAND_COLORS.length];
+}
+
+/** Editorial short blurbs for priority brands (fallback is generic). */
+const BRAND_SHORT: Record<string, string> = {
+  "beauty-of-joseon":
+    "K-beauty skincare brand with cleansers, serums, sunscreen, moisturizers, and eye care.",
+  cosrx:
+    "Skincare brand known for simplified routines across cleansers, essences, serums, and barrier-support products.",
+  anua: "Skincare brand with toners, cleansers, serums, and soothing hydration-focused products.",
+  "round-lab":
+    "Skincare brand with cleansers, toners, moisturizers, sunscreen, and barrier-support products.",
+  skin1004:
+    "Centella-focused skincare brand with cleansers, toners, ampoules, moisturizers, and sunscreen.",
+  medicube:
+    "Device-adjacent K-beauty skincare with serums, pads, and barrier/glow-focused routines.",
+  torriden:
+    "Hydration-focused skincare with serums, toners, moisturizers, masks, and cleansers.",
+  mixsoon:
+    "Minimalist K-beauty brand focused on essences, serums, cleansers, and ingredient-led skincare.",
+  "vt-cosmetics":
+    "Centella and Reedle Shot–known K-beauty brand spanning serums, creams, and masks.",
+  numbuzin:
+    "Numbered serum lines for targeted concerns — brightening, barrier, and texture-focused routines.",
+  abib: "Pad- and texture-led K-beauty skincare with toners, serums, and moisturizers.",
+  biodance: "Overnight mask and hydrogel-focused K-beauty skincare.",
+  haruharu: "Black rice and gentle-barrier K-beauty skincare line.",
+  "dr-g": "Dermatologist-positioned K-beauty skincare for sensitive and barrier care.",
+  purito: "Clean-leaning K-beauty skincare with sunscreen, serums, and moisturizers.",
+  isntree: "Hydration and sunscreen-focused K-beauty skincare.",
+  manyo: "Ferment-forward K-beauty skincare (ma:nyo) with cleansers, ampoules, and creams.",
+  "mary-may": "Vegan, ingredient-led K-beauty skincare with serums and ampoules.",
+  tirtir: "Cushion and makeup-forward K-beauty brand with skincare adjacents.",
+  romand: "K-beauty color cosmetics — lips, cheeks, and everyday makeup.",
+  mediheal: "Mask and sheet-mask–led K-beauty skincare brand.",
+  laneige: "Hydration-focused K-beauty skincare and lip care.",
+  clio: "K-beauty makeup brand — base, eyes, and lips.",
+  peripera: "Playful K-beauty color cosmetics and lip tints.",
+  hince: "Modern K-beauty makeup and beauty brand.",
+  fwee: "K-beauty makeup brand known for blushes and lip products.",
+  tocobo: "Sunscreen and everyday skincare from a rising K-beauty line.",
+  needly: "Needle-pad and treatment-pad K-beauty skincare.",
+  rejuran: "Healer / polynucleotide-associated K-beauty skincare line.",
+  aestura: "Barrier-care K-beauty skincare often explored for sensitive routines.",
+};
+
+const BRAND_CATEGORIES: Record<string, string[]> = {
+  romand: ["Lip color", "Blush", "Makeup", "Cheeks"],
+  clio: ["Base makeup", "Eyes", "Lips", "Makeup"],
+  peripera: ["Lip tints", "Blush", "Makeup"],
+  hince: ["Makeup", "Lips", "Base"],
+  fwee: ["Blush", "Lips", "Makeup"],
+  tirtir: ["Cushion foundation", "Makeup", "Base"],
+  mediheal: ["Sheet masks", "Serums", "Skincare"],
+  needly: ["Treatment pads", "Serums", "Skincare"],
+};
 export const MARKETPLACE_SERVICES: MarketplaceService[] = [
   {
     slug: "facial-skincare",
@@ -137,120 +224,58 @@ export const SUGGESTED_SEARCHES = [
   "Private label skincare",
 ];
 
-const brandBase = (
-  slug: string,
-  name: string,
-  short: string,
-  categories: string[],
-  bestFit: string[],
-  color: string,
-  website: string | null,
-  gbBrandSlug?: string,
-): Supplier => ({
-  id: slug,
-  slug,
-  name,
-  supplierType: "Skincare brand profile",
-  kind: "skincare_brand",
-  shortDescription: short,
-  fullDescription: `${short} This page is a discovery profile only. Product information is editorial and may be incomplete.`,
-  logoInitials: name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase(),
-  logoColor: color,
-  websiteUrl: website,
-  contactUrl: website,
-  country: "South Korea",
-  shippingMarkets: [],
-  productCategories: categories,
-  bestFitBusinessTypes: bestFit,
-  bestFitServices: ["Facial & Skincare", "Spa Retail", "Med Spa Aftercare"],
-  sampleStatus: "pending",
-  businessPricingStatus: "pending",
-  wholesaleStatus: "pending",
-  trainingStatus: "pending",
-  demoStatus: "pending",
-  privateLabelStatus: "pending",
-  minimumOrder: null,
-  shippingDetails: null,
-  profileStatus: "brand_profile",
-  claimed: false,
-  sponsored: false,
-  authorizedContent: false,
-  disclaimer: BRAND_DISCLAIMER,
-  featured: false,
-  productFocus: categories.slice(0, 4).join(", "),
-  commonProfessionalUse: "Explore for facial services, client education, and take-home retail research.",
-  retailOpportunity: "May fit retail shelves focused on K-beauty and skincare routines.",
-  aftercareOpportunity: "Often explored for post-facial and daily home-care recommendations.",
-  useCases: [
-    {
-      title: "Use during services",
-      body: "Explore category fit for treatment-room prep, finish, or education — confirm use with the brand or distributor before service application.",
-    },
-    {
-      title: "Recommend after appointments",
-      body: "Use product categories as conversation starters for home routines that support in-salon results.",
-    },
-    {
-      title: "Add to a retail shelf",
-      body: "Research demand and brand recognition with clients before committing to inventory.",
-    },
-    {
-      title: "Build an aftercare routine",
-      body: "Pair cleanser, toner/serum, moisturizer, and sunscreen categories into simple take-home paths.",
-    },
-  ],
-  gbBrandSlug,
-});
+const DEFAULT_CATEGORIES = [
+  "Cleansers",
+  "Toners",
+  "Serums",
+  "Moisturizers",
+  "Sunscreen",
+  "Masks",
+  "K-beauty skincare",
+];
 
-export const SUPPLIERS: Supplier[] = [
-  {
-    id: "kbeauty-outlet-usa",
-    slug: "kbeauty-outlet-usa",
-    name: "KBeauty Outlet USA",
-    supplierType: "Multi-brand K-beauty retailer / product source",
-    kind: "multi_brand_source",
-    shortDescription:
-      "Explore a broad selection of Korean skincare, makeup, body care, and haircare products from multiple K-beauty brands.",
-    fullDescription:
-      "KBeauty Outlet USA is presented as a multi-brand product source for professionals researching Korean beauty products. This profile uses public, high-level information only. Business-order terms, samples, and salon accounts are not confirmed by GoBeauty.",
-    logoInitials: "KO",
-    logoColor: "#7c3aed",
-    websiteUrl: "https://www.kbeautyoutlet.com",
-    contactUrl: "https://www.kbeautyoutlet.com",
-    country: "United States",
-    shippingMarkets: ["United States"],
-    productCategories: [
-      "Korean skincare",
-      "Makeup",
-      "Body care",
-      "Hair care",
-      "Cleansers",
-      "Toners",
-      "Serums and ampoules",
-      "Moisturizers",
-      "Sunscreen",
-      "Facial masks",
-      "Hair treatments",
-    ],
-    bestFitBusinessTypes: [
-      "Facial spas",
-      "Estheticians",
-      "K-beauty retailers",
-      "Beauty boutiques",
-      "Salons exploring take-home skincare",
-      "Professionals researching Korean beauty products",
-    ],
-    bestFitServices: [
-      "Facial & Skincare",
-      "Spa Retail",
-      "Makeup Services",
-      "Med Spa Aftercare",
-    ],
+const DEFAULT_BEST_FIT = [
+  "Facial spas",
+  "Estheticians",
+  "K-beauty retail",
+  "Take-home skincare",
+];
+
+function brandFromCatalog(brand: KBeautyBrand): Supplier {
+  const short =
+    BRAND_SHORT[brand.slug] ??
+    `${brand.name} is a Korean beauty brand. Explore product categories for professional education, aftercare, and retail research.`;
+  const categories = BRAND_CATEGORIES[brand.slug] ?? DEFAULT_CATEGORIES;
+  const isMakeup = categories.some((c) => /makeup|lip|blush|cushion|base makeup/i.test(c));
+  const tier = brand.marketplaceTier as MarketplaceTier;
+  return {
+    id: brand.slug,
+    slug: brand.slug,
+    name: brand.name,
+    supplierType: isMakeup ? "Makeup brand profile" : "Skincare brand profile",
+    kind: "skincare_brand",
+    shortDescription: short,
+    fullDescription: `${short} This page is a discovery profile only. Product information is editorial and may be incomplete.`,
+    logoInitials: brand.name
+      .replace(/[^A-Za-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase(),
+    logoColor: colorForSlug(brand.slug),
+    websiteUrl: brand.website,
+    contactUrl: brand.website,
+    country: "South Korea",
+    shippingMarkets: [],
+    productCategories: categories,
+    bestFitBusinessTypes: isMakeup
+      ? ["Beauty boutiques", "Makeup services", "K-beauty retail", "Salons"]
+      : DEFAULT_BEST_FIT,
+    bestFitServices: isMakeup
+      ? ["Makeup Services", "Spa Retail", "Facial & Skincare"]
+      : ["Facial & Skincare", "Spa Retail", "Med Spa Aftercare"],
     sampleStatus: "pending",
     businessPricingStatus: "pending",
     wholesaleStatus: "pending",
@@ -258,158 +283,129 @@ export const SUPPLIERS: Supplier[] = [
     demoStatus: "pending",
     privateLabelStatus: "pending",
     minimumOrder: null,
-    shippingDetails: "Shipping markets and timeframes not independently verified by GoBeauty.",
-    profileStatus: "featured_supplier",
+    shippingDetails: null,
+    profileStatus: "brand_profile",
     claimed: false,
     sponsored: false,
     authorizedContent: false,
-    disclaimer: PENDING_DISCLAIMER,
-    featured: true,
-    productFocus: "Multi-brand K-beauty skincare, makeup, body, and hair",
+    disclaimer: BRAND_DISCLAIMER,
+    // Top tier (1) = featured on marketplace home; 2/3 still listed & sorted after
+    featured: tier === 1,
+    productFocus: categories.slice(0, 4).join(", "),
     commonProfessionalUse:
-      "Research K-beauty lines for retail, education, and client recommendations.",
-    retailOpportunity: "Strong candidate for boutiques and spas exploring K-beauty retail.",
-    aftercareOpportunity: "Useful when building take-home skincare options after facial services.",
+      "Explore for facial services, client education, and take-home retail research.",
+    retailOpportunity: "May fit retail shelves focused on K-beauty and skincare routines.",
+    aftercareOpportunity:
+      "Often explored for post-facial and daily home-care recommendations.",
     useCases: [
       {
         title: "Use during services",
-        body: "Identify candidate product categories for facial and makeup services — always confirm professional-use suitability with the supplier.",
+        body: "Explore category fit for treatment-room prep, finish, or education — confirm use with the brand or distributor before service application.",
       },
       {
         title: "Recommend after appointments",
-        body: "Explore multi-brand options when clients want K-beauty home care after treatments.",
+        body: "Use product categories as conversation starters for home routines that support in-salon results.",
       },
       {
         title: "Add to a retail shelf",
-        body: "Browse a wide catalog when testing which K-beauty brands resonate with your clients.",
+        body: "Research demand and brand recognition with clients before committing to inventory.",
       },
       {
-        title: "Support a trending beauty goal",
-        body: "Pair glass-skin, barrier, and hydration trends with relevant product categories.",
+        title: "Build an aftercare routine",
+        body: "Pair cleanser, toner/serum, moisturizer, and sunscreen categories into simple take-home paths.",
       },
     ],
-  },
-  brandBase(
-    "cosrx",
-    "COSRX",
-    "Skincare brand known for simplified routines across cleansers, essences, serums, and barrier-support products.",
-    [
-      "Cleansers",
-      "Essences",
-      "Serums",
-      "Moisturizers",
-      "Acne-care products",
-      "Hydration",
-      "Barrier support",
-    ],
-    ["Facial spas", "Estheticians", "K-beauty retail", "Take-home skincare"],
-    "#111827",
-    "https://www.cosrx.com",
-    "cosrx",
-  ),
-  brandBase(
-    "skin1004",
-    "SKIN1004",
-    "Centella-focused skincare brand with cleansers, toners, ampoules, moisturizers, and sunscreen.",
-    [
-      "Centella-focused skincare",
-      "Cleansers",
-      "Toners",
-      "Ampoules",
-      "Moisturizers",
-      "Sunscreen",
-      "Sensitive-skin routines",
-    ],
-    ["Facial spas", "Estheticians", "Sensitive-skin aftercare", "K-beauty retail"],
-    "#0d9488",
-    "https://skin1004.com",
-    "skin1004",
-  ),
-  brandBase(
-    "beauty-of-joseon",
-    "Beauty of Joseon",
-    "K-beauty skincare brand with cleansers, serums, sunscreen, moisturizers, and eye care.",
-    [
-      "Cleansers",
-      "Serums",
-      "Sunscreen",
-      "Moisturizers",
-      "Eye care",
-      "Hydration and brightening",
-    ],
-    ["Facial spas", "Beauty boutiques", "K-beauty retail", "Client aftercare exploration"],
-    "#b45309",
-    "https://beautyofjoseon.com",
-    "beauty-of-joseon",
-  ),
-  brandBase(
-    "anua",
-    "Anua",
-    "Skincare brand with toners, cleansers, serums, and soothing hydration-focused products.",
-    [
-      "Toners",
-      "Cleansers",
-      "Serums",
-      "Soothing skincare",
-      "Hydration",
-      "Sensitive-skin routines",
-    ],
-    ["Estheticians", "Facial spas", "Soothing aftercare", "Retail skincare shelves"],
-    "#be185d",
-    "https://anua.global",
-    "anua",
-  ),
-  brandBase(
-    "mixsoon",
-    "Mixsoon",
-    "Minimalist K-beauty brand focused on essences, serums, cleansers, and ingredient-led skincare.",
-    [
-      "Essences",
-      "Serums",
-      "Cleansers",
-      "Creams",
-      "Hydration",
-      "Ingredient-focused skincare",
-    ],
-    ["Facial spas", "Estheticians", "Ingredient-focused retail", "Routine-building and aftercare"],
-    "#1d4ed8",
-    "https://mixsoon.us",
-    "mixsoon",
-  ),
-  brandBase(
-    "round-lab",
-    "Round Lab",
-    "Skincare brand with cleansers, toners, moisturizers, sunscreen, and barrier-support products.",
-    [
-      "Cleansers",
-      "Toners",
-      "Moisturizers",
-      "Sunscreen",
-      "Hydration",
-      "Barrier-support products",
-    ],
-    ["Facial spas", "Estheticians", "Hydration-focused routines", "Take-home skincare"],
-    "#0369a1",
-    "https://roundlab.us",
-    "round-lab",
-  ),
-  brandBase(
-    "torriden",
-    "Torriden",
-    "Hydration-focused skincare with serums, toners, moisturizers, masks, and cleansers.",
-    [
-      "Hydrating serums",
-      "Toners",
-      "Moisturizers",
-      "Masks",
-      "Cleansers",
-      "Hydration and barrier support",
-    ],
-    ["Facial spas", "Estheticians", "Hydrating facial aftercare", "K-beauty retail"],
-    "#7c3aed",
-    "https://torriden.com",
-    "torriden",
-  ),
+    gbBrandSlug: kbeautyGbSlug(brand),
+  };
+}
+
+const KBEAUTY_OUTLET: Supplier = {
+  id: "kbeauty-outlet-usa",
+  slug: "kbeauty-outlet-usa",
+  name: "KBeauty Outlet USA",
+  supplierType: "Multi-brand K-beauty retailer / product source",
+  kind: "multi_brand_source",
+  shortDescription:
+    "Explore a broad selection of Korean skincare, makeup, body care, and haircare products from multiple K-beauty brands.",
+  fullDescription:
+    "KBeauty Outlet USA is presented as a multi-brand product source for professionals researching Korean beauty products. This profile uses public, high-level information only. Business-order terms, samples, and salon accounts are not confirmed by GoBeauty.",
+  logoInitials: "KO",
+  logoColor: "#7c3aed",
+  websiteUrl: "https://www.kbeautyoutlet.com",
+  contactUrl: "https://www.kbeautyoutlet.com",
+  country: "United States",
+  shippingMarkets: ["United States"],
+  productCategories: [
+    "Korean skincare",
+    "Makeup",
+    "Body care",
+    "Hair care",
+    "Cleansers",
+    "Toners",
+    "Serums and ampoules",
+    "Moisturizers",
+    "Sunscreen",
+    "Facial masks",
+    "Hair treatments",
+  ],
+  bestFitBusinessTypes: [
+    "Facial spas",
+    "Estheticians",
+    "K-beauty retailers",
+    "Beauty boutiques",
+    "Salons exploring take-home skincare",
+    "Professionals researching Korean beauty products",
+  ],
+  bestFitServices: [
+    "Facial & Skincare",
+    "Spa Retail",
+    "Makeup Services",
+    "Med Spa Aftercare",
+  ],
+  sampleStatus: "pending",
+  businessPricingStatus: "pending",
+  wholesaleStatus: "pending",
+  trainingStatus: "pending",
+  demoStatus: "pending",
+  privateLabelStatus: "pending",
+  minimumOrder: null,
+  shippingDetails: "Shipping markets and timeframes not independently verified by GoBeauty.",
+  profileStatus: "featured_supplier",
+  claimed: false,
+  sponsored: false,
+  authorizedContent: false,
+  disclaimer: PENDING_DISCLAIMER,
+  featured: true,
+  productFocus: "Multi-brand K-beauty skincare, makeup, body, and hair",
+  commonProfessionalUse:
+    "Research K-beauty lines for retail, education, and client recommendations.",
+  retailOpportunity: "Strong candidate for boutiques and spas exploring K-beauty retail.",
+  aftercareOpportunity:
+    "Useful when building take-home skincare options after facial services.",
+  useCases: [
+    {
+      title: "Use during services",
+      body: "Identify candidate product categories for facial and makeup services — always confirm professional-use suitability with the supplier.",
+    },
+    {
+      title: "Recommend after appointments",
+      body: "Explore multi-brand options when clients want K-beauty home care after treatments.",
+    },
+    {
+      title: "Add to a retail shelf",
+      body: "Browse a wide catalog when testing which K-beauty brands resonate with your clients.",
+    },
+    {
+      title: "Support a trending beauty goal",
+      body: "Pair glass-skin, barrier, and hydration trends with relevant product categories.",
+    },
+  ],
+};
+
+/** Multi-brand source + US top-30 K-beauty brand profiles (tiers 1–3). */
+export const SUPPLIERS: Supplier[] = [
+  KBEAUTY_OUTLET,
+  ...kbeautyMarketplacePriority().map(brandFromCatalog),
 ];
 
 /** Editorial seed products — cautious, non-clinical language only. */

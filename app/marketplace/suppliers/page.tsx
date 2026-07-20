@@ -61,6 +61,15 @@ export default function SuppliersDirectoryPage({
           <h1 className="mt-3 font-display text-[2rem] leading-[1.1] text-ink md:text-[2.75rem]">
             Beauty suppliers and brands
           </h1>
+          <p className="mt-2 max-w-[520px] text-[14.5px] text-ink-soft">
+            Multi-brand sources plus US-priority K-beauty brand profiles.{" "}
+            <Link
+              href="/brands/kbeauty"
+              className="font-semibold text-brand-600 hover:text-brand-700"
+            >
+              Full K-beauty A–Z catalog →
+            </Link>
+          </p>
           <div className="mt-6 max-w-[640px]">
             <MarketplaceSearch
               initialQuery={searchParams?.q ?? ""}
