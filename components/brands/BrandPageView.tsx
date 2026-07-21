@@ -13,20 +13,45 @@ function Stat({
   value,
   label,
   sub,
+  href,
 }: {
   value: string;
   label: string;
   sub?: string;
+  /** When set, the whole stat card is a link (e.g. product count → product list). */
+  href?: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-line bg-white px-4 py-3.5 shadow-card sm:px-5">
-      <p className="font-display text-2xl tabular-nums text-ink sm:text-[28px]">{value}</p>
+  const inner = (
+    <>
+      <p className="font-display text-2xl tabular-nums text-ink sm:text-[28px]">
+        {value}
+        {href && (
+          <span className="ml-1 text-[14px] font-semibold text-brand-600 opacity-0 transition group-hover:opacity-100">
+            →
+          </span>
+        )}
+      </p>
       <p className="mt-0.5 text-[12.5px] font-bold uppercase tracking-wide text-ink-muted">
         {label}
       </p>
       {sub && <p className="mt-0.5 text-[11.5px] text-ink-faint">{sub}</p>}
-    </div>
+    </>
   );
+
+  const className =
+    "rounded-2xl border border-line bg-white px-4 py-3.5 shadow-card sm:px-5" +
+    (href
+      ? " group block transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-cardHover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+      : "");
+
+  if (href) {
+    return (
+      <a href={href} className={className} aria-label={`View ${label.toLowerCase()}: ${value}`}>
+        {inner}
+      </a>
+    );
+  }
+  return <div className={className}>{inner}</div>;
 }
 
 function ProductRail({
@@ -183,9 +208,14 @@ export default function BrandPageView({
             )}
           </div>
 
-          {/* Stats */}
+          {/* Stats — product count links to full catalog on this page */}
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat value={String(stats.productCount)} label="Products" sub="Ingredient-checked" />
+            <Stat
+              value={String(stats.productCount)}
+              label="Products"
+              sub={stats.productCount > 0 ? "Tap to view all →" : "Ingredient-checked"}
+              href={stats.productCount > 0 ? "#all-products" : undefined}
+            />
             <Stat
               value={stats.avgRating != null ? stats.avgRating.toFixed(1) : "—"}
               label="Avg rating"
@@ -204,6 +234,7 @@ export default function BrandPageView({
               value={String(stats.categories.length)}
               label="Categories"
               sub={stats.categories[0]?.name ?? "—"}
+              href={stats.categories.length > 0 ? "#all-products" : undefined}
             />
           </div>
         </div>
