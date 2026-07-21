@@ -7,6 +7,11 @@ import { CartProvider } from "@/lib/cart";
 import SiteFooter from "@/components/SiteFooter";
 import MobileTabBar from "@/components/MobileTabBar";
 
+const GOOGLE_SITE_VERIFICATION =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+  process.env.GOOGLE_SITE_VERIFICATION ||
+  "";
+
 export const metadata: Metadata = {
   // www is the host that actually resolves (the apex has no A record yet); canonical
   // URLs must point at a reachable origin or crawlers drop them.
@@ -36,6 +41,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  // Search Console HTML-tag verification — set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+  // (or GOOGLE_SITE_VERIFICATION) in the deploy env to the token Google provides.
+  ...(GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 const ORG_JSONLD = {
@@ -44,6 +54,7 @@ const ORG_JSONLD = {
   name: "goBeauty.ai",
   url: "https://www.gobeauty.ai",
   logo: "https://www.gobeauty.ai/gobeauty-logo.png",
+  sameAs: [] as string[],
 };
 
 const SITE_JSONLD = {
@@ -51,6 +62,14 @@ const SITE_JSONLD = {
   "@type": "WebSite",
   name: "goBeauty.ai",
   url: "https://www.gobeauty.ai/",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://www.gobeauty.ai/get-this-look?q={search_term_string}",
+    },
+    "query-input": "required name=search_term_string",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

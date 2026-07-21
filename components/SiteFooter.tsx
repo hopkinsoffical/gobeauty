@@ -41,6 +41,8 @@ export default function SiteFooter() {
               { label: "Find Pros", href: "/find-pros" },
               { label: "Local Rankings", href: "/local-rankings" },
               { label: "Looks & Trends", href: "/looks-trends" },
+              { label: "Blog", href: "/blog" },
+              { label: "FAQ", href: "/faq" },
             ]}
           />
           <FooterCol
@@ -71,6 +73,8 @@ export default function SiteFooter() {
         <div className="mt-10 flex flex-col gap-3 border-t border-line-soft pt-6 text-[13px] text-ink-muted md:flex-row md:items-center md:justify-between">
           <div>© {new Date().getFullYear()} GoBeauty, Inc. All rights reserved.</div>
           <div className="flex flex-wrap gap-5">
+            <Link href="/faq" className="hover:text-ink">FAQ</Link>
+            <Link href="/blog" className="hover:text-ink">Blog</Link>
             <Link href="/sms-consent" className="hover:text-ink">SMS Consent</Link>
             <Link href="/privacy" className="hover:text-ink">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-ink">Terms of Service</Link>

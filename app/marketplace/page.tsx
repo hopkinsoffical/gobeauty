@@ -3,6 +3,7 @@ import Link from "next/link";
 import MarketplaceSearch from "@/components/marketplace/MarketplaceSearch";
 import SupplierCard from "@/components/marketplace/SupplierCard";
 import ProductDiscoveryGrid from "@/components/marketplace/ProductDiscoveryGrid";
+import PageFaqSection from "@/components/PageFaqSection";
 import {
   LOOKING_FOR_CARDS,
   MARKETPLACE_PRODUCTS,
@@ -11,6 +12,7 @@ import {
   searchMarketplaceProducts,
   searchSuppliers,
 } from "@/lib/data/marketplace";
+import { FAQ_MARKETPLACE } from "@/lib/data/page-faqs";
 import {
   LOOKING_FOR_IMAGES,
   MARKETPLACE_HERO,
@@ -238,6 +240,13 @@ export default function MarketplacePage({
           </div>
         </div>
       </section>
+
+      <PageFaqSection
+        items={FAQ_MARKETPLACE}
+        pageUrl="https://www.gobeauty.ai/marketplace"
+        title="Salon marketplace FAQ"
+        subtitle="How Products for Salons works for owners, pros, and suppliers — samples, inquiries, and listings."
+      />
     </>
   );
 }

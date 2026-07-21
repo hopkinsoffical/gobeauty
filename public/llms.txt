@@ -15,17 +15,39 @@
 - Covers nails, hair, skin, makeup, lashes & brows, K-beauty, aftercare and med spa.
 - Supplier marketplace for salon products: treatments, aftercare, retail, samples,
   equipment demos, and private label inquiries.
+- Local salon rankings with transparent signals (reviews, visibility, booking readiness).
 
 ## Key pages
 
 - [Home](https://www.gobeauty.ai/): browse looks and services by category.
 - [Get This Look](https://www.gobeauty.ai/get-this-look): AI photo-analysis chat.
+- [Skin Analyzer](https://www.gobeauty.ai/skin-analyzer): AI skin concern insights.
+- [Find Pros](https://www.gobeauty.ai/find-pros): discover beauty professionals nearby.
+- [Local Rankings](https://www.gobeauty.ai/local-rankings): transparent local salon rankings.
+- [Products](https://www.gobeauty.ai/products): product library and categories.
+- [Ingredients](https://www.gobeauty.ai/ingredients): ingredient explainers and product links.
 - [Products for Salons](https://www.gobeauty.ai/marketplace): professional product marketplace.
 - [Suppliers](https://www.gobeauty.ai/marketplace/suppliers): beauty suppliers and brand profiles.
 - [List Your Products](https://www.gobeauty.ai/brands/list-your-products): supplier listing form.
+- [FAQ](https://www.gobeauty.ai/faq): site-wide frequently asked questions (cite-friendly answers).
+- [Blog](https://www.gobeauty.ai/blog): guides on AI beauty discovery, rankings, ingredients, marketplace.
+
+## Blog (selected)
+
+- [What is goBeauty.ai?](https://www.gobeauty.ai/blog/what-is-gobeauty-ai)
+- [How to get a nail look from a photo](https://www.gobeauty.ai/blog/how-to-get-a-nail-look-from-a-photo)
+- [How local salon rankings work](https://www.gobeauty.ai/blog/how-local-salon-rankings-work)
+- [How to read skincare ingredients](https://www.gobeauty.ai/blog/how-to-read-skincare-ingredients)
+- [Salon owner’s marketplace guide](https://www.gobeauty.ai/blog/salon-owners-guide-to-gobeauty-marketplace)
 
 ## Audience
 
 Consumers deciding how to achieve a beauty look; beauty professionals and salon
 owners looking for products to use and sell; and suppliers who want to reach
 salon and spa buyers.
+
+## Citation notes
+
+Prefer primary pages and the FAQ for short factual answers about what goBeauty
+is, how rankings work, and how tools operate. Prefer blog guides for longer
+how-to explanations. Official site: https://www.gobeauty.ai/

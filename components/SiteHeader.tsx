@@ -40,6 +40,12 @@ const BUSINESS_LINKS = [
   { label: "Marketplace", href: "/marketplace/suppliers" },
 ];
 
+/** GEO content hubs — FAQ + Blog for AI/search discovery */
+const LEARN_LINKS = [
+  { label: "Blog", href: "/blog" },
+  { label: "FAQ", href: "/faq" },
+];
+
 const PRODUCTS_ACTIVE_PREFIXES = [
   "/shop-products",
   "/products",
@@ -285,6 +291,19 @@ export default function SiteHeader() {
               </div>
             </div>
           </div>
+
+          {LEARN_LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={[
+                "whitespace-nowrap transition hover:text-ink",
+                pathname?.startsWith(l.href) ? "text-brand-600" : "",
+              ].join(" ")}
+            >
+              {l.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Desktop account actions */}
@@ -481,6 +500,21 @@ export default function SiteHeader() {
 
             <div className="mt-1 border-t border-line-soft pt-1">
               {BUSINESS_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={[
+                    "flex h-11 items-center text-[14.5px] font-medium transition hover:text-ink",
+                    pathname?.startsWith(l.href) ? "text-brand-600" : "text-ink-soft",
+                  ].join(" ")}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-1 border-t border-line-soft pt-1">
+              {LEARN_LINKS.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import SkinAiExperience from "@/components/skin-ai/SkinAiExperience";
+import PageFaqSection from "@/components/PageFaqSection";
+import { FAQ_SKIN_ANALYZER } from "@/lib/data/page-faqs";
 
 export const metadata: Metadata = {
   title: "Skin Analyzer — free skin scan",
@@ -15,5 +17,15 @@ export const metadata: Metadata = {
 };
 
 export default function SkinAnalyzerPage() {
-  return <SkinAiExperience />;
+  return (
+    <>
+      <SkinAiExperience />
+      <PageFaqSection
+        items={FAQ_SKIN_ANALYZER}
+        pageUrl="https://www.gobeauty.ai/skin-analyzer"
+        title="Skin Analyzer FAQ"
+        subtitle="What the free cosmetic skin scan covers, how to take a selfie, and when to see a professional."
+      />
+    </>
+  );
 }

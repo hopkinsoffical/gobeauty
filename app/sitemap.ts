@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listCategories, listIngredients, listProducts } from "@/lib/gbApi";
 import type { CategoryNode } from "@/lib/gbApi";
+import { getAllBlogPosts } from "@/lib/data/blog";
 import { MARKETPLACE_SERVICES, SUPPLIERS } from "@/lib/data/marketplace";
 
 export const revalidate = 3600;
@@ -41,10 +42,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/brands/explore`, changeFrequency: "daily", priority: 0.85 },
     { url: `${base}/ingredients`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/compare`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${base}/faq`, changeFrequency: "weekly", priority: 0.85 },
+    { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/sms-consent`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },
   ];
+
+  const blogEntries: MetadataRoute.Sitemap = getAllBlogPosts().map((p) => ({
+    url: `${base}/blog/${p.slug}`,
+    lastModified: new Date(p.updatedAt),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
 
   // Best-effort: the gb API can be briefly down without breaking the sitemap.
   let dynamic: MetadataRoute.Sitemap = [];
@@ -88,5 +98,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // fall through with fixed URLs only
   }
 
-  return [...fixed, ...dynamic];
+  return [...fixed, ...blogEntries, ...dynamic];
 }
