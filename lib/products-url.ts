@@ -14,6 +14,8 @@ export function buildProductsHref(opts: {
   filters?: string[];
   category?: string;
   sort?: string;
+  view?: string;
+  page?: number;
 }): string {
   const params = new URLSearchParams();
   if (opts.q?.trim()) params.set("q", opts.q.trim());
@@ -25,8 +27,18 @@ export function buildProductsHref(opts: {
     params.set("badge", opts.filters.join(","));
   }
   if (opts.sort) params.set("sort", opts.sort);
+  if (opts.view) params.set("view", opts.view);
+  if (opts.page && opts.page > 1) params.set("page", String(opts.page));
   const qs = params.toString();
   return `/products${qs ? `?${qs}` : ""}`;
+}
+
+export function buildBrandsHref(opts: { q?: string; page?: number } = {}): string {
+  const params = new URLSearchParams();
+  if (opts.q?.trim()) params.set("q", opts.q.trim());
+  if (opts.page && opts.page > 1) params.set("page", String(opts.page));
+  const qs = params.toString();
+  return `/brands/explore${qs ? `?${qs}` : ""}`;
 }
 
 export function toggleFilter(active: string[], key: string): string[] {

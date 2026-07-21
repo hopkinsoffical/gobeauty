@@ -194,7 +194,14 @@ async function get<T>(path: string): Promise<T> {
 
 export const listProducts = (
   q = "",
-  opts: { badge?: string; category?: string; brand?: string; sort?: string; limit?: number } = {},
+  opts: {
+    badge?: string;
+    category?: string;
+    brand?: string;
+    sort?: string;
+    limit?: number;
+    offset?: number;
+  } = {},
 ) => {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
@@ -203,6 +210,7 @@ export const listProducts = (
   if (opts.brand) params.set("brand", opts.brand);
   if (opts.sort) params.set("sort", opts.sort);
   if (opts.limit) params.set("limit", String(opts.limit));
+  if (opts.offset) params.set("offset", String(opts.offset));
   const qs = params.toString();
   return get<{ products: ProductCard[] }>(`/api/gb/products${qs ? `?${qs}` : ""}`);
 };

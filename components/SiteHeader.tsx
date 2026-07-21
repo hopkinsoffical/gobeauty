@@ -19,6 +19,8 @@ const NAV_LINKS = [
 const PRODUCTS_FOR_YOURSELF = [
   { label: "Skin Analyzer", href: "/skin-analyzer" },
   { label: "Shop Pro-Recommended Products", href: "/shop-products" },
+  { label: "All Products", href: "/products?view=all" },
+  { label: "All Brands", href: "/brands/explore" },
   { label: "Product Library", href: "/products" },
   { label: "Ingredients", href: "/ingredients" },
   { label: "Compare Products", href: "/compare" },

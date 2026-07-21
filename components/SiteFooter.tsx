@@ -46,6 +46,8 @@ export default function SiteFooter() {
           <FooterCol
             title="Shop"
             items={[
+              { label: "All Products", href: "/products?view=all" },
+              { label: "All Brands", href: "/brands/explore" },
               { label: "Pro-Recommended Products", href: "/shop-products" },
               { label: "Product Library", href: "/products" },
               { label: "Ingredients", href: "/ingredients" },

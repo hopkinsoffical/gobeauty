@@ -69,6 +69,8 @@ const TABS = [
 
 const MORE_LINKS = [
   { label: "Skin Analyzer", href: "/skin-analyzer" },
+  { label: "All Products", href: "/products?view=all" },
+  { label: "All Brands", href: "/brands/explore" },
   { label: "Looks & Trends", href: "/looks-trends" },
   { label: "Local Rankings", href: "/local-rankings" },
   { label: "Product Library", href: "/products" },

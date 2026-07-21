@@ -45,6 +45,8 @@ const JSONLD = {
   },
 };
 
+const PAGE_SIZE = 24;
+
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -55,12 +57,14 @@ export default async function ProductsPage({
     category?: string;
     sort?: string;
     view?: string;
+    page?: string;
   };
 }) {
   const q = (searchParams.q ?? "").trim();
   const category = (searchParams.category ?? "").trim();
   const sort = searchParams.sort ?? "relevance";
   const viewAll = searchParams.view === "all";
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1);
 
   // Accept both filters= (hyphenated public URL) and badge= (API-style).
   const fromFilters = parseFilterKeys(searchParams.filters);
@@ -72,21 +76,33 @@ export default async function ProductsPage({
   const apiBadges = activeFilters.filter((k) => k in BADGE_LABELS);
 
   const isDiscovery = !q && !category && activeFilters.length === 0 && !viewAll;
+  // Paginated full list when browsing all / filtering / searching.
+  const usePagination = !isDiscovery;
+  const offset = usePagination ? (page - 1) * PAGE_SIZE : 0;
+  // Fetch one extra to know if a next page exists (API has no total count).
+  const fetchLimit = usePagination ? PAGE_SIZE + 1 : PAGE_SIZE;
 
-  // Always load products so category links (?category=skincare), view=all, search,
-  // and the discovery landing all show a real product grid (not an empty state).
   let products: Awaited<ReturnType<typeof listProducts>>["products"] = [];
+  let hasNext = false;
   try {
     const res = await listProducts(q, {
       badge: apiBadges.join(","),
       category: category || undefined,
-      // Discovery / unfiltered browse: bayesian top-rated. Explicit sort from UI wins.
       sort: sort !== "relevance" ? sort : isDiscovery || viewAll ? "top" : undefined,
-      limit: 48,
+      limit: fetchLimit,
+      offset: usePagination ? offset : undefined,
     });
-    products = res.products ?? [];
+    const raw = res.products ?? [];
+    if (usePagination && raw.length > PAGE_SIZE) {
+      hasNext = true;
+      products = raw.slice(0, PAGE_SIZE);
+    } else {
+      products = raw;
+      hasNext = false;
+    }
   } catch {
     products = [];
+    hasNext = false;
   }
 
   return (
@@ -114,6 +130,10 @@ export default async function ProductsPage({
         products={products}
         sort={sort}
         isDiscovery={isDiscovery}
+        viewAll={viewAll}
+        page={page}
+        hasNext={hasNext}
+        pageSize={PAGE_SIZE}
       />
 
       {isDiscovery && <ProductBenefits />}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/products/product-card";
+import Pagination from "@/components/Pagination";
 import type { ProductCard as ApiProduct } from "@/lib/gbApi";
 import { BADGE_LABELS } from "@/lib/gbApi";
 import { FILTERS } from "@/data/products-landing";
@@ -12,6 +13,10 @@ export default function ProductResults({
   products,
   sort = "relevance",
   isDiscovery = false,
+  viewAll = false,
+  page = 1,
+  hasNext = false,
+  pageSize = 24,
 }: {
   q: string;
   category: string;
@@ -19,6 +24,10 @@ export default function ProductResults({
   products: ApiProduct[];
   sort?: string;
   isDiscovery?: boolean;
+  viewAll?: boolean;
+  page?: number;
+  hasNext?: boolean;
+  pageSize?: number;
 }) {
   const categoryLabel = category
     .replace(/-/g, " ")
@@ -31,6 +40,21 @@ export default function ProductResults({
         ? "Top products"
         : "All products";
 
+  const showPagination = !isDiscovery || viewAll || q || category || activeFilters.length > 0;
+  const hasPrev = page > 1;
+  const rangeStart = products.length ? (page - 1) * pageSize + 1 : 0;
+  const rangeEnd = (page - 1) * pageSize + products.length;
+
+  const pageHref = (p: number) =>
+    buildProductsHref({
+      q,
+      category: category || undefined,
+      filters: activeFilters,
+      sort: sort !== "relevance" ? sort : undefined,
+      view: viewAll || (!q && !category && activeFilters.length === 0) ? "all" : undefined,
+      page: p,
+    });
+
   return (
     <section
       className="mx-auto max-w-[1440px] px-4 py-10 md:px-6 lg:px-8"
@@ -42,12 +66,19 @@ export default function ProductResults({
             {title}
           </h2>
           <p className="mt-1 text-[14px] text-[var(--beauty-muted)]">
-            {products.length} product{products.length === 1 ? "" : "s"}
+            {products.length === 0
+              ? "0 products"
+              : showPagination
+                ? `Showing ${rangeStart}–${rangeEnd} · page ${page}`
+                : `${products.length} product${products.length === 1 ? "" : "s"}`}
           </p>
         </div>
         <form action="/products" method="get" className="flex items-center gap-2">
           {q && <input type="hidden" name="q" value={q} />}
           {category && <input type="hidden" name="category" value={category} />}
+          {(viewAll || (!q && !category && activeFilters.length === 0)) && (
+            <input type="hidden" name="view" value="all" />
+          )}
           {activeFilters.length > 0 && (
             <>
               <input type="hidden" name="filters" value={activeFilters.map((k) => k.replace(/_/g, "-")).join(",")} />
@@ -124,11 +155,22 @@ export default function ProductResults({
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard key={p.slug} mode="api" product={p} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((p) => (
+              <ProductCard key={p.slug} mode="api" product={p} />
+            ))}
+          </div>
+          {showPagination && (
+            <Pagination
+              page={page}
+              hasPrev={hasPrev}
+              hasNext={hasNext}
+              hrefForPage={pageHref}
+              label="products"
+            />
+          )}
+        </>
       )}
     </section>
   );

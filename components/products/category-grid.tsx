@@ -31,7 +31,7 @@ export default function CategoryGrid() {
           href="/products?view=all"
           className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--beauty-border)] bg-white px-7 text-[14.5px] font-semibold text-[var(--beauty-text)] transition hover:border-brand-300 hover:bg-[var(--beauty-pink-light)]"
         >
-          Explore all categories
+          Browse all products
         </Link>
       </div>
     </section>
