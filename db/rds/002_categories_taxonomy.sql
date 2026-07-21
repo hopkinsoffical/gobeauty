@@ -29,6 +29,10 @@ select pg_temp.gb_cat('skincare', 'Skincare', null, 1,
   'Ingredient-checked skincare: every product decoded down to its INCI list, with benefit and concern analysis.');
 select pg_temp.gb_cat('makeup', 'Makeup', null, 2,
   'Makeup with full ingredient transparency — what''s in your base, cheek, eye, and lip products and what it does for your skin.');
+select pg_temp.gb_cat('haircare', 'Hair Care', null, 3,
+  'Shampoos, conditioners, masks, and treatments with full ingredient transparency.');
+select pg_temp.gb_cat('bodycare', 'Body Care', null, 4,
+  'Body washes, lotions, hand and foot care — decoded by ingredients.');
 
 -- ── skincare ────────────────────────────────────────────────────────────────
 select pg_temp.gb_cat('moisturizers', 'Moisturizers', 'skincare', 1,

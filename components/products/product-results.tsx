@@ -11,18 +11,25 @@ export default function ProductResults({
   activeFilters,
   products,
   sort = "relevance",
+  isDiscovery = false,
 }: {
   q: string;
   category: string;
   activeFilters: string[];
   products: ApiProduct[];
   sort?: string;
+  isDiscovery?: boolean;
 }) {
+  const categoryLabel = category
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
   const title = q
     ? `Results for “${q}”`
     : category
-      ? `Products in ${category.replace(/-/g, " ")}`
-      : "Filtered products";
+      ? `${categoryLabel}`
+      : isDiscovery
+        ? "Top products"
+        : "All products";
 
   return (
     <section

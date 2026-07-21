@@ -34,7 +34,7 @@ export const FILTERS: FilterDef[] = [
 
 export const PLATFORM_STATS: PlatformStat[] = [
   {
-    value: "1073+",
+    value: "2300+",
     label: "Products",
     sub: "Ingredient-checked",
     icon: "package",
@@ -58,7 +58,7 @@ export const CATEGORIES: CategoryCardData[] = [
     slug: "skincare",
     title: "Skincare",
     description: "Ingredient transparency for every skincare product.",
-    countLabel: "1073+ products",
+    countLabel: "1400+ products",
     popularLabel: "Popular",
     chips: [
       { label: "Moisturizer", href: "/products?q=moisturizer&category=skincare" },
@@ -77,7 +77,7 @@ export const CATEGORIES: CategoryCardData[] = [
     slug: "makeup",
     title: "Makeup",
     description: "Know what’s in your makeup from base to finish.",
-    countLabel: "90+ products",
+    countLabel: "200+ products",
     popularLabel: "Popular",
     chips: [
       { label: "Foundation", href: "/products?q=foundation&category=makeup" },
@@ -96,7 +96,7 @@ export const CATEGORIES: CategoryCardData[] = [
     slug: "haircare",
     title: "Hair Care",
     description: "Healthy hair starts with safer ingredients.",
-    countLabel: "120+ products",
+    countLabel: "18+ products",
     popularLabel: "Popular",
     chips: [
       { label: "Shampoo", href: "/products?q=shampoo&category=haircare" },
@@ -115,7 +115,7 @@ export const CATEGORIES: CategoryCardData[] = [
     slug: "bodycare",
     title: "Body Care",
     description: "Gentle, effective, and better for your body.",
-    countLabel: "80+ products",
+    countLabel: "12+ products",
     popularLabel: "Popular",
     chips: [
       { label: "Body Wash", href: "/products?q=body+wash&category=bodycare" },

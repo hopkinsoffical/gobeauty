@@ -73,19 +73,20 @@ export default async function ProductsPage({
 
   const isDiscovery = !q && !category && activeFilters.length === 0 && !viewAll;
 
+  // Always load products so category links (?category=skincare), view=all, search,
+  // and the discovery landing all show a real product grid (not an empty state).
   let products: Awaited<ReturnType<typeof listProducts>>["products"] = [];
-  if (!isDiscovery) {
-    try {
-      const res = await listProducts(q, {
-        badge: apiBadges.join(","),
-        category: category || undefined,
-        sort: sort !== "relevance" ? sort : undefined,
-        limit: 48,
-      });
-      products = res.products ?? [];
-    } catch {
-      products = [];
-    }
+  try {
+    const res = await listProducts(q, {
+      badge: apiBadges.join(","),
+      category: category || undefined,
+      // Discovery / unfiltered browse: bayesian top-rated. Explicit sort from UI wins.
+      sort: sort !== "relevance" ? sort : isDiscovery || viewAll ? "top" : undefined,
+      limit: 48,
+    });
+    products = res.products ?? [];
+  } catch {
+    products = [];
   }
 
   return (
@@ -99,21 +100,23 @@ export default async function ProductsPage({
 
       <PopularFilters active={activeFilters} q={q} category={category} />
 
-      {!isDiscovery ? (
-        <ProductResults
-          q={q}
-          category={category}
-          activeFilters={activeFilters}
-          products={products}
-          sort={sort}
-        />
-      ) : (
+      {isDiscovery && (
         <>
           <CategoryGrid />
           <TopBrands />
-          <ProductBenefits />
         </>
       )}
+
+      <ProductResults
+        q={q}
+        category={category}
+        activeFilters={activeFilters}
+        products={products}
+        sort={sort}
+        isDiscovery={isDiscovery}
+      />
+
+      {isDiscovery && <ProductBenefits />}
     </div>
   );
 }

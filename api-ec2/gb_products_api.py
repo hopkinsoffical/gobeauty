@@ -58,20 +58,39 @@ async def list_products(
         key = key.strip()
         if key in _BADGE_KEYS:  # whitelist — badge names go into the jsonb literal
             where += f" and p.badge_flags @> '{{\"{key}\": true}}'::jsonb"
+    # Parent categories (e.g. skincare) must include descendant leaf categories —
+    # products are almost never assigned directly to the root slug.
+    cat_cte = ""
     if category.strip():
         args.append(category.strip())
-        where += f" and c.slug = ${len(args)}"
+        cat_cte = f"""
+            with recursive cat_tree as (
+              select id from gb_categories where slug = ${len(args)}
+              union all
+              select c.id from gb_categories c join cat_tree t on c.parent_id = t.id
+            )
+        """
+        where += " and p.category_id in (select id from cat_tree)"
     if brand.strip():
         args.append(brand.strip())
         where += f" and b.slug = ${len(args)}"
+    # Frontend sends sort=rating | name | relevance | top; map them.
+    if sort in ("top", "rating"):
+        order = ("(coalesce(p.rating_avg, 0) * p.rating_count + 4.0 * 10) "
+                 "/ (p.rating_count + 10) desc, p.rating_count desc")
+    elif sort == "name":
+        order = "p.name asc"
+    else:
+        order = "p.rating_count desc, p.created_at desc"
     rows = await pool.fetch(
-        f"""select p.slug, p.name, p.badge_flags, p.rating_avg, p.rating_count,
+        f"""{cat_cte}
+            select p.slug, p.name, p.badge_flags, p.rating_avg, p.rating_count,
                    p.images, b.name as brand, b.slug as brand_slug, c.name as category
             from gb_products p
             join gb_brands b on b.id = p.brand_id
             left join gb_categories c on c.id = p.category_id
             where {where}
-            order by {"(coalesce(p.rating_avg, 0) * p.rating_count + 4.0 * 10) / (p.rating_count + 10) desc, p.rating_count desc" if sort == "top" else "p.rating_count desc, p.created_at desc"}
+            order by {order}
             limit {int(limit)} offset {int(offset)}""",
         *args,
     )
