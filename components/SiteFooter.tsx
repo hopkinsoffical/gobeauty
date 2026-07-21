@@ -37,6 +37,7 @@ export default function SiteFooter() {
             title="Discover"
             items={[
               { label: "Get This Look", href: "/get-this-look" },
+              { label: "Skin AI Analyzer", href: "/skin-ai" },
               { label: "Find Pros", href: "/find-pros" },
               { label: "Local Rankings", href: "/local-rankings" },
               { label: "Looks & Trends", href: "/looks-trends" },
