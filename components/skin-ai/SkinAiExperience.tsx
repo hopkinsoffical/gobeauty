@@ -70,7 +70,7 @@ export default function SkinAiExperience() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(235,79,120,0.10),transparent_55%)]" />
         <div className="relative mx-auto max-w-[1100px] px-4 pb-10 pt-10 md:px-6 md:pb-14 md:pt-14 lg:px-8">
           <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--beauty-pink)]">
-            Skin AI Analyzer
+            Skin Analyzer
           </p>
           <h1 className="mt-3 max-w-2xl font-display text-[36px] leading-[1.12] tracking-tight text-ink sm:text-5xl">
             Scan your skin. Get scores.{" "}

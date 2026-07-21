@@ -10,14 +10,14 @@ import CartLink from "@/components/gb/CartLink";
 // Products is a mega menu (marketplace doc §2); other items stay simple links.
 const NAV_LINKS = [
   { label: "Get This Look", href: "/get-this-look" },
-  { label: "Skin AI", href: "/skin-ai" },
+  { label: "Skin Analyzer", href: "/skin-analyzer" },
   { label: "Find Pros", href: "/find-pros" },
   { label: "Local Rankings", href: "/local-rankings" },
   { label: "Looks & Trends", href: "/looks-trends" },
 ];
 
 const PRODUCTS_FOR_YOURSELF = [
-  { label: "Skin AI Analyzer", href: "/skin-ai" },
+  { label: "Skin Analyzer", href: "/skin-analyzer" },
   { label: "Shop Pro-Recommended Products", href: "/shop-products" },
   { label: "Product Library", href: "/products" },
   { label: "Ingredients", href: "/ingredients" },
