@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { decodeSlug, getBrand } from "@/lib/gbApi";
-import { ProductCardTile } from "@/components/gb/ProductBits";
+import BrandPageView from "@/components/brands/BrandPageView";
+import { brandStats } from "@/lib/brand-page";
+import { decodeSlug, getBrand, listBrands } from "@/lib/gbApi";
 
 export const revalidate = 300;
 
@@ -21,65 +21,35 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const b = await load(decodeSlug(params.slug));
   if (!b) return { title: "Brand not found" };
+  const stats = brandStats(b.products);
+  const desc =
+    b.description?.slice(0, 155) ??
+    `Shop ${b.name}: ${stats.productCount} ingredient-checked products, top-rated picks, and most-reviewed bestsellers.`;
   return {
-    title: `${b.name} — products & ingredient analysis`,
-    description:
-      b.description?.slice(0, 155) ??
-      `Every ${b.name} product decoded: full ingredient lists, benefits, and concerns.`,
+    title: `${b.name} — products, bestsellers & ingredient analysis`,
+    description: desc,
+    alternates: { canonical: `/brands/${b.slug}` },
+    openGraph: {
+      title: `${b.name} | goBeauty.ai`,
+      description: desc,
+      url: `/brands/${b.slug}`,
+    },
   };
 }
 
 export default async function BrandPage({ params }: { params: { slug: string } }) {
-  const b = await load(decodeSlug(params.slug));
+  const slug = decodeSlug(params.slug);
+  const b = await load(slug);
   if (!b) notFound();
 
-  return (
-    <div className="mx-auto max-w-[1200px] px-6 py-10">
-      <nav className="mb-6 text-sm text-ink-muted">
-        <Link href="/products" className="hover:text-brand-700">
-          Products
-        </Link>{" "}
-        / {b.name}
-      </nav>
+  // Related brands: top catalog peers excluding current
+  let related: Awaited<ReturnType<typeof listBrands>>["brands"] = [];
+  try {
+    const { brands } = await listBrands(24);
+    related = brands.filter((x) => x.slug !== b.slug).slice(0, 6);
+  } catch {
+    related = [];
+  }
 
-      <header className="mb-8 flex items-start gap-4">
-        {b.logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={b.logoUrl}
-            alt={`${b.name} logo`}
-            className="h-16 w-16 rounded-xl border border-line object-contain"
-          />
-        )}
-        <div>
-          <h1 className="font-display text-3xl text-ink">{b.name}</h1>
-          {b.country && <p className="mt-1 text-sm text-ink-faint">{b.country}</p>}
-          {b.description && <p className="mt-2 max-w-xl text-ink-soft">{b.description}</p>}
-          {b.website && (
-            <a
-              href={b.website}
-              target="_blank"
-              rel="noopener noreferrer nofollow"
-              className="mt-2 inline-block text-sm text-brand-700 hover:underline"
-            >
-              {b.website.replace(/^https?:\/\//, "")}
-            </a>
-          )}
-        </div>
-      </header>
-
-      <h2 className="mb-3 font-display text-xl text-ink">
-        Products <span className="text-sm text-ink-muted">({b.products.length})</span>
-      </h2>
-      {b.products.length === 0 ? (
-        <p className="text-ink-muted">No products decoded yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {b.products.map((p) => (
-            <ProductCardTile key={p.slug} p={p} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <BrandPageView brand={b} related={related} />;
 }
