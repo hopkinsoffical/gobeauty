@@ -7,14 +7,14 @@ import { breadcrumbJsonLd, faqPageJsonLd } from "@/lib/jsonld";
 const PAGE_URL = "https://www.gobeauty.ai/faq";
 
 export const metadata: Metadata = {
-  title: "FAQ — Beauty AI, Products, Salons & Account Help",
+  title: "FAQ",
   description:
-    "Frequently asked questions about goBeauty.ai: Get This Look AI analysis, Skin Analyzer, products and ingredients, Find Pros, local rankings, marketplace, privacy, and accounts.",
+    "Short answers about goBeauty: AI look analysis, Skin Analyzer, products, local pros, marketplace, and accounts.",
   alternates: { canonical: "/faq" },
   openGraph: {
-    title: "goBeauty.ai FAQ",
+    title: "FAQ | goBeauty.ai",
     description:
-      "Answers about AI beauty discovery, products, local pros, salon marketplace, and accounts on goBeauty.ai.",
+      "Compact answers on AI beauty tools, products, salons, and accounts.",
     url: PAGE_URL,
   },
 };
@@ -26,9 +26,10 @@ export default function FaqPage() {
     { name: "Home", url: "https://www.gobeauty.ai/" },
     { name: "FAQ", url: PAGE_URL },
   ]);
+  const total = flat.length;
 
   return (
-    <div className="bg-[#fffaf9]">
+    <div className="bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
@@ -38,74 +39,113 @@ export default function FaqPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbLd) }}
       />
 
-      <section className="border-b border-brand-100 bg-gradient-to-br from-brand-50 via-white to-[#fff5ed]">
-        <div className="mx-auto max-w-[900px] px-5 py-12 md:py-16">
-          <nav className="flex items-center gap-2 text-[12px] font-semibold text-ink-muted">
-            <Link href="/" className="transition hover:text-brand-600">
+      {/* Compact header — Stripe/Notion-style density */}
+      <header className="border-b border-line-soft">
+        <div className="mx-auto max-w-[960px] px-5 py-6 md:py-8">
+          <nav className="mb-3 flex items-center gap-1.5 text-[12px] font-medium text-ink-muted">
+            <Link href="/" className="hover:text-brand-600">
               Home
             </Link>
-            <span aria-hidden>／</span>
+            <span aria-hidden className="text-ink-faint">
+              /
+            </span>
             <span className="text-ink">FAQ</span>
           </nav>
-          <p className="mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-brand-600">
-            Help center
-          </p>
-          <h1 className="mt-3 max-w-3xl font-display text-[2.4rem] leading-[1.08] text-ink md:text-[3.2rem]">
-            Frequently asked questions about goBeauty.ai
-          </h1>
-          <p className="mt-5 max-w-2xl text-[15px] leading-7 text-ink-soft md:text-[16px]">
-            Straight answers about AI look analysis, skincare tools, products,
-            local salons, and business features — written so you can act in one
-            step.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h1 className="font-display text-[1.85rem] leading-none text-ink md:text-[2.15rem]">
+              FAQ
+            </h1>
+            <p className="text-[13px] text-ink-muted">{total} questions</p>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile category chips */}
+      <div className="sticky top-16 z-20 border-b border-line-soft bg-white/95 backdrop-blur md:hidden">
+        <div className="flex gap-1.5 overflow-x-auto px-5 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {SITE_FAQ_GROUPS.map((g) => (
+            <a
+              key={g.id}
+              href={`#${g.id}`}
+              className="shrink-0 rounded-full border border-line bg-surface-soft px-3 py-1 text-[12px] font-semibold text-ink-soft transition hover:border-brand-300 hover:text-brand-700"
+            >
+              {g.title}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Sidebar + list — Intercom help center pattern */}
+      <div className="mx-auto grid max-w-[960px] gap-0 px-5 py-6 md:grid-cols-[168px_minmax(0,1fr)] md:gap-10 md:py-8 lg:grid-cols-[180px_minmax(0,1fr)]">
+        <aside className="hidden md:block">
+          <nav
+            aria-label="FAQ categories"
+            className="sticky top-24 space-y-0.5"
+          >
+            <p className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-[0.1em] text-ink-faint">
+              Topics
+            </p>
             {SITE_FAQ_GROUPS.map((g) => (
               <a
                 key={g.id}
                 href={`#${g.id}`}
-                className="rounded-pill border border-brand-100 bg-white/90 px-3.5 py-1.5 text-[12.5px] font-semibold text-ink-soft shadow-card transition hover:border-brand-300 hover:text-brand-700"
+                className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-ink-soft transition hover:bg-surface-soft hover:text-ink"
               >
-                {g.title}
+                <span>{g.title}</span>
+                <span className="text-[11px] font-medium tabular-nums text-ink-faint">
+                  {g.items.length}
+                </span>
               </a>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-[900px] space-y-14 px-5 py-12 md:py-16">
-        {SITE_FAQ_GROUPS.map((group, gi) => (
-          <section key={group.id} id={group.id} className="scroll-mt-24">
-            <div className="mb-5">
-              <h2 className="font-display text-[1.65rem] text-ink md:text-[1.85rem]">
-                {group.title}
-              </h2>
-              <p className="mt-2 text-[14.5px] text-ink-soft">{group.description}</p>
+            <div className="mt-4 border-t border-line-soft px-2.5 pt-4 text-[12px] leading-relaxed text-ink-muted">
+              <Link href="/blog" className="font-semibold text-brand-600 hover:underline">
+                Blog
+              </Link>
+              {" · "}
+              <Link href="/get-this-look" className="font-semibold text-brand-600 hover:underline">
+                Get This Look
+              </Link>
             </div>
-            <FaqAccordion items={group.items} openFirst={gi === 0} />
-          </section>
-        ))}
+          </nav>
+        </aside>
 
-        <section className="rounded-2xl border border-line bg-white p-6 shadow-card md:p-8">
-          <h2 className="font-display text-2xl text-ink">Still need help?</h2>
-          <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">
-            Browse the{" "}
+        <div className="min-w-0 space-y-8 md:space-y-9">
+          {SITE_FAQ_GROUPS.map((group, gi) => (
+            <section key={group.id} id={group.id} className="scroll-mt-28 md:scroll-mt-24">
+              <div className="mb-1 flex items-baseline justify-between gap-2">
+                <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-ink-muted">
+                  {group.title}
+                </h2>
+                <span className="text-[11px] tabular-nums text-ink-faint">
+                  {group.items.length}
+                </span>
+              </div>
+              <FaqAccordion
+                items={group.items}
+                openFirst={gi === 0}
+                variant="list"
+              />
+            </section>
+          ))}
+
+          <p className="border-t border-line-soft pt-5 text-[13px] text-ink-muted">
+            Still stuck?{" "}
             <Link href="/blog" className="font-semibold text-brand-600 hover:underline">
-              goBeauty blog
-            </Link>{" "}
-            for deeper guides, review the{" "}
-            <Link href="/privacy" className="font-semibold text-brand-600 hover:underline">
-              Privacy Policy
+              Read the blog
             </Link>
-            , or explore{" "}
+            {" · "}
+            <Link href="/privacy" className="font-semibold text-brand-600 hover:underline">
+              Privacy
+            </Link>
+            {" · "}
             <Link
               href="/get-this-look"
               className="font-semibold text-brand-600 hover:underline"
             >
-              Get This Look
-            </Link>{" "}
-            to analyze a beauty photo now.
+              Try Get This Look
+            </Link>
           </p>
-        </section>
+        </div>
       </div>
     </div>
   );
