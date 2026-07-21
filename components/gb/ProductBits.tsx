@@ -69,19 +69,23 @@ export function ProductCardTile({ p }: { p: ProductCard }) {
   return (
     <Link
       href={`/products/${p.slug}`}
-      className="group flex flex-col gap-2 rounded-2xl border border-line bg-white p-4 transition hover:border-brand-300 hover:shadow-md"
+      className="group flex flex-col gap-2 rounded-2xl border border-line bg-white p-3 transition hover:border-brand-300 hover:shadow-md sm:p-3.5"
     >
-      <div className="flex h-32 items-center justify-center rounded-xl bg-surface-soft text-4xl">
+      <div className="flex h-28 items-center justify-center rounded-xl bg-surface-soft text-3xl sm:h-32">
         {p.images[0]?.url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={p.images[0].url} alt={p.images[0].alt ?? p.name} className="max-h-full rounded-xl object-contain" />
+          <img
+            src={p.images[0].url}
+            alt={p.images[0].alt ?? p.name}
+            className="max-h-20 max-w-20 object-contain sm:max-h-24 sm:max-w-24"
+          />
         ) : (
           <span aria-hidden>🧴</span>
         )}
       </div>
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{p.brand}</p>
-        <h3 className="font-display text-lg leading-snug text-ink group-hover:text-brand-700">
+        <h3 className="font-display text-[15px] leading-snug text-ink group-hover:text-brand-700 sm:text-base">
           {p.name}
         </h3>
         {p.category && <p className="text-xs text-ink-faint">{p.category}</p>}

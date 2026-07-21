@@ -26,23 +26,23 @@ export default function BrandProductCard({
       )}
       <Link
         href={`/products/${p.slug}`}
-        className="relative block aspect-[4/5] bg-[var(--beauty-blush)]"
+        className="relative flex h-32 items-center justify-center bg-[var(--beauty-blush)] sm:h-36"
       >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={img}
             alt={p.images[0]?.alt || p.name}
-            className="h-full w-full object-contain p-4"
+            className="max-h-[6.5rem] max-w-[6.5rem] object-contain sm:max-h-28 sm:max-w-28"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-4xl" aria-hidden>
+          <div className="flex items-center justify-center text-3xl" aria-hidden>
             🧴
           </div>
         )}
       </Link>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
+      <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-3.5">
         {rankLabel && (
           <p className="text-[10.5px] font-bold uppercase tracking-wide text-brand-600">
             {rankLabel}

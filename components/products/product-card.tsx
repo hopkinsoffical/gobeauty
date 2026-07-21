@@ -19,27 +19,30 @@ export default function ProductCard(props: Props) {
     const img = p.images[0]?.url;
     return (
       <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--beauty-border)] bg-white shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-cardHover motion-reduce:transform-none">
-        <Link href={`/products/${p.slug}`} className="relative block aspect-[4/5] bg-[var(--beauty-blush)]">
+        <Link
+          href={`/products/${p.slug}`}
+          className="relative flex h-36 items-center justify-center bg-[var(--beauty-blush)] sm:h-40"
+        >
           {img ? (
             // External product CDN images may not be in next.config remotePatterns.
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={img}
               alt={p.images[0]?.alt || p.name}
-              className="h-full w-full object-contain p-4"
+              className="max-h-[7.5rem] max-w-[7.5rem] object-contain sm:max-h-32 sm:max-w-32"
               loading="lazy"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-4xl" aria-hidden>
+            <div className="flex items-center justify-center text-3xl" aria-hidden>
               🧴
             </div>
           )}
         </Link>
-        <div className="flex flex-1 flex-col gap-2 p-4">
+        <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
           <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--beauty-muted)]">
             {p.brand}
           </p>
-          <h3 className="font-display text-[17px] leading-snug text-[var(--beauty-text)] group-hover:text-[var(--beauty-pink-dark)]">
+          <h3 className="font-display text-[15.5px] leading-snug text-[var(--beauty-text)] group-hover:text-[var(--beauty-pink-dark)] sm:text-[16px]">
             <Link href={`/products/${p.slug}`}>{p.name}</Link>
           </h3>
           {(p.ratingAvg != null || p.ratingCount > 0) && (
@@ -80,14 +83,26 @@ export default function ProductCard(props: Props) {
   const p = props.product;
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--beauty-border)] bg-white shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-cardHover motion-reduce:transform-none">
-      <Link href={`/products?q=${encodeURIComponent(p.name)}`} className="relative block aspect-[4/5] bg-[var(--beauty-blush)]">
-        <Image src={p.imageSrc} alt={p.name} fill className="object-contain p-4" sizes="240px" />
+      <Link
+        href={`/products?q=${encodeURIComponent(p.name)}`}
+        className="relative flex h-36 items-center justify-center bg-[var(--beauty-blush)] sm:h-40"
+      >
+        <Image
+          src={p.imageSrc}
+          alt={p.name}
+          width={128}
+          height={128}
+          className="max-h-32 max-w-32 object-contain"
+          sizes="128px"
+        />
       </Link>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
         <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--beauty-muted)]">
           {p.brand}
         </p>
-        <h3 className="font-display text-[17px] leading-snug text-[var(--beauty-text)]">{p.name}</h3>
+        <h3 className="font-display text-[15.5px] leading-snug text-[var(--beauty-text)] sm:text-[16px]">
+          {p.name}
+        </h3>
         <p className="flex items-center gap-1 text-[13px] text-[var(--beauty-muted)]">
           <IconStar className="h-3.5 w-3.5 text-amber-400" />
           <span className="font-semibold text-[var(--beauty-text)]">{p.rating.toFixed(1)}</span>

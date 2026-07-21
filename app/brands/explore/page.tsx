@@ -124,26 +124,26 @@ export default async function BrandsExplorePage({
                   href={`/brands/${b.slug}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-cardHover"
                 >
-                  <div className="flex aspect-square items-center justify-center bg-[var(--beauty-blush)] p-4">
+                  <div className="flex h-24 items-center justify-center bg-[var(--beauty-blush)] p-3 sm:h-28">
                     {b.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={b.image}
                         alt=""
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-16 max-w-16 object-contain sm:max-h-[4.5rem] sm:max-w-[4.5rem]"
                         loading="lazy"
                       />
                     ) : (
-                      <span className="font-display text-3xl text-brand-600">
+                      <span className="font-display text-2xl text-brand-600">
                         {b.name.slice(0, 1)}
                       </span>
                     )}
                   </div>
-                  <div className="p-3">
-                    <p className="truncate text-[13.5px] font-bold text-ink group-hover:text-brand-700">
+                  <div className="p-2.5 sm:p-3">
+                    <p className="truncate text-[13px] font-bold text-ink group-hover:text-brand-700 sm:text-[13.5px]">
                       {b.name}
                     </p>
-                    <p className="text-[11.5px] text-ink-muted">
+                    <p className="text-[11px] text-ink-muted sm:text-[11.5px]">
                       {b.productCount} product{b.productCount === 1 ? "" : "s"}
                     </p>
                   </div>

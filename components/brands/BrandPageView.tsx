@@ -172,12 +172,12 @@ export default function BrandPageView({
             </div>
 
             {heroImg && (
-              <div className="relative mx-auto hidden aspect-square w-full max-w-[300px] overflow-hidden rounded-[28px] border border-line bg-white shadow-card lg:block">
+              <div className="relative mx-auto hidden h-44 w-44 items-center justify-center overflow-hidden rounded-2xl border border-line bg-white shadow-card lg:flex xl:h-48 xl:w-48">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={heroImg}
                   alt={`${brand.name} product`}
-                  className="h-full w-full object-contain p-8"
+                  className="max-h-32 max-w-32 object-contain xl:max-h-36 xl:max-w-36"
                 />
               </div>
             )}
@@ -307,21 +307,21 @@ export default function BrandPageView({
                   href={`/brands/${r.slug}`}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-cardHover"
                 >
-                  <div className="flex aspect-square items-center justify-center bg-[var(--beauty-blush)] p-4">
+                  <div className="flex h-24 items-center justify-center bg-[var(--beauty-blush)] p-3 sm:h-28">
                     {r.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={r.image}
                         alt=""
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-16 max-w-16 object-contain sm:max-h-[4.5rem] sm:max-w-[4.5rem]"
                       />
                     ) : (
-                      <span className="font-display text-2xl text-brand-600">
+                      <span className="font-display text-xl text-brand-600">
                         {r.name.slice(0, 1)}
                       </span>
                     )}
                   </div>
-                  <div className="p-3">
+                  <div className="p-2.5 sm:p-3">
                     <p className="truncate text-[13.5px] font-bold text-ink group-hover:text-brand-700">
                       {r.name}
                     </p>
