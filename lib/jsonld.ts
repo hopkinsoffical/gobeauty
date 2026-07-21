@@ -40,7 +40,14 @@ export function blogPostingJsonLd(opts: {
   datePublished: string;
   dateModified: string;
   authorName: string;
+  /** Absolute or site-relative image URL */
+  image?: string;
 }) {
+  const imageUrl = opts.image
+    ? opts.image.startsWith("http")
+      ? opts.image
+      : `https://www.gobeauty.ai${opts.image}`
+    : undefined;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -48,6 +55,7 @@ export function blogPostingJsonLd(opts: {
     description: opts.description,
     datePublished: opts.datePublished,
     dateModified: opts.dateModified,
+    ...(imageUrl ? { image: [imageUrl] } : {}),
     author: {
       "@type": "Organization",
       name: opts.authorName,

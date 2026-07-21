@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/data/blog";
 import { blogJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
@@ -44,7 +45,7 @@ export default function BlogIndexPage() {
   ]);
 
   return (
-    <div className="bg-[#fffaf9]">
+    <div className="bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogLd) }}
@@ -54,70 +55,85 @@ export default function BlogIndexPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbLd) }}
       />
 
-      <section className="border-b border-brand-100 bg-gradient-to-br from-brand-50 via-white to-[#fff5ed]">
-        <div className="mx-auto max-w-[960px] px-5 py-12 md:py-16">
-          <nav className="flex items-center gap-2 text-[12px] font-semibold text-ink-muted">
-            <Link href="/" className="transition hover:text-brand-600">
+      <section className="border-b border-line-soft">
+        <div className="mx-auto max-w-[960px] px-5 py-8 md:py-10">
+          <nav className="mb-3 flex items-center gap-1.5 text-[12px] font-medium text-ink-muted">
+            <Link href="/" className="hover:text-brand-600">
               Home
             </Link>
-            <span aria-hidden>／</span>
+            <span aria-hidden className="text-ink-faint">
+              /
+            </span>
             <span className="text-ink">Blog</span>
           </nav>
-          <p className="mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-brand-600">
-            Editorial
-          </p>
-          <h1 className="mt-3 max-w-3xl font-display text-[2.4rem] leading-[1.08] text-ink md:text-[3.2rem]">
-            Beauty guides from goBeauty.ai
+          <h1 className="font-display text-[1.85rem] leading-none text-ink md:text-[2.15rem]">
+            Blog
           </h1>
-          <p className="mt-5 max-w-2xl text-[15px] leading-7 text-ink-soft md:text-[16px]">
-            Clear, cite-worthy explainers on AI look analysis, local salons,
-            ingredients, and professional product discovery — written for people
-            first, structured for search and AI assistants.
+          <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-ink-soft">
+            Guides on AI beauty discovery, salons, ingredients, and professional
+            products.
           </p>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[960px] px-5 py-12 md:py-16">
-        <ul className="grid gap-5 md:grid-cols-2">
+      <div className="mx-auto max-w-[960px] px-5 py-8 md:py-10">
+        <ul className="grid gap-6 sm:grid-cols-2">
           {posts.map((post) => (
             <li key={post.slug}>
-              <article className="flex h-full flex-col rounded-2xl border border-line bg-white p-6 shadow-card transition hover:border-brand-200">
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.slice(0, 3).map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-pill bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-brand-700"
+              <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:border-brand-200 hover:shadow-card">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="relative block aspect-[16/9] overflow-hidden bg-surface-soft"
+                >
+                  <Image
+                    src={post.image}
+                    alt={post.imageAlt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 480px"
+                    className="object-cover transition duration-300 group-hover:scale-[1.02]"
+                    priority={false}
+                  />
+                </Link>
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="flex flex-wrap gap-1.5">
+                    {post.tags.slice(0, 2).map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-pill bg-brand-50 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-brand-700"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <h2 className="mt-2.5 font-display text-[1.25rem] leading-snug text-ink">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="transition hover:text-brand-700"
                     >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <h2 className="mt-3 font-display text-[1.35rem] leading-snug text-ink">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="transition hover:text-brand-700"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-2 flex-1 text-[14px] leading-relaxed text-ink-soft">
-                  {post.tldr}
-                </p>
-                <div className="mt-4 flex items-center justify-between gap-3 border-t border-line-soft pt-4 text-[12.5px] text-ink-muted">
-                  <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="font-semibold text-brand-600 hover:underline"
-                  >
-                    Read guide →
-                  </Link>
+                      {post.title}
+                    </Link>
+                  </h2>
+                  <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-ink-soft line-clamp-3">
+                    {post.description}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-line-soft pt-3 text-[12px] text-ink-muted">
+                    <time dateTime={post.publishedAt}>
+                      {formatDate(post.publishedAt)}
+                    </time>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="font-semibold text-brand-600 hover:underline"
+                    >
+                      Read →
+                    </Link>
+                  </div>
                 </div>
               </article>
             </li>
           ))}
         </ul>
 
-        <p className="mt-12 text-center text-[14px] text-ink-soft">
+        <p className="mt-10 text-center text-[13.5px] text-ink-soft">
           Looking for short answers? Visit the{" "}
           <Link href="/faq" className="font-semibold text-brand-600 hover:underline">
             FAQ

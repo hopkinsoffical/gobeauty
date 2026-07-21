@@ -6,6 +6,13 @@ export type BlogPost = {
   slug: string;
   title: string;
   description: string;
+  /**
+   * Cover image path under /public (e.g. /images/blog/slug.jpg).
+   * Shown on index cards and article hero; also used for Open Graph.
+   */
+  image: string;
+  /** Short alt text for the cover image */
+  imageAlt: string;
   /** ISO date YYYY-MM-DD */
   publishedAt: string;
   /** ISO date YYYY-MM-DD when content was last reviewed */
@@ -32,6 +39,8 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "What is goBeauty.ai? AI beauty discovery explained",
     description:
       "goBeauty.ai turns a beauty look or goal into a clear plan: DIY, book a pro, or shop products — with AI photo analysis and local recommendations.",
+    image: "/images/blog/what-is-gobeauty-ai.jpg",
+    imageAlt: "Phone and beauty look photos on a soft pink salon table",
     publishedAt: "2026-07-15",
     updatedAt: "2026-07-21",
     author: { name: "goBeauty Editorial", role: "Beauty product team" },
@@ -77,6 +86,8 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "How to get a nail look from a photo (DIY vs salon)",
     description:
       "Step-by-step: use goBeauty Get This Look to turn a nail photo into DIY steps, product ideas, or a salon booking decision.",
+    image: "/images/blog/how-to-get-a-nail-look-from-a-photo.jpg",
+    imageAlt: "Manicured nails being photographed for a look analysis",
     publishedAt: "2026-07-18",
     updatedAt: "2026-07-21",
     author: { name: "goBeauty Editorial", role: "Beauty product team" },
@@ -120,6 +131,8 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "How goBeauty local salon rankings work",
     description:
       "Transparent ranking signals for local nail and beauty salons: Google visibility, reviews, freshness, booking readiness, and AI growth opportunity.",
+    image: "/images/blog/how-local-salon-rankings-work.jpg",
+    imageAlt: "Modern nail salon interior representing local salon rankings",
     publishedAt: "2026-07-10",
     updatedAt: "2026-07-21",
     author: { name: "goBeauty Editorial", role: "Local rankings team" },
@@ -158,6 +171,8 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "How to read skincare ingredients (without a chemistry degree)",
     description:
       "A practical guide to INCI lists, common actives, and how goBeauty’s ingredients library helps you compare products safely.",
+    image: "/images/blog/how-to-read-skincare-ingredients.jpg",
+    imageAlt: "Skincare serums and ingredients flat lay on marble",
     publishedAt: "2026-07-12",
     updatedAt: "2026-07-21",
     author: { name: "goBeauty Editorial", role: "Product science desk" },
@@ -196,6 +211,8 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Salon owner’s guide to the goBeauty product marketplace",
     description:
       "How salon and spa buyers use Products for Salons to find treatments, aftercare, samples, and suppliers on goBeauty.ai.",
+    image: "/images/blog/salon-owners-guide-to-gobeauty-marketplace.jpg",
+    imageAlt: "Professional salon product backbar and treatment bottles",
     publishedAt: "2026-07-08",
     updatedAt: "2026-07-21",
     author: { name: "goBeauty Editorial", role: "Marketplace team" },
